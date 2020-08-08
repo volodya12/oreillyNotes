@@ -1,0 +1,99 @@
+Redy API
+Endpoint = URL
+
+WorkSpace -> Project -> Test Suite -> Test Case -> Test Steps
+PREP
+1. Create an Empty Project folder
+	Rename project folder
+2. Click "New REST Service From URL" - aka REST Request URL
+	Paster the URL link
+		URL= Endpoint/Resouce/Parameters
+3. Select within Resource - JSON/XML - or add [type] at end of Resouce
+4. Rename "Request" to something meaningful
+5. IF need to add another REST Service URL, right-click project - "New REST Services from URL"
+
+ADD Steps - Convert into Executable Test
+1. Right-Click on Project folder and "New TestSuite"
+2. Within TestSuite - Create "New TestCase"
+3. Within TestCase - Navigate to TestStep - Add "REST Request"
+4. Point that Step (REST Request) to [REST Request URL] created earlier in PREP-2
+	Now you have the option to Add/Create Assertions - Verificaton Steps
+
+ONLY for Ready API - open source
+Evaluate JSON path
+1. www.jsonpath.com - only if validating "JSONPathMatch" assertion
+2. Run the Request in SoapUI/Ready API and COPY JSON results (all of it)
+3. Paste into www.jsonpath.com (within JSON box)
+4. Key into JSON Syntax the Path you want to validate (city, state, name, etc)
+5. Copy that JSON Syntax path
+
+ASSERTIONS
+Add/Create Assertions
+	Validating in JSON - Select "JSONPathMatch"
+	Validating in XML - Select "XPathMatch"
+1. Click on "Assertions" and + button on screen
+2. Write in "Expected Results" your outcome/results
+3. Copy JSON Syntax Path from jsonpath.com and Paste to "JSONPath Expression"
+
+Create PROPERTIES and PROPERTY TRANSFER - Open source API
+1. Insert Step - Properties
+2. Create <properties> withing "properties request"
+3. To Connect Steps "REST Request" and "Properties" - use "Property Transfer"
+4. Create <transfers> within "Property Transfer"
+5. Select <Source> - Extract from
+6. Select <Property> - Type of Property - "Response"
+7. Select <Path Language> - JSON or XML
+8. Copy/Paste from www.jsonpath.com into white space under Source
+9. Select <Target> - Extract to "Properties"
+10. Select <Properteis> within Properties (whatever property you created)
+11. Select <Path Language> - JSON or XML
+12. Finally - Change any <Property Value> within "REST Request" from (Add Steps - step 3) and run the test
+
+Syntax way to Connect PROPERTY to REST Request
+1. Withing <REST Request>, Key in for <Value> = ${Properties#<propertyName>}
+	if need add 2nd <Property Value> = ${Properties#<propertyName>},${Properties#<propertyName>}
+2. 
+
+SCRIPT Assertion
+import groovy.json.JsonSlurper
+def response=messageExchange.response.responseContent
+def slurper=new JsonSlurper()
+def json=slurper.parseText response
+
+assert json.trends.'2012-08-29 08:20'!=null
+----------------------------- 
+Learn JSON path
+
+# STATUS CODE
+200 OK			Request successfully completed
+201 Created		New Resource was successfully created
+400 Bad Request		The request was invalid
+401 Unauthorized	The request did NOT include authentication or it was expired
+403 Forbidden		The client did not have permission to access the requested resource
+404 Not Found		The requested resource NOT Found
+405 Method Not Allowed	The HTTP method in request not supported
+
+METHODS
+GET: Fetch data from applicaton
+	Fetch only HEADER 
+POST: Add New data
+PUT: Updata Data
+DELETE: Delete
+PATCH: Similar to PUT but require only updated data to send
+
+
+
+
+
+# Other RestAPI course
+http://mapstotest.herokuapp.com/maps/api/geocode/json/
+http://mapstotest.herokuapp.com/maps/api/geocode/xml/
+
+http://mapstotest.herokuapp.com/maps/api/geocode/json/?address=bangalore
+http://mapstotest.herokuapp.com/maps/api/geocode/xml/?address=bangalore
+
+Other cities to play with
+Bangalore, Sydney, London, Bengaluru, Dublin, Chennai, Mumbai, New York, Melbourne, Pune, New Jersey, Mysore, Boston, Galway
+
+
+

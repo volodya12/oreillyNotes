@@ -1,0 +1,17 @@
+ssh into different server from personal pc (username@hostname or IP address)
+EX: ssh username@192.168.0.1
+or  ssh username@hostname (storegw3)
+
+1. IN terminal type:
+	ssh vkalmykov@storegw3 
+	type: yes
+	type: current password
+
+
+------ oreilly 4 servers hosts: 
+Storegw3
+Storegw2
+OS Test-1: ost-t-pg-broadleaf-1
+OS Test-2: ost-t-pg-www2-1
+
+Port: 22

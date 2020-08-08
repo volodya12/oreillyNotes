@@ -1,0 +1,63 @@
++Find Files based on SIZE
+	- Open C Drive or other drives
+	- In Search (right-corner) Key: size:gigantic - you can select variety of "sizes" to select from
+
++Navigate to Settings, NOT Control Panel
++Scan for Viruses with Build in AntiVirus software
++Keep Software (PC) up to date
++Replace HHD with SSD - will improve big time performance
++Add more RAM
+
++Navigate to Command prompt - Run as Admin
+	- type: wmic
+	- type: diskdrive get status
+	- IF shows OK, then good, if Not then some harddrive is failing
+++Chkdsk /F then type Y - this will try to fix any disk problems when restart pc
+++sfc /scannow - runs system file checker
+	- this will search files that are corrupted, missing and will try to repair them
+	- some warning messages might pop up, error codes, Google those error/Messages codes to figure out
+
+#Storage Sense - windows will monitor storage and remove unwanted files
+	- Settings, Storage, Storage Sense ON
+	- Advance settings in "Change how we free up space automatically"
+
+#Metered Connecton
+	- Navigate to Network connection
+	- Wifi, Metered Connection ON
+#Game mode on
+ - Settings, Gaming, Game Mode ON
+
+#Change hours for Automatic Updates - runs updates while computer not used, improves performance
+	- Update and Security, Change Active hours, Set time to When computer is ON BUT not Used
+
+#Power Options
+	- Control Panel, Power Options, Select Balanced (recommended) or High Performance
+
+#Remove Unused programs
+#Remove Unused Apps
+	- Settings, Apps, go thru list and unstall apps not used
+
+#Disable Starup programs
+ - Task Manager, Startup, Disable programs
+
+#Second way of disabling startup services
+	- run: services.msc, Click Services that says "Automatic", Click Properties, Change Startup type: "Manual"
+
+#Run Disk Cleanup
+	- Search for Disk Cleanup, and clean the Drive
+
+#Disable Schedule Maintenance
+	- Type Optimize in search bar, Select Defragment and Optimize, Select Drive, Change Settings, Disable Run Unschedule, but may 
+need to do defragment manually
+
+#If nothing helps, might need to Reset PC but keep personal Files
+	- Settings, Update and Security, Recovery, Reset this PC, Keep personal files or Get back to previous version of windows
+
+#Windows Memory Diagnostic
+	- Search "Windows Memory Diagnostic", Click "Check for Problems..." or may "Restart now..." 
+	- Will restart and go into Blue screen where it will check memory diagnostics
+
+#Disabling Animation (not necessary)
+	- Control Panel, Ease of Access, Make the computer easier to use, Turn off all unnecessary animations (uncheck)
+
+

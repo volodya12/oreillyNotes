@@ -1,0 +1,49 @@
+--- Git ---
+
+Step 1. Git init - initialize Git repository. Set Folder as Git repository
+Step 2. git config --global user.name '<name>'
+		git config --global user.email '<email>'
+
+git add <file> = add file to staging area
+	git add . = adds ALL
+git status = status of files where they at
+
+#Commit
+git commit = commits to folder 
+	(will direct to VIM, push 'i' to type and when finish ESC, :wq to write and exit)
+git commit -m 'textHere' = commits to folder with actual message
+	
+#For Remote Repository
+Git push - pushes/submits code to Online Repository 
+git pull - pull lates code onto your PC from Online
+git Clone - Clones repository into New Directory (download files onto your machine)
+
+git rm --cached <fileName> = Unstage files that are staged
+
+#Ignore files to commit
+Create file 
+	touch .gitignore = all files names in this file will be ignored
+When creating new file, ex: "log.txt", just add <fileName> -> "log.txt" into ".gitignore"
+	All it takes it to add <fileName> into ".gitignore"
+Then do "git add ." and that will stage all files except files in ".gitignore"
+$Ignoring Folder directory
+	Same way, put that <folderDirectoryName> into ".gitignore" but in slight diff format
+		Key: /<folderName>  (include slash)
+
+
+# * (star) means ALL
+#ignore all text files	
+	in ".gitignore" key '*.text' will add all text files into .gitignore
+$touch = create new file
+
+#Branches
+Git branch <nameOfBranch> = create New Branch
+Git checkout <branchName> = switching to different Branch
+Git Remote = List ALL repositories
+
+#Merging
+Go to MASTER branch first (recommended) 
+git checkout master = branch switches to MASTER
+git merge <branchName> = Merges new branch with code into MASTER 
+
+

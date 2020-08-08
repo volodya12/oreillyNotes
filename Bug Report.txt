@@ -1,0 +1,43 @@
+###### Creating Bug #####
+
+*Observed*
+
+*Expected*
+
+*Does the Bug occur in Production?*
+*Steps to Reproduce*
+#
+
+*Frequency*
+*Workaround*
+
+
+*Additional Info*
++TestBox+:
++WS+:
++Line and Item+:
++Invoice Number+: 
++Customer number+:
++Version#+:
++Query used+:
+
+
+###### Creating Test Case ####### Be short and on point with GROUPS ########
+
+*Testing Purpose*
+Prove or Verify ...	
+
+*User Type(s)*
+* Valid Enactor user with a drawer assigned - [Enactor - User List|https://confluence.oreillyauto.com/display/RetailQATeam/Enactor+-+User+List]
+
+*Testing Needs*
+
+* Thin Client connected to the Test System
+* Pinpad connected to thin client
+* Database Connection: pricingdata, retaildata, mdm
+* Laser or Thermal printer must be connected - Receipt printed out
+
+* Mark In Component as <Disruptive Testing> 
+* Mention here if its <Disruptive Testing>
+
+*Testing Release:*

@@ -1,0 +1,109 @@
+#Composite Project
+
+-Projects saved as single XML file, which makes it difficult to share among other testers, working on same project.
+SEtting "Composite Project" to TRUE, the project is separated into multiple components.
+-Environments can change endpoints, database connections, properties and more
+-Event handlers can customize all aspects of API interactions/applies custom behavior to API calls
+
+Quiz
+Soap ui stores its project in XML
+What is true about workspace
+	You may only need one
+	Workspaces does not stored in CSV files
+When defining different configurations with different endpoints,
+	Environment feature is use
+What is reason to use an Event handler
+	To apply custom behavior to all API Calls in project
+Properties are best thought of as Variables
+What is good way to share projectgs with colleagues
+	Composite projectsa
+Why soup ui project files get so big
+	because they often contain complete WSDL
+Reason to customize yoour proxy settings
+	To work with your firewall
+Where can user view Global Properties
+	From File->Preference menu
+
+#Manual API Interaction
+
+Before interact/create Test Suites, first experiment with your Services and APIs
+	Goal is to Validate basic behavior
+Creating New Project
+	Definitions - Examines resource and automatically determines types to use
+	EndPoint - Test live API with specific method
+	Integration - Allows to test Third party APIs
+	Discover API - records HTTP/HTTPS traffic to API. Uses external client applications or browsers record clicks and behaviors
+		Like testing Web sites, interacts with buttons
+
+Endpoint Explorer - allows quick way to Test APIs with various methods, submit header, and receive Response all in one window
+	You can also create Test Case right from Endpoint Explorer
+
+#Provides sample data automatically instead of question marks - when pulling WSLD file - From "Definition" from Create NEw Project
+How does it knows which values to use as sample?
+	Its getting all information from WSDL file, Data types, restrictions to decite what is permissible.
+#Soap request can validate WSDL fiel via FORM if its properly filled out with valid information.
+#WSDL determines UI behavior for Web Service
+
+
+Quiz
+How can soap ui determine what default values to generate / Also soapui know how to validate a form of data that you have filled in.
+	By consulting the WSDL
+Why is it good that soapui can render JSON as XML
+	It makes XPath assertions possible
+Want to see what you send on the wire to your service? where should u look
+	Raw View
+What is NOT a reason to setup multiple requests?
+	To make hidden request tabs visible
+Where cyou find HTTP header content that returned from service
+	Response tab, Header
+WSDL is for Web Services. Analogy for REST Api
+	Swagger
+INstruct soapui to fill in sample values for request
+	At Global Preference
+What is least information you need to create project that works with REST api
+	A sample call to the request
+
+#TestSuites are container of functional tests (TestCases)
+#TestSuites can be run sequentially or in parallel.
+#TestSuites can be automatically generated and can be implemented into different environment.
+
+
+Quiz
+Why might you want to run TestSuite from command line
+	Integration with automated test tool
+What do you need to create TestSuite containing REST APIs
+	A Sample call to Api
+You only want to run 2 out of 3 TestSuite. What to do
+	Disable the TestSuite do not want to run
+What is utility that runs TestSuites from command line
+	TestRunner.bat
+
+#TestCase
+-Have two main settings	- preffered unchecked
+	Abort test if an error occur
+	Fail TestCase if it has failed TestSteps
+Debugger lets you pause and analyze  your TestCase
+
+Quiz
+Best analogy for TestCase
+	Functional test
+Building Blocks that compose TestCase
+	TestSteps
+NOT true about TestCase
+	TestCases are only available in Soap services
+If Soap created TestCase, what type step does it usually include to start
+	A call to API
+Which two types soapui tests taht can be generated from testcase
+	Load Test & Security scan
+What does Debugger NOT provide
+	Ability to change properties while test is running
+YOu want to pause Testcase to check properties. Easy way to proceed
+	Use debugger to insert a breakpoint
+What determines to run testcase to completion, despite any problems
+	Abort on Error Setting
+
+
+
+
+
+

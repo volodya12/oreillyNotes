@@ -1,0 +1,14 @@
+Connecting to a Client (AS400) via tn5250
+--Connect to a network first (open vpn)
+--Open Tn5250 and key: Ozark1
+--For Sysdev, Key: Sysdev2
+
+-----First way:
+Termnal: ping ozark1
+Servers host numbers will show up
+172.31.253.111
+
+----Second way:
+Open up tn5250
+Hostname: OZARK1
+Hostname: sysdev2
