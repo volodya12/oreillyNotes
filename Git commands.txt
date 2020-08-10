@@ -1,25 +1,44 @@
 --- Git ---
 
-Step 1. Git init - initialize Git repository. Set Folder as Git repository
+#If problem occurs while Pushing files to GitHub repository (as a first Push)
+https://stackoverflow.com/questions/44313299/unable-to-push-to-github-using-the-command-git-push-u-origin-master
+
+Step 1. Git init - initialize Git repository. Set Folder as Git repository. Tracks the project
 Step 2. git config --global user.name '<name>'
 		git config --global user.email '<email>'
 
+#Settings - setting up
+git remote -v = shows the github link to actual repository
+git config --list = shows all values for repository (ex: user.name/email/password)
+git help <verb> or git <verb> --help = description what can be done with command (ex: git help config) 
+
+#Add/Stage/unStage/Commit file
 git add <file> = add file to staging area
 	git add . = adds ALL
+git reset <fileName> = unStages file
+git reset = removes ALL files from Staging
+git rm --cached <fileName> = unStages file
 git status = status of files where they at
 
-#Commit
 git commit = commits to folder 
 	(will direct to VIM, push 'i' to type and when finish ESC, :wq to write and exit)
 git commit -m 'textHere' = commits to folder with actual message
-	
+git log = shows logs/commits that been made	
+git Diff = to see changes in code made (red = removed/green = added)
+
+
 #For Remote Repository
 Git push - pushes/submits code to Online Repository 
+	Git push origin master = pushes all changes (MASTER is main branch)
+	Git push origin <branchName> = if its NOT master branch
 git pull - pull lates code onto your PC from Online
-git Clone - Clones repository into New Directory (download files onto your machine)
+	git pull origin master = pulls all changes from remote to local PC (MASTER is main Branch)
+git clone <repositoryNameURL> = Clones repository into New Directory (download files onto your machine)
+git clone <repositoryNameURL> <folderDirectoryName> = clone into specific folder location
 
-git rm --cached <fileName> = Unstage files that are staged
-
+#For Local Repository
+git clone ../<folderName>.git . = Cd into current folder, run this command to clone local repo
+ 
 #Ignore files to commit
 Create file 
 	touch .gitignore = all files names in this file will be ignored
@@ -35,15 +54,18 @@ $Ignoring Folder directory
 #ignore all text files	
 	in ".gitignore" key '*.text' will add all text files into .gitignore
 $touch = create new file
+$(.)dot - means current directory
 
 #Branches
 Git branch <nameOfBranch> = create New Branch
 Git checkout <branchName> = switching to different Branch
 Git Remote = List ALL repositories
+Git branch -a = lists all branches name Localy and Remotely
+git branch -d <branchName> = deletes Branch
+
 
 #Merging
 Go to MASTER branch first (recommended) 
 git checkout master = branch switches to MASTER
 git merge <branchName> = Merges new branch with code into MASTER 
-
 

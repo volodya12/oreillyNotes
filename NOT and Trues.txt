@@ -1,0 +1,62 @@
+NOT and Trues
+
+What is NOT a reason to setup multiple requests?
+	To make hidden request tabs visible
+	
+NOT true about TestCase
+	TestCases are only available in Soap services
+	
+What does Debugger NOT provide
+	Ability to change properties while test is running
+	
+NOT true about TestStep protocol
+	They only work when underlying protocol TestStep
+	
+True about JDBC Request
+	They provide query builder you can use to generate SQL
+	
+NOT reason to use Properties
+	To speed up server responses
+	
+NOT benefit of Assertions TestStep
+	New assertions that cannot be invoked anywhere else
+	
+NOT a DataSink output option
+	Binary
+	
+NOT true about using DataSource and DataSink within project	
+	DataSource and DataSink must use same repository
+	
+NOT reason why assertions are important
+	They feed information to your API to help it respond more quickly
+	
+Which TestStep generally NOT good candidate for assertions
+	Property Transfer
+	
+REST API to NOT return one of group of HTTP status codes
+	Invalid HTTP status codes
+
+You Expect call to Web Service to NOT produce standardized error
+	Not SOAP Fault
+	
+NOT reason to use data-driven assertions
+	Less passes through a TestCase
+
+NOT good reason to pre-load a few rows from DataSource
+	Check response time for API
+	
+NOT true about DataSink TestStep
+	They are incapable of exporting the request
+	
+NOT reason to use Virtual API
+	YOu need to measure true network latency of your production API
+
+NOT dispatch method for routing requests to virtual API responses
+	JDBC
+	
+NOT reason to use scripting in virtual API
+	to eliminate the need for WSDL or sample REST invocation when creating virtual api
+	
+NOT advantage of using Global Sensitive Information tokens
+	Better integration with the soapui debugger
+	
