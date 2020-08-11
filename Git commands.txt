@@ -2,6 +2,8 @@
 
 #If problem occurs while Pushing files to GitHub repository (as a first Push)
 https://stackoverflow.com/questions/44313299/unable-to-push-to-github-using-the-command-git-push-u-origin-master
+#Problem with Cloning (Public key) issue. Watch this video
+https://www.youtube.com/watch?v=Vi-WqFKYpnw
 
 Step 1. Git init - initialize Git repository. Set Folder as Git repository. Tracks the project
 Step 2. git config --global user.name '<name>'
