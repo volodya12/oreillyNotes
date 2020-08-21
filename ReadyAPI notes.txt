@@ -445,9 +445,143 @@ A security scan that sends string to an element that expects an integer known
 	Invalid Type
 Which is best tactic to ensure success with soapui security wizard
 	Start with small scan and then build on it as you proceed
+
+------------------	
+UDEMY - Learn API & WebService Testing
+------------------
+# 3 Layers
+Front End - (GUI, Presentable Screen/Layer)- JavaScript, CSS, JAVA
+Business Logic - (API-Application Programming Interface) - Java, C#, C++, Phyton
+Back End - (Database)- My SQL, SQL, Oracle
+
+# APIs are in form of JAVA files (also available in WebService)
+	- No need URL
+	- No need Web Browser
+	- API is in form of JAVA (no need internet, can be tested locally)
+# Web Service
+	- Reads XML format
+	- Available in WebServers
+# API is NOT a WebService BUT WebService can be API 
+------------
+Web Services
+------------
+1. SOAP - XML,  WSLD file
+2. REST - XML, JSON, HTTPS, HTML, (GET, POST etc...) Must have URL Request 
+-----------
+Web Service is service available over Web or Network, it communicates between 2 machines/Applications
+----------------------------------------------
+# Web Application - Provides service directly to User - Receives response from Web Server
+# Web Service - Provides service to other Programs
+
+# Components of Web Services
+	WSDL - Web Service Description Language. 
+		- XML based-language that describes  Web Services, how to access and locate them
+	UDDI - Universal Description Discovery and Intergration
+		- Open internet-based specification, offers directory service for storing information about Web Services
+		- Company or Storage Unit where Service Providers store their Services
+			- UDDI - Place where ALL Services are Stored/Available 
+		- With WSDL - Web Services can be accessed and located
+		- ##Service Consumer (Client) uses WSDL to Get/Find Services from UDDI, then WSDL Approves the Service and Client Sends Request to Server
+# These are Service Providers - Web Service - Servers - Store their services in UDDI
+# These are Service Consumers - Clients - They only send Request and get Response
+	- UDDI - Place where Service Cunsumers Finds Service
+	- WebService stored in UDDI
+
+### Web Service vs API ###
+	WebService ALWAYS need network to operate/Test.BUT API may not need Network to operate/Test
+		API can be tested on local machine if Server is located Locally
+	WebService can be used by Soap, Rest, XML RPC BUT API can be communicated through other ways like CURL calls/URL
+	API can be considered as Web Service BUT ALL Web Service are not API 
+	API can be exposed in number of ways like via JAR, DLL files, XML over HTTP, JSON over HTTP - which may not need network
+
+### SOAP vs REST ###	
+# SOAP - Simple Object Access Protocol
+	- Soap is a Protocol 
+	- designed to ensure that programs built on different platforms and programming languages could exchange data easily
+	- exchanges messages between applications/systems
+	- it uses HTTP protocol to transfer XML messages 
+	- Supports XML for data exchange (Request and Response)
+	- Heavy Weight cuz it uses WSDL file, also very Slow 
+	- WSDL - Web Service definition Language - written in XML format
+	- It is VERY Strict for its Standard Rules	
+	- Requires MORE bandwidth and resource
+	- Defines its own Security
 	
+# REST - Representational State Transfer 
+	- REST is an architectural style
+	- designed specifically working with components such as media components, files, objects on a particular hardware device. 
+	- Any web service that is defined on the principles of REST can be called RestFul web Service.
+	- It uses HTTP verbs/protocol = GET, POST, PUT, etc... to work with required components
+	- Uses mostly HTTP rather than HTTPS - cuz HTTPS is more enctypted, not fur user eyes, but HTTP is easier to aquire info 
+		- Allow users to view web pages, easily to communicate between different systems. 
+	- HTTP disadvantage - Information flows between server to browser can be easily stolen. 
+	- HTTPS uses SSL (Secure Sockets Layer) certificate which helps to secure encrypted connection between server and browser. 
+	- REST does not define too much standard unlike SOAP 
+	- Requires LESS bandwidth and resource
+	
+# Advantages of REST over Soap
+	REST supports multiple format to exchange data between 2 machines/Application
+	REST services are faster than SOAP 
+	Less data transfer between machines 
+	SOAP is protocol, REST is set of guidelines which described how client should interact with server
+	SOAP can be accessed thru WSDL only BUT REST can be accessed thru WADL or URI
+	
+----------------------------------------
+# Tools available to use for API
+	API - no internet required, can be tested locally (available in Jars file)
+	WebServices - Requires Internet, test by sending HTTP request (URL)
+	Soapui
+	POSTMAN
+	Katalon - Testing Web Services
+	Assertible
+	Apigee
+	Apache JMeter - performance testing
+	REST-Assured - complete Automation
+	Tricentis
+	Karate
+--------------------------------
+# API/Web Service Testing Process
+	- API Specification Review - review API specifications, documentation from test perspective
+	- Test Specificaton Development - document deals with test conditions and expected results 
+	- Test Framework Development - choose tools to use, JMeter, SOAPUI, REST, other resources
+	- Test Case Development - code/create test cases
+	- Test Execution and Report to Dev or Client
 
+# URI and URL (Uniform Resource Identifier vs Uniform Resource Locator)
+URL Link contains of: 
+	Domain: www.michaelcropper.com/
+	URI: /seo-tools/uri-encoder-decoder-tools-for-seo?
+	Query String: name=value&lastName=value&Address=value
+# Part of URL = Domain + URI + Query String
 
+Domain: Physical server where website is hosted
+URI: Identifier which maps to file on your server - Directory/Folder/ Where that folder/File is Located inside Server
+Query String: Part of GET, POST, PUT request to pass in values to customise output (Parameters)
+-----------------------------------------
+# HTTP Request Contains
+ URI
+ HEADER
+ Payload - Data in JSON, XML format (Data send or received)
+	ex: POST - create FirstName, LastName, Address, Location - includes in Payload
 
+# HTTP Response Contains
+ Status Code - 200 OK
+ Response Payload
+ String Message "Successfull"
+ 
+Example: 
+POST Call: via JSON, XML or other form
+AccountID=1
+AccountName="TOM"
+Address="London"
 
+GET Call: URL -> http://api/service/account/1
+Parameters
+Query Parameters
+HEADER
+
+# Status Codes: 
+200 -> GET Successfull
+201 -> POST Successfull
+204 -> DELETE Successfull
 
