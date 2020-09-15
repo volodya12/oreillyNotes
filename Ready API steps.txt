@@ -80,11 +80,7 @@ POST: Add New data
 PUT: Updata Data
 DELETE: Delete
 PATCH: Similar to PUT but require only updated data to send
-
-
-
-
-
+-------------------------------------------------------------
 # Other RestAPI course
 http://mapstotest.herokuapp.com/maps/api/geocode/json/
 http://mapstotest.herokuapp.com/maps/api/geocode/xml/
@@ -94,6 +90,43 @@ http://mapstotest.herokuapp.com/maps/api/geocode/xml/?address=bangalore
 
 Other cities to play with
 Bangalore, Sydney, London, Bengaluru, Dublin, Chennai, Mumbai, New York, Melbourne, Pune, New Jersey, Mysore, Boston, Galway
+-------------------------------------------------------------------
+########## Creating SOAP WSDL Test
+
+1. Create New Workstation if needed (not necessary)
+2. Create New Project
+3. Import WSDL File (Definition tab)
+	Select Type: (WSDL Definition (SOAP))
+	Paste WSDL link into "URL or File Path"
+	Once imported, it will show all functionalities
+4. Create "Test Suite" by Right-Click on Project Name  (on left)
+5. Create "Test Case" inside "Test Suite" (Create as many as needed)
+6. Create "Test Step" inside "Test Case" by Right-Click and "Add Step"
+7. Select "SOAP Request"
+8. Select available function from "Choose Requests" Menu
+9. Click "Add Test Step"
+10. Fill out either Form, XML, Outline, RAW in REQUEST Field (Box) - XML format preffered 
+11. Add Assertions if needed (Validation)
+12. Run Test 
+
+########## Create REST Test
+
+1. Create New Project
+2. Select Endpoint Tab
+	Choose Method (Get, Post, Put etc...)
+	Paste URL into "Endpoint" field
+	Only One Functionality will show under Project Name
+3. Create "Test Suite" by Right-Click on Project Name  (on left)
+4. Create "Test Case" inside "Test Suite" (Create as many as needed)
+5. Create "Test Step" inside "Test Case" by Right-Click and "Add Step"
+6. Select "REST Request"
+7. Select available function from "Choose Requests" Menu (URL)
+8. Add "Test Step Name"
+9. Click "Add Test Step"
+10. Select "Form" tab from REQUEST to see if any data need to pass
+11. Add Assertions if needed (Validation)
+12. Run Test
+------------------------------------------------------------
 
 
 

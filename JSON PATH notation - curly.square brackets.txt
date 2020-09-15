@@ -1,0 +1,194 @@
+JSON PATH notation
+
+JSON is Syntax for Storing, and Exchange Data
+	- Placed/Formatted in form of Key and Value (Key:Value)
+#JSON supports#
+	- Strings  "Hello World"
+	- Numbers  10, 1.5, -5, 1.2e10
+	- Booleans  True/False
+	- Null      Null (Nothing)
+	- Arrays    [1,2,3], ["Hello", "World"]
+	- Objects   {"key": "Value"}, {"age": 20}
+
+#To Create JSON file - add extension (.json) for example: user.json 
+
+# Get more practice with JSON PATH Query at https://kodekloud.com/p/json-path-quiz - Enrol For Free
+# https://github.com/json-path/JsonPath - more info on JSON PATH
+
+---------- JSON PATH Curly Brackets -----------
+
+# Anything in Curly Brackets are "Dictionary"
+	"car" and "bus" are two properties of Dictionary or *Dictionary within Dictionary *
+	- these little elements "car", "bus", "color", "price" means, *Capsulated in curly Brackets*
+# $. = represents the Root element of Dictionary
+
+{
+	"vehicle": 		{
+		"car": {
+			"color": "blue",
+			"price": "20,000"
+		},
+		"bus": {
+			"color": "White",
+			"price": "120,000"
+		}
+	}
+}
+--------
+# QUERY:
+-------- 
+vehicle.bus		"color": "white"
+				"price": "120,000"
+				
+# vehicle.car.color 		"blue"
+# vehicle.bug.price			"120,000"
+-----------------
+# Use of Wildcard *
+-----------------
+	- Get All Colors
+		$.vehicle.*.color			["blue", "white"]
+	- Get All Prices
+		$.vehicle.*.price 			["20,000", "120,000"]
+		
+----------------
+If NO "vehicle" Dictionary would be there
+the JSON path would look like this
+
+$.car
+$.bus
+$.car.color
+
+With "vehicle" dictionary being present
+JSON path would look like this
+
+$.vehicle.car
+$.vehicle.bus
+$.vehicle.car.color 
+---------------------- JSON PATH with Square Brackets [] ------------
+Brackets represents "List" of ARRAY
+. (dot) represents Dictionary 
+-------------
+Form of ARRAY
+-------------
+[
+	"car",			$[0]		["car"]
+	"bus",			$[1]		["bus"]
+	"truck",		$[2]		["truck"]
+	"bike"			$[3]		["bike"]
+]
+ex: 
+	{
+		"car": {
+			"color": "blue",
+			"price": "20,000"
+			"wheels": [
+				{
+					"model": "Xterra",
+					"location": "Front"
+				},
+				{
+					"model": "Nissan",
+					"location": "Rear"
+				},
+				{
+					"model": "Toyota",
+					"location": "Middle"
+				}
+			]
+		}
+	}	
+----------------		
+$.car.wheels[1]				"model": "Nissan",
+							"location": "Rear"
+
+$.car.wheels[1].model		"Nissan"
+----------------
+OR
+#This is "If" statement, instead of hard coding. If something may change in data, use IF statement. Similar to WHERE Clause
+	- you want to find the "model" of car where Location is "Rear"
+
+$.car.wheels[?(@.location == "Rear")].model 			"Nissan"   (This Called "Criteria)
+
+------------------JSON PATH - Criteria -----------
+[
+12
+43
+23
+15
+33
+53
+]
+
+You want:
+$[Check if each item in array > 40 ] -> this can be replaced with (bellow)
+$[?(PhraseHere) > 40 ] -> Phrase: Check each item in the List -> Phrase can be replaced with @ symble
+$[?(@ > 40)] - Final say 
+
+OR
+------------------------------
+(@ == 40}
+(@ != 40)
+(@ in [43, 23, 12])
+(@ nin [43, 23, 12]) -> Not in
+-----------------------------
+
+----------- JSON PATH - List ---------
+$[0,3]		["12", "15"]
+
+# Get ALL elements from the Array List (use Semicolon)
+	- START : END
+	$[0:5] - ["12", 43, 23, 15, 33, 52"]
+	$[0:3] - ["12, 43, 23, 15"]
+# Get EVERY OTHER, every 2nd element from the List
+	- START : END : STEP
+	$[0:5:2] - ["12, 23, 33"]
+# Get LAST item From the List, no Hard Coding
+	- start of with [-1] - bottom of the list AND [-6] - Top of List, if there are 6 Items in the List
+	- May NOT work in certain implementations
+	$[-1] - 53
+	$[-6] - 12
+	- Best procedure is 
+	$[-1:0] - List only Bottom Element - 53
+same as $[-1:] - automatic 0		- 53
+# List LAST 3 items from bottom
+	$[-3:0] - ["15, 33, 53"]
+	
+-------------------
+# Wildcard *
+-------------------
+
+[
+	{
+		"model": "Xterra",
+		"location": "Front"
+	},
+	{
+		"model": "Nissan",
+		"location": "Rear"
+	},
+	{
+		"model": "Toyota",
+		"location": "Middle"
+	}
+]
+
+$.[0].model 		["Xterra"]
+$.[*].models		["Xterra", "Nissan", "Toyota"] - lists of all models from the List	
+--------------
+JSON - OBJECTS
+--------------
+"Address"  - This is called "Object" cuz it has several keys (elements) underneath
+	{
+	"Street": "Glenstone",
+	"HouseNumber":2020,
+	"City":"Springfield",
+	"State":  ----------------> This is called "Object within an Object" -> State is within Address 
+		{
+		"BigState":"MO",
+		"SmallState":"Kansas City"
+		}
+	}
+--------------
+JSON - Arrays
+--------------
+	"City": ["Springfield", "Kansas City", "St. Louis"] -----> this is calle "Array"

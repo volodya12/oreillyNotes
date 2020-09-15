@@ -5,6 +5,14 @@ SEtting "Composite Project" to TRUE, the project is separated into multiple comp
 -Environments can change endpoints, database connections, properties and more
 -Event handlers can customize all aspects of API interactions/applies custom behavior to API calls
 
+About XML
+	Designed to store and Transport Data
+	Has no Pre-Defined taga - tags are complete customizeable
+	XML separates information from Presentation
+About JSON
+	Data Representation format - similar to XML
+	
+
 Quiz
 Soap ui stores its project in XML
 What is true about workspace
@@ -185,6 +193,7 @@ JSONPath Match = Validates the Value for Node to match Value in Response
 Message Content Assertoins - checks for node (value) that is dynamic (changes) or Static (dont change) in the response 
 	Lets user skip specific fields when evalueting a response
 	Allows to validate specific nodes in XPath by selecting options to validate
+	Validate multiple messages/Values
 Equal = When you expect the response to exactly match the defined value (great for Text based info)
 	Can compare entire response with predefined values
 Equals (Binary) = great for evaluating multimedia service responses (ex: media, images, audio, video)
@@ -200,14 +209,20 @@ Type of assertion requires more knowledge of scripting/prograomming
 
 #Other Assertions
 Valid HTTP status Code = validates proper code return (200, 404). Validates HEADER
+
 Invalid HTTP status code = validates unwanted/error status code are present (400, 401, 402, 403, 404, 500, 501)
+
 Schema Complience = tells if response from the Web Service matched its XML Schema
 	Validates response message to comply with associated WSDL or WADL schema definition (Used in REST too)
 	If assertion failed, look at "WSDL Content" file itself
 	Validates SOAP Web Service response matching its Contract 
+
 SOAP Fault = Validates last received message is soap fault. Applicable only to Soap teststep
 	Checks for Standard Web Service errors
 	Not SOAP Fault = confirms that no errors occurred
+Schema Assertion = Schema Compliance - Validates Response Structure 
+	- Schema File contains (.xsd) extension
+	- Everything about in Response is mentioned in Schema File (.xsd)
 WS-Addressing - checks for routing headers
 
 
@@ -228,6 +243,10 @@ For Web Service, what two things Schema Compliance compares
 #More Assertions
 Service Level Agreement (SLA) = Measures response time for call service (timing)(Applicable for ALL environment)
 	Confirma how quickly results are returned
+	5000 = 5 seconds
+	10000 = 10 seconds
+	500 = 500 miliseconds
+	Used in Delay Test Step 
 Sensitive Information Exposure = Security - validates no sensitive information is returned in Response 
 	soapui Preferences includes library of global sensitive information that should not be visible to others
 	Measures in Tokens
@@ -239,6 +258,10 @@ Assertion TestStep = allows to apply assertions to individual teststeps (Combine
 	Allows to apply assertions to REQUEST 
 	AND/OR Boolean Conditions are allowed to be used in this assertion teststep
 JDBC and JMS Assertions both check that relevant headers and status codes are received
+
+
+HTTP Header Equals - Validates Header assertion. Validates the value its expecting from Header
+HTTP Header Exists   - Value in Header object might change like Date, Time. This validates that Value in Header Object actually exist in Header
 
 Quiz
 Issue a call to *database*, ensure there is no errors. what assertions use
@@ -580,8 +603,57 @@ Parameters
 Query Parameters
 HEADER
 
-# Status Codes: 
-200 -> GET Successfull
-201 -> POST Successfull
-204 -> DELETE Successfull
+# Status Codes (Http code): 
+200 --------> (OK)GET Successfull
+201 --------> (Created) POST Successfull
+202 --------> (Accepted)POST Data Accepted 
+200/201 ----> PUT Successfull (201 - in case new Resource created)
+204/200 ----> DELETE Successfull
+204 --------> No Content (You(PUT-Update) Date to server but there is no Data to Return. Must use GET)
 
+400(s) Code means Something wrong with Data (input), Data might have changed by Devs, May need to check with Devs 
+400 - Bad Request -------------- Invalid Request 
+401 - UnAuthorized ------------- Request did not include Authentication token/or Token was expired
+403 - Forbidden ---------------- Client do NOT have permission to access resource
+404 - Not Found ---------------- Requested resource NOT found
+405 - Method NOT Allowed ------- HTTP Method not Supported 
+409 - Conflict
+
+500 - Internal Server Error ----- 500(s) Code means Something Wrong with Server
+502 - Bad Gateway
+503 - Service Unavailable
+504 - Gate Timeout
+
+# Method
+	HEAD - Fetch (GET) only HEADER & BODY data from the application
+		Header includes - Data time, format, encryption and more...
+	OPTIONS - Finds which REQUESTS METHODS  server supports 
+		(In RESPONSE, you'll get this: Allow: OPTIONS, GET, HEAD, POST...)
+		When you get URL, you want to know which METHODS that URL supports 
+	TRACE - Used for Debugging. This method will Loop - Back, meaning return same message as in REQUEST 
+--------------------------------------------------------------------
+Jetty is a Web Server, similar to Tomcat server, made for Web Applications, Web sites
+	Java HTTP Web server and Java Servlet Container
+	Jetty is a Servlet container and Web Server which is known to be portable, lightweight, robust, flexible, easy to integrate
+	Jetty can be deployed as a standalone server and also can be embedded in an existing application.
+Jasper Soft - Creates Advanced/Detailed Report. Allows user to Customize in any form or shape, Convert into PDF file and Share with steakholders. 
+	Works and follows the guidelines of REST method. 
+Saxon - collection of tools for processing XML documents. Main Component is XSLT processor. 
+	Saxon offers XQuery extension, also, XML Schema, XPath
+	Use Saxon API calls to navigate directly to other nodes in the document, either directly, or using XPath expressions
+	Saxon can also be used as Java Library without making XSLT stylesheets.
+Hermes - Hermes has implemented web services to communicate with external applications. 
+	Advantage of using WEB SERVICES are to reduce coupling between external applications and Hermes - 
+	And to allow external applications to integrate Hermes seamlessly using any programming languages that support sending SOAP Messages
+----------------------------------------------------------------
+# Query VS Path Parameter Resource (both GET)
+
+(URI)
+Path Parameter - used to identity a specific resource or resources - To identify specific customer, User will use "CustomerID" 
+	ex: GET hhtp://localhost:8899/mysql/customers/456574856 - specific customerID number
+Query Parameter - used to sort/filter those resources 
+	ex: GET http://localhost:8899/mysql/customers?country=London - Filtering out customers from London
+		"Country" = Key
+		"London" = Value       After ? it is Parameters 
+		Query Parameters in Results - usually includes [] - as an Array 
+---------------------------------------------------------------------

@@ -65,9 +65,17 @@ Git Remote = List ALL repositories
 Git branch -a = lists all branches name Localy and Remotely
 git branch -d <branchName> = deletes Branch
 
-
 #Merging
 Go to MASTER branch first (recommended) 
 git checkout master = branch switches to MASTER
 git merge <branchName> = Merges new branch with code into MASTER 
 
+----------------------------------------------
+# Steps to Push Updated info to GitHub
+	- Checkout <branchName> - mainly its MASTER 
+1. Git add .
+2. Git Status
+3. Git commit -m 'message'
+4. Git push origin master
+	Enter KeyPhrase (password) - if needed
+5. Git Status - check if everything is pushed
