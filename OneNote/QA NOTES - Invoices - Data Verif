@@ -1,0 +1,76 @@
+-- QA Notes - Data Verification on ANY invoices created - in DBViz --
+
+# Invoices for AS400 (table invoices, find invoices) 
+JORHSH
+JORHSD
+JCCINF - Lots of Card Info can be found here
+JORPMT - View Payment Type/Information - Multiple Form of Payments
+JORPMTOV - Multiple Payment Forms with Override
+JSHPTO - ship to (addresses)
+	- Send invoices to SysDev 
+	(curl -X POST http://posrest:18080/posrest/pipe/sendToCorporate)
+JIHIST - History after Sale - sort of like Inventory
+JIAHST (IAINV#) - Item Additional History File - Containing ALL invoices that ran (Sale and Returns)
+
+Invoices for Sysdev - 
+DWPOSDATA.JPMTXMIT - If order been Tendered as Multiple Form of Payment
+DWPOSDATA.JCCXMIT - same as Order made with Credit Card - Credit Card Info
+DWPOSDATA.JHXMIT - same as JORHSH
+DWPOSDATA.JDXMIT - same as JORHSD 
+PTEST-36573
+
+# jorhsd/jimast/jorhsh
+JDITMC - Amount - Cost of an item when Store (Oreilly) buys it from Vendor (Also could be cost for Employees)/JDITMC = IMSCST - Store Cost - Item Cost
+JDTCC - Total Core Cost QTY * Core Cost
+JDCCST - Core Cost Amount
+JDTCST - TOTAL COST AMOUNT OF ITEM QTY * Cost Amount of Item
+JDQTYS - Quantity shipped
+JDITMC - Item Cost Amount
+TAX = <Status> = TAXED. Could be different status besides TAXED
+JHCTYP - Customer Type; U-User/D-Dealer
+
+jbrdata.JRWDSHPR - Reward Shoppers (If user wants Non-Rewards Customers, they must exclude customers from this table) 
+
+JHBORH/JHBORD - Stock Transfers invoices
+
+JCCINF. CCAPTN -  <AurusPayTicketNumber>
+JCCINF. CCTRANID - <transactionID>
+JCCINF. CCMASKED - <accountNumber>, <maskedAccountNumber>
+JCCINF. ARDTKN - <CardToken>
+CCCTYP - Commercial Card Type
+
+JHTRAN - Transaction Type -  Blank=Cash/ C=Charge (Card on file, Pro Cust, Credit Card)
+JHTYPE - Invoice Type - I=Invoice (Sale)/C=Credit (Return)(Payment on Account - Cash or Credit)
+
+JHCSCC - Cash Sale To Charge Cust - Y=Yes/Blank=No
+JHCTYPE - Customer Type
+JHDISC - 2% discount Code, Blank=no discount/Y=Discount
+JHSSDC - Senior Citizen and Military Discount code
+JHTDSC -- Invoice Total Discount
+
+JORHSH - Table
+JHCHGA = Y - American Express Card
+JHCHVD = Y - Discovery Card/Diner Card
+JHCHGV = Y - Visa/Master Card
+JHCHGC = Y - Credit Card Sale/F- Fleet Card/D - Debit Card
+
+JCCINF (Invoices)- Store Side        ---- Should display same data 
+JCCXMIT (Invoices) - Corporate Side --- Should display same data ^ 
+
+JORHSH - (Store side) Gives information about Which Card was Used/Swiped 
++DWPOSDATA.JHXMIT - (Corporate Side) Gives information about Which Card was Used/Swiped 
+
++JORPMT - (Store Side) Info about (Multiple Form of Payment)- MFP - Which ever Card was Used/Swiped
++DWPOSDATA.JPMTXMIT - (Corporate side)-(Multiple form of Payment) - MFP - Gives information about Which CARD was Used/Swiped - ON CORPORATE side (PAYMENT_TYPE = Card/Check/Cash)
+
+##<CloseReason>Complete<CloseReason> - close reason - Making sure that transaction Sale/Return has been completed (Linux command)
+echo -n "Invoice:  "; read invoice ; grep -B 7 $invoice /usr/local/oreilly/tomcat/logs/cct.log | grep "<CloseReason>COMPLETE</CloseReason>"
+
+#<CloseReason> and more other information displays
+tac /usr/local/oreilly/tomcat/logs/cct.log | grep "<InvoiceNumber>112832</InvoiceNumber>" -m 1 -A 6
+
+#JSON TransactionID can be found in AS400, JCCINF
+#JORHSD.JDPCDE - Special Order Code
+	• 1 = Outside purchase
+	• 2 = Branch Store Stock Transfer
+	• 3 = Factory (Vendor) order

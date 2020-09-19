@@ -1,0 +1,106 @@
+Pro Customer Columns
+
+--customer on account
+SELECT data->>'customerType' as "CustomerType",
+data->>'customerNumber' as "CustomerNumber",
+data->>'customerName' as "CustomerName"
+from customers
+where data->>'branchAccount' != 'Y' 
+and data->>'activityCode' = ''
+and data->>'customerType' != 'J' 
+and data->>'codCode' != 'Y'
+and data->>'customerNumber' = :customerNumber
+
+Id: 6545
+Description: Ozark Valley Ranch
+Type: p
+Updated_from_corp_ts: yyyy-mm-dd hh:mm:ss
+
+Data
+	
+    "cmsls": 0,
+    "codCode": "Y",
+    "enabled": true,
+    "mtdCost": 0.00,
+    "taxCode": "Y",
+    "taxDesc": null,
+    "ytdCost": -20.23,
+    "salesName": "INTERNAL",
+    "mtdReturns": 0.00,
+    "purchasers": [],
+    "ytdReturns": 257.98,
+    "salesNumber": 99,
+    "accountNotes": "",
+    "activityCode": "",
+    "customerCity": "LEBANON",
+    "customerName": "WOODY'S AUTOMOTIVE",
+    "customerType": "D",
+    "mtdPurchases": 0.00,
+    "ytdPurchases": 214.99,
+    "branchAccount": "",
+    "careOfAddress": "",
+    "customerPhone": "8410656",
+    "customerState": "OR",
+    "sortFieldName": "WOODY'S AUTOMOTIVE    005",
+    "territoryCode": 3119,
+    "customerNumber": 2481201,
+    "recordLoadDate": 318,
+    "activeBidsExist": "",
+    "customerAddress": "2886 STOLTZ HILL ROAD",
+    "customerZIPCode": "97355",
+    "dailyPayBalance": 0.00,
+    "dailyWeeklyCode": "",
+    "employeeAccount": "",
+    "reprintCopyCode": 0,
+    "updatedFromCorp": "2018-03-01T00:00",
+    "customerAreaCode": "541",
+    "customerTypeDesc": "Dealer",
+    "deferredCoreFlag": "",
+    "localPhoneNumber": null,
+    "oldTerritoryCode": 0,
+    "poNumberRequired": "N",
+    "specialPriceCode": "",
+    "wixReportingCode": "",
+    "customerTaxNumber": "",
+    "customerAttributes": {
+        "defaultLogo": null,
+        "extraInvoiceCopies": null,
+        "receiptEmailAddress": null
+    },
+    "lastTransactionDate": 40920,
+    "procurementCardCust": "",
+    "recordLoadLocalDate": "2018-03-01",
+    "corporatePhoneNumber": {
+        "areaCode": "541",
+        "phoneNumber": "8410656"
+    },
+    "deferredCoreCustomer": false,
+    "deferredCorePeriodDays": 0,
+    "previousYearsDeliveries": 0,
+    "printOutstandingBalance": false,
+    "purchaseControlSettings": {
+        "emailReceipt": false,
+        "poNumberVerifyMasks": [],
+        "hidePricingOnInvoice": false,
+        "restrictPriceOverride": false,
+        "hardMatchPurchaseOrders": false,
+        "salesRequirePurchaseOrder": false,
+        "returnsRequirePurchaseOrder": false,
+        "onePurchaseOrderPerTransaction": false,
+        "invoiceOrdersAfterCustomerPickup": false,
+        "concealedVerifyPurchaseOrderNumber": false,
+        "returnAgainstPurchaseOrderRequired": false
+    },
+    "separateCreditDebitCode": "",
+    "lastTransactionLocalDate": "2020-04-09",
+    "numberOfYearlyDeliveries": 0,
+    "numberOfMonthlyDeliveries": 0
+}
+	---------------------------------------------------
+|| - joins two columns together or strings
+#> - used for data with Parent & children
+->> - used for direct value
+{} - use to identify parent before child
+Example in Pro Cust tab
+
+	

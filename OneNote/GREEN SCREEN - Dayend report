@@ -1,0 +1,88 @@
+-- GREEN SCREEN - Dayend Report --
+
+	• View Logs to see problem with DayEnd
+	Key 5 <enter>, #10 <enter>, F10, Shift-F6 To View JOB LOG SCREEN and WHILE DayEnd running
+	· Display joblog to find out whats been running As well, when last dayend was ran
+	- WRKOUTQ qez* - View All JOb Logs (Very helpful LOG)- JOBS that are DONE
+	- WRKOUTQ qezjoblog
+		Select View 2 - #5
+		Shift F6-Bottom page
+		"Job" number = When signing in as QSECOFR, Top-right - "Display" - QPADEV0001
+		Everytime user log in again, that job # will record NEW logs - QPADEV0001
+		
+	• DSPJOBLOG - displays what command/pgm you've typed/executed, what pgms running
+	• DSPJOB - display Logs of Running Jobs 
+	• RQ JJOBLOG - displays important messages about program
+	• WRKSPLF -  work with spooled files - handy
+	• WRKOBJLCK jde300a *dtaara
+--------------------------------------------------------------------
+JSC100 Y or C
+	• Y - means DayEnd has NOT been ran for the Current Day, It ran for Previous Day (or Just moved date forward)
+	• C - means DayEnd has been Completed for Previous Day
+	• Make sure "Y" is NOT present for SAT or SUN
+	• And Looking in advance of the Month, make sure M/E field is empty until reached
+-------------------------------------------------------------
+	- Jsc301upda - indicates someone was messing with transmit, Someone was signed on to Terminal and didn't signed out. 
+	- Check JSCHDA - Store Schedule Control Data Area - After Dayend - related to dayend
+Dspdtaara jschda
+
+-----------------------------------------------------------------------
+	• JDE300A - Jobber DayEnd - Checks for any Locks that would Hinder DayEnd running (stuck)
+Dspdtaara dtaara(JDE300A)
+	• JCS300A - Jobber Nighly Communications - Checks if there is any Locks 
+Dspdtaara dtaara(JCS300A)
+---------------------------------------------------------------------------
+
+	• DayEnd runs thru 8 Saves (sequences)
+	- Between Save 1 and 2 - its updating the files. After 2, its Done updating
+	- Between Save 3-8 - it saves other things
+	- Save 3 - Saves written programs 
+	- Save 4 -6 - Most likely saves Time Clocking
+	- Save 7-8 - Hub store
+---------------------------------------------------------------------------
+	• DayEnd issues to look at (very useful)
+	• https://confluence.oreillyauto.com/display/ISHelpSupport/Dayend+Issues
+	Tab/Link - DayEnd Overview - shows whats happening while dayend is running (different sequences its going thru)
+	Tab/Link - CHS - DayEnd- Interrupted While Running -  helps user to navigate within AS400 and find out what the ISSUE is on AS400 side
+	Tab/Link - Dayend - Researching Enactor Problems - helps to identify/view logs on Linux side
+	
+	• Include for In JIRA ISSUE when reporting to Developers for a fix
+	- Joglog for RUN_PO - include the header as well
+	- Enactor (linux side) log
+	
+	- MOST IMPORTANTLY - SAVE REPORTED ISSUE TO CONFLUENCE FOR later, cuz developers tend to comment the solution on the problem on how to fix it. 
+
+		Save DayEnd reported Issues
+		
+# If OPS does not start up on TestBox after DayEnd, Check to see if there is conflict between PSP and DayEnd
+Cd /usr/local/oreilly/status
+Ls -l
+
+Results: (normally it should be empty (total 0)
+Command: dunderwoo4@linux-9990:/usr/local/oreilly/status$ ls -l 
+total 12 
+-rw-r--r-- 1 root root 6 Feb 20 01:05 heart.beating 
+-rw-r--r-- 1 root root 7 Feb 20 08:24 oreillyTomcat
+ -rw-r--r-- 1 root root 6 Feb 20 01:05 patchStage.changing 
+-rw-r--r-- 1 root root 0 Feb 20 00:30 psp.pricingUpdate 
+-rw-r--r-- 1 root root 0 Feb 20 08:23 psp.restartEnactorTomcat
+ -rw-r--r-- 1 root root 0 Feb 20 08:23 psp.restartOreillyTomcat
+ -rw-r--r-- 1 root root 0 Feb 20 08:23 psp.restartOreillyTomcatEPC 
+-rw-r--r-- 1 root root 0 Feb 20 08:23 psp.restartOreillyTomcatPricing
+ -rw-r--r-- 1 root root 0 Feb 20 08:23 psp.restartOreillyTomcatTax
+------------------------------------------------------------------------------------------------------
+
+Research workjob - if dayend is stuck
+1)  WRKACTJOB
+2)  look for any unusual jobs or jobs in MSGW.  i saw CLEANUP, which runs early in the morning.  it shouldn't be there at this time-of-day
+3)  look at the job log for the CLEANUP job (option 5, option 10, [F10], [F18])
+4)  look at the repeating message at the bottom of the clean-up job ("Cannot allocate object JCS301UPDA.")
+5)  do a WRKOBJLOCK on the thing that's locked (JCS301UPDA)
+6)  check the job log of the job that's locking the object
+7)  determined that the job shouldn't still be signed on
+8)  ended the job
+
+if you're not sure about a job, ask me.  please
+even if you're reasonably sure the job should be ended, go ahead and ask me.  i'll be happy to check it out and give you the all-clear or let you know to leave it alone
+
+

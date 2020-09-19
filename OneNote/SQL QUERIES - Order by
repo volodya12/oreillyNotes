@@ -1,0 +1,46 @@
+-- SQL QUERIES - order by --
+
+-- Order by -                            (invoice: 115000 on 9982)
+SELECT * FROM mytab
+WHERE JSON_VALUE(json_col, '$.lastname') LIKE '%Connor%'
+ORDER BY JSON_VALUE(json_col, '$.firstname') 
+
+##------ Example of pulling data from JSON file, when values are far down the list. -------
+Way to format SQL so that data can be displayed in SQL results
+https://www.postgresql.org/docs/12/functions-json.html
+--retaildata - Invoice
+Select
+invoice_data-> 'customerInfo'-> 'arCustomer'-> 'customerName' as CustomerName,
+invoice_data-> 'legacyId'-> 'invoiceNumber' as InvoiceNumber,
+invoice_data#>'{basket,items}'->0#>'{netPriceCalculatorResult, line}' as Line,
+invoice_data#>'{basket,items}'->0#>'{netPriceCalculatorResult, item}' as Item,
+invoice_data#> '{basket, items}'->0#>'{warrantyCode}' as WarrantyCode
+from retaildata.public.invoice 
+where invoice_data-> 'legacyId' ->> 'invoiceNumber' = :invoice#;
+
+--retaildata - Invoice 
+Select 
+invoice_id,
+invoice_data->'legacyId' ->> 'invoiceNumber' as "Invoice_Number",
+invoice_data->>'transactionTime' as "Transaction_time",
+invoice_data->'legacyId' ->> 'invoiceDate' as "Invoice_Date",
+invoice_data#>'{basket,items}'->0#>'{item}' as "Item",
+invoice_data#>'{basket,items}'->0#>'{line}' as "Line"
+from invoice inv
+where invoice_data->>'transactionTime' LIKE '%HHMM%'
+order by invoice_data-> 'legacyId' ->> 'invoiceDate' desc
+
+
+	- Use 0#> if there is Array {} - array. | Every array starts with 0. 0 for item 1, If two diff items = array of 1 
+	- Use {} curly brackets for Array. EX: 
+	invoice_data#>'{basket,items}'->0#>'{netPriceCalculatorResult, item}' as Item,
+	- use #> or #>> instead, it can define the path in one list
+	- Ex of (->) = obj->a->b and so on
+	- Ex of (#>) = obj#> '{a,b}'
+	- To Concaticate (||) - join two values - add (->>) which removes ""
+	(invoice_data#> '{customerInfo, arCustomer}'->> 'customerAreaCode') ||
+	(invoice_data#> '{customerInfo, arCustomer}'->> 'customerPhone') as CustomerPhone,
+	
+# In retaildata - stores both retail and pro cust
+Type = 'p'  for Professional customer
+Type = 'r'   for Retail Customer

@@ -1,0 +1,11 @@
+JIRA SEARCH - Search by TEXT
+
+"QA Test Case Type" - Routine, Query, End to End, Appearance ...
+Project (in or =)
+Build Number
+------------------------
+Type - test case template, bug ... 
+Status - Ready for Review
+Priority - Blocker, Critical, Major, Minor, Trivial, Unprioritized
+Resolution - Bug Resolved/Unresolved
+Order By DESC

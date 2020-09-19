@@ -1,0 +1,68 @@
+GREEN SCREEN - Commands
+
+#DSPJOBLOG - displays job logs, All COMMANDS typed, and Messages displayed
+
+COMMANDS:
+
+#DSPFD FILE(<file>/<library>) - Display File Description
+#WRKLNK   - Work with Object Links
+#WRKOBJLCK JBRDATA/JIMAST *FILE - Check if any files have LOCK on it in JIMAST
+#WRKOBJLCK JDE300A *dtaara - Dayend Locks Log
+
+#DSPDTAARA/WRKDTAARA/UPDDTAARA - To view data area on the AS/400
+#CHGDTAARA (ex: chgdtaara <Library>/<filename> '<data>'
+#TELNET 'TestBox'
+#WRKACTJOB 
+#WRKUSRJOB 
+#WRKSBMJOB
+#WRKOBJ " " 
+#WRKSPLF - work with spooled files
+#DSPSPLF - Display Spooled files - will show prompt to enter job name
+#WRKOBJ "specific file"  - Views all files in all Libraries
+#WRKLIB/CRTLIB - work library/create library
+#WRKJOBQ - Work with All Jobs in  Queues
+#WRKJOBQ QBATCH - Jobs in QBATCH
+#wrkoutq qezjoblog - List of all jobs been running - dead jobs
+	- Select View 2 to see dates and times - Shift+F6 Bottom of page
+	
+#WRKSYSVAL QDATE - change date on AS400
+#WRKSYSVAL QTIME - change time on AS400
+#UPDDTA - Update table or data
+	Key: upddta and press ENTER, then enter Table name
+#DSPPFM - Display Physical File Member
+# RQ JJOBLOG - view Logs
+--------------------------------------------------------------------------
+#DSPMNU MST001M - Master Menu
+#DSPMNU JDM001M - District Manager Menu
+#DSPMNU JCM001M - Customer Information Menu
+#DSPMNU JPS001M - Price Maintenance Menu
+#DSPMNU JPO002m - Stock Order Check in Menu
+#DSPMNU MISC -    Miscellaneous Menu
+#DSPMNU JIS003M - Hard Disk Recovery Menu
+------------------------------------------------------------------------
+#RQ JCKINV - inventory labels 
+#DSPMSG QSYSOPR - will tell user that "System is in Restricted Condition" - Look for that message
+#DSPPFM JCOMMLNX - to view BATCH file for particular store or JBRDATA/JCOMMLNX
+#RQ JBRDATA/JCOMMLNX - view actual copied file (Enter x2)
+#DSPLIB JBRDATA    -  Displays Files in that Library
+---------------------------------------------------------------------------
+
+RQ JMNDTL - displays all "Call" programs that can be called from Command line
+
+#DSPDTAARA JLRGRFDA - Displays Large Refund Limit Data (currently at -45.00)
+#DSPDTAARA INTERNETA - Displays if Test Box is set to "Internet Store"
+
+#CRTLIB - Create Library
+#WRKLIB - Work with Library
+#CRTDUPOBJ - Create Duplicate Object
+
+#GO LICPGM (OPTION 10)(F11) - To see Test Box/Store Batch License Release Version (V5R4M0)
+#CFGTCP (#1) - what test box your connected to via Ozark Session
+#STRSBS QCTL - Will START ALL Subsystems. Wait until RUN_PO is in a status of "DLYW"
+#ENDSBS *ALL *IMMED - Ends All Subsystems on TB - let ppl know ahead of time
+#CALL JISRPTC - View Day End reports in Legacy
+
+#CLRPFM - Clear physical file member - Clear File, make it empty
+#DLTOBJ - Delete Object
+	DLTOBJ OBJ(<obj>/<lib>)
+

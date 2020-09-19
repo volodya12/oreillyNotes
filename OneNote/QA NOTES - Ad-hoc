@@ -1,0 +1,41 @@
+-- QA Notes - Ad-hoc --
+
+Regression (Bulk) includes
+Dealer order
+Pro Customer Search
+RCAT
+Autoload
+
+AD-HOC
+For any other adhoc scenarios, look for "hotfix" in QA Notes
+MDM - Retail Customer Update/Updating Customer Information ISM-7569
+Reports - QOH reports (ISM-7150)
+Daily/Weekly pay account Statement/Summary reports - ISM-7472
+Hub Manifest ROPP-2017
+Catalog - Item Sourcing - Customer Service UI - RETAILMNT-22873
+Catalog - Selecting Vehicles, Items, Item Sourcing. etc…
+Return Quantity when entered is ignored
+Returns - Warranty Replacement - Source Replacement - Check Code OPSR-7631
+Retail Customer not retaining on Tender Selection screen RETAILMNT-22993
+PO Masking accounts processing thru with wrong PO pattern RETAILMNT-23081
+Cant lookup Pro Customer by Name RETAILMNT-22992
+9 Screen Issues - Display Item Number screen
+	Verify prices/quantities/core match database and on VR (basket)
+Lost Sales screen - main menu
+Purchase Inquiry by Customer - main menu
+Product Ordering & Inquiry - main menu
+OPS Lockup on startup when accessing Catalog OPSVR-2506
+Check Price Override/Discounts
+Check Pricing Match in both JORHSH/JORHSD 
+Check Promotion pricing in JORHSH/JORHSD
+Dealer Orders - FCO OPSVR-2491
+Barcode - Manual entry/Scan gun/Generating barcode and Scanning
+Tender Selection - on Account Customers does not display List of accounts ISM-7159
+Autoloads - ISM-7142
+Cannot do Core Return on certain items and certain customers ISM-7162
+Make sure Price for Items (Core, nonCore) calculates correctly if Qty > 1 both Sale and Return OPSVR-2526
+	- Column "Each" should show pricing per One Item & per One Core, Column "Total" should show Total pricing if Qty is 2 or more. OPSVR-2517
+	- Ex: "Each" multiply "Qty" = "Total"    NOT "Qty of 2" multiply pricing = "Each" as Total
+Online FCO order make it to POSDATA ISM-7554
+Freight/Service Charge fee should show results in JDTCST and JDITMC in JORHSD ISM-7551
+OPP Orders - with tracking number - entire process PTEST-212825

@@ -1,0 +1,8 @@
+LINUX - SOLR - Catalog
+
+# Check if SOLR is running
+/usr/local/oreilly/solr/solr-7.3.0/bin/solr status
+
+output looks like this:
+Found 1 Solr nodes:
+Solr process 57209 running on port 8983 { "solr_home":"/usr/local/oreilly/solr/solr-7.3.0/server/solr", "version":"7.3.0 98a6b3d642928b1ac9076c6c5a369472581f7633 - woody - 2018-03-28 14:37:45", "startTime":"2020-04-30T11:30:03.186Z", "uptime":"0 days, 2 hours, 28 minutes, 15 seconds", "memory":"4.6 GB (%50.6) of 9 GB"}

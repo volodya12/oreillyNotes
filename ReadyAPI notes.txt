@@ -11,32 +11,40 @@ About XML
 	XML separates information from Presentation
 About JSON
 	Data Representation format - similar to XML
-	
 
-Quiz
-Soap ui stores its project in XML
-What is true about workspace
-	You may only need one
-	Workspaces does not stored in CSV files
-When defining different configurations with different endpoints,
-	Environment feature is use
-What is reason to use an Event handler
-	To apply custom behavior to all API Calls in project
-Properties are best thought of as Variables
-What is good way to share projectgs with colleagues
-	Composite projectsa
-Why soup ui project files get so big
-	because they often contain complete WSDL
-Reason to customize yoour proxy settings
-	To work with your firewall
-Where can user view Global Properties
-	From File->Preference menu
+#Architecture
+Jasper / Saxon / Logging / H2 Database / JDBC Drives / HermesJMS / Monitoring / Runner / Jetty 
+
+
+#Projects
+Project contains everything to test API 
+Project is like a container 
+Definitions are stored in XML file
+Project don't contains data but it can be send via email
+LoadUI offers comprehensive sets of predefined and configurable perfomance tests that are able to build upon functional tests already created in SoapUI 
+Simulating soap/rest/JMS/jdbc apis = check out Service V pro 
+Artifacts - They are primarily of interests of development
+		Many software development tools build them by default
+		End users have no interest in artifacts
+Zephyr Intergration - design/manager/track tests 
+
+# Properties (TestStep) need to be above API calls (REST request/SOAP Request)
+
 
 Jetty - Java HTTP server and Java Servlet container. It is often used for machine to machine communications.
 Jetty is Web Server which is know to be portable, lightweight, robust, flexible, extensible and easy to integrate. 
 
 #Manual API Interaction
 
+Creating Project:
+	Definition - point soapui endpoint Resource definition. SoapUI examines the resource and automatically determines 
+		how to set up right project based on what you provided
+	Endpoint = create a project by providing one or more endpoints. This is for commonly if user wants to test Specific REST API
+		Select specific method GET/POST/PUT/DELETE etc. 
+	Intergration = allows soapui to import from and test sources/endpoints from third party application 
+	Discover API = Select how you want to record HTTP/HTTPS traffic to web api 
+		Records interactions on websites, testing buttons, links, movements
+		
 Before interact/create Test Suites, first experiment with your Services and APIs
 	Goal is to Validate basic behavior
 Creating New Project
@@ -45,10 +53,12 @@ Creating New Project
 	Integration - Allows to test Third party APIs
 	Discover API - records HTTP/HTTPS traffic to API. Uses external client applications or browsers record clicks and behaviors
 		Like testing Web sites, interacts with buttons
+Definition (commonly used for creating New Project with TYPE: Determine Automatically method)- it does JOB for you 
 
+API gives ability to create Empty project and then user can bring any resources into it 
 Endpoint Explorer - allows quick way to Test APIs with various methods, submit header, and receive Response all in one window
 	You can also create Test Case right from Endpoint Explorer
-
+# Payload - Data that needs included as Body (via JSON) - mainly used in POST, PUT, DELETE 
 #Provides sample data automatically instead of question marks - when pulling WSLD file - From "Definition" from Create NEw Project
 How does it knows which values to use as sample?
 	Its getting all information from WSDL file, Data types, restrictions to decite what is permissible.
@@ -56,70 +66,64 @@ How does it knows which values to use as sample?
 #Soap request can validate WSDL fiel via FORM if its properly filled out with valid information.
 #WSDL determines UI behavior for Web Service
 #Soapui uses WSDL to determine how to configure requests
-#Soap allows to Validate the REQUEST before submitting/Sending
+#Soap allows to Validate the REQUEST before submitting/Sending to Service or API 
 #Soap mostly deals with *Web Services*
 #Always good practice to have Positive & Negative Assertions
 
-Quiz
-How can soap ui determine what default values to generate / Also soapui know how to validate a form of data that you have filled in.
-	By consulting the WSDL
-Why is it good that soapui can render JSON as XML
-	It makes XPath assertions possible
-Want to see what you send on the wire to your service? where should u look
-	Raw View
-Where you find HTTP header content that returned from service
-	Response tab, Header
-WSDL is for Web Services. Analogy for REST Api
-	Swagger
-Instruct soapui to fill in sample values for request
-	At Global Preference
-What is least information you need to create project that works with REST api
-	A sample call to the request
-
-#TestSuites are container of functional tests (TestCases)
-#TestSuites can be run sequentially or in parallel.
-#TestSuites can be automatically generated and can be implemented into different environment.
+#Samples = API can provide sample data by goind to Settings -> WSDL -> Check box "Generate example values in new requests"
+	Mainly used in SOAP, (it uses WSDL file to determine what data to fill in what fields)
+#RAW tab in Request shows most recent requests that been called/Sent/Received on the wire
 
 
-Quiz
-Why might you want to run TestSuite from command line
-	Integration with automated test tool
-What do you need to create TestSuite containing REST APIs
-	A Sample call to Api
-You only want to run 2 out of 3 TestSuite. What to do
-	Disable the TestSuite do not want to run
-What is utility that runs TestSuites from command line
-	TestRunner.bat
+# TestSuites 
+
+TestSuites are container of functional tests (TestCases)
+TestSuites can be run sequentially or in parallel.
+
+Two ways to run TestSuite = From Inside the product (useful when design & configure TestSuite) OR From Command Line (ideal for Automation & DevOps)
+TestSuites can be automatically generated and can be implemented into different environment.
+
+Tabs:    Test Case- overview of all TestCases in this TestSuite
+		Transaction Log - Details about TestSuite execution
+		Compare - Compare different testsuite runs
+		History - view history for this testsuite
+		Coverage - Measure thoroughness of TestSuite
+		Requirements - Set requirements for this TestCase
+		Step by step run - Debug this TestCase
+		
 
 #TestCase
--Have two main settings	- preffered unchecked
+-Have two main settings	- preferred unchecked
 	Abort test if an error occur
 	Fail TestCase if it has failed TestSteps
 Debugger lets you pause and analyze  your TestCase
+TestCase is simply a functional test consists of at least one TestStep
+	Each TestStep has specific purpose
+TestCase can be debugged
+TestCases can be easily turned into Load Test or Security Test
+TestCases can be run in Groups or Standalone, they can be enabled/disabled 
+# Debuggin Testcase
+	Click Step by step run tab	
+	SEt one or more breakpoints and run the test
+	YOu may process entire testcase step by step (one teststep at a time)
+	When finish debugging/analyzing, remove all breakpoints
+	
 
-Quiz
-Best analogy for TestCase
-	Functional test
-Building Blocks that compose TestCase
-	TestSteps
-If Soap created TestCase, what type step does it usually include to start
-	A call to API
-Which two types soapui tests taht can be generated from testcase
-	Load Test & Security scan
-YOu want to pause Testcase to check properties. Easy way to proceed
-	Use debugger to insert a breakpoint
-What determines to run testcase to completion, despite any problems
-	Abort on Error Setting
+#TestStep - Introduction and Protocol
 
-#TestStep
+##Creating TestSteps##
+	Assemble TestSteps in Right order
+	Add Assertions
+	Add Data
+	
 TestSteps Runs in sequence
 Individual steps can be disabled
 	Either Programmatically 
 	Either User Interface
 Develope a good functional TestCase and then choose the right component (TestSteps) for the job
 
-$Categories: - Creating project
-Protocol = communicate with a service/API = TestSteps
+#Categories: - Creating project
+Protocol = communicate with a service/API = TestSteps (SOAP/REST/JDBC/JMS etc)
 Flow Control = Determine how the TestCase will be processed - Flow/Structure of TestSteps/Properties
 Data = Support input, output, data generation - Data Storage/Data Source
 
@@ -133,50 +137,80 @@ TestSteps:
 	REST Request = Communicate with REST API using methods GET, POST, PUT ...
 	JDBC Request = Interact with any database that has JDBC driver - Allows to write SQL
 	JMS Request = Transmit a message to JMS message bus using either soap or rest protocol
+	JMS - Java Messaging Service
+	HTTP Request - Can be used to interact with any HTTP service including Websites & APIs
+	AMF Request - Meant to work with Adobe Action Message Format (Action Message Format)
+		binary format used to serialize object graphs such as ActionScript and XML or send messages between Adobe flash client and remote service
+	XML-RPC - Communicate with this legacy protocol
+		Remote procedure call protocl which uses XML to encode its calls and HTTP as a transport mechanism
+	Publish using MQTT - Connect to MQTT broker and send message to it
+	Drop MQTT Connection - simulate what should happen when MQTT connection unexpectedly drops
+	Receive MQTT message - Subscribe to a topic on an MQTT broker and receive messages from it 
+	SOAP VirtResponse - Create a soap virtual response and return it when request arrives
+	REST VirtResponse - Create a REST virtrual response and return it when a request arrives
+	
 Protocol TestSteps interact with APIs
 TestStep name states the targeted protocol
 TestSteps can include Headers and attachments
 Assertions are assigned to protocol TestSteps
-
-Quiz
-Verify information has been registered in Database. Which request to use
-	JDBC request 
-Which TestStep let you works with Adobe Flash or Flex Service
-	AMF Request
-Need to test Different protocols than soapui offers. What to do
-	Extend soapui with new protocol handler
+Request and Response HTTP Headers are OFTEN different 
+Message Viewer lets you see requests and responses
 
 
-#Flow Control of TestSteps
-ConditionGoto used to branch TestCase workflow
-Delay Step pauses for specific period of time
-Manual Step pauses TestCase indefinitely
-Multiple assertions allowec per TestStep
+#TestSteps - Flow Control 
 
-Quiz
-What is necessary for ConditionGoTo statement to work
-	One boolean condition
-You have separate functional test that may need to launch in different circumstances
-	Condition GoTo and Run TestCase
-TestStep that can automatically be generated by soapui
-	Property Transfer
-What is good reason to use Assertions TestStep
-	YOu want to apply boolean logic to multiple assertions
-TestStep least to be used to run from start to finish with no need for branching
-	ConditionGoTo
-What happens if TestCase is invoked from command line yet contains Manual TestStep
-	Soupui will skip the manual teststep
+Properties - Store variables within a functional test
+Property transfer - Copy information within soapui (can be inserted automatically from Response)
+Property wait - Pause TestCase execution until a property reaches a certain value
+Send Mail - Generate and transmit an email message
+Create File - Define and populate a file outside of the soapui environment
+File Wait - Pause Testcase execution until a file is detected outside of soap
+FTP - Uploads a file in passive mode to FTP server
 
-#Data
+ConditionGoto - Branch execution of a TestCase based on Boolean values
+Delay Step - pauses a testcase for a specific number of milliseconds
+Manual Step - Pauses a testcase indefinitely pending user interactions
+Virt Runner - Launch or halt a virtual API
+Run TestCase - Transfer control to another TestCase (Invokes other TestSteps)
+Test Complete - Start an external project in SmartBear TestComplete product
+Groovy Script - Execute groovy script within a TestCase (allows to add your own logic if SoapUI does not offers it)
+	Enables Customer Scripting 
+Assertion - Evaluate a collection of assertions using boolean logic
+
+Multiple assertions allowe per TestStep
+User can Group multiple Assertions in the Assertion TestStep
+
+
+#TestStep - Data
+
+TestStep = Protocol 
+To make sure API services are ready for production, feed it with lots of realistic data
+
+Data TestStep:
+DataSource - Store data to be trasnmitted to an Api
+DataSource Loop - Fetch the next record of API test data
+DataSink - Save response or other data from Api
+DataGen - Generate sample data from API calls
+
 All DataSource need a DataSource Loop
 Create random data using DataGenerator  DataSource
 DataSink can export single property as well as Entire Response message
 
-Quiz
-What supports Data Generation within soapui
-	List
-	
-#Assertions
+
+#Assertions - Intro & property content
+
+Assertions is to test whether or not our product is meeting the customers criteria 
+	It verifies expected behavior
+	Determines if service has met certain criteria
+	Lets user decide if test has passed or failed
+Assertion Category:
+	Property Content - verify if Response messages have certain information in them 
+	Compliance, Status, and Standards - determine whether or not messages are properly structured and meet standards
+	Script - Apply scripts to responses to meet our needs 
+	JMS - determine if headers are present 
+	JDBC - determine if headers are present 
+	SLA - measure if Response comes back in proper amount of time (How fast is Response)
+	Security - determine if services have any volnerabilities 
 Useful to decide whether a test passes or fail
 Can be placed into separete/own TestSteps
 Determines whether service has met certain criteria
@@ -198,25 +232,28 @@ Equal = When you expect the response to exactly match the defined value (great f
 	Can compare entire response with predefined values
 Equals (Binary) = great for evaluating multimedia service responses (ex: media, images, audio, video)
 
+Xpath/JSONPath - evaluates specific node
+Multiple content assertion can be processed
+Message content - lets user skip specific fields when evaluating a response
+Equals - compares entire Response with predefined value
 
-Quiz
-Type of TestStep has assertions
-	Protocol
-Approach soapui uses for pattern matching on contains and not contains assertions
-	Regular expressions (regex)
-Type of assertion requires more knowledge of scripting/prograomming
-	XQuery Match
+Regular expression (regex) - a sequence of characters that define a search pattern. Usually such patterns are 
+used by string-searching algorithms for "find" or "find and replace" operations 
 
-#Other Assertions
+
+#Assertions - Compliance & Standards
+
 Valid HTTP status Code = validates proper code return (200, 404). Validates HEADER
-
 Invalid HTTP status code = validates unwanted/error status code are present (400, 401, 402, 403, 404, 500, 501)
+
+General purpose of compliance, status, and standards assertions is IT is useful for REST apis, web services and other protocol
 
 Schema Complience = tells if response from the Web Service matched its XML Schema
 	Validates response message to comply with associated WSDL or WADL schema definition (Used in REST too)
-	If assertion failed, look at "WSDL Content" file itself
+	If assertion failed, look at "WSDL Content" file itself (XML file)
 	Validates SOAP Web Service response matching its Contract 
-
+	Two things that SChemal Compliance assertion compares is Response and WSDL 
+	
 SOAP Fault = Validates last received message is soap fault. Applicable only to Soap teststep
 	Checks for Standard Web Service errors
 	Not SOAP Fault = confirms that no errors occurred
@@ -225,23 +262,20 @@ Schema Assertion = Schema Compliance - Validates Response Structure
 	- Everything about in Response is mentioned in Schema File (.xsd)
 WS-Addressing - checks for routing headers
 
+Web Services assertions:
+	SOAP Request
+	SOAP Response
+	SOAP Fault - checks for standard WEb Service errors
+	Not SOAP Fault - confirms that no errors occurred
+	WS-Security Status
+	WS-Addressing Request 
+	WS-Addressing Response - checks for routing headers
 
-Quiz
-You expect call to your Web Service to produce standardized error. Which assertion to use
-	SOAP Fault
-What part of message does Invalid HTTP code assertion checks
-	The Header
-Assertion Soapui uses to see if Web Service response matches its contract
-	Schema Compliance
-Which assertion checks to see if proper routine headers are in place
-	WS-Addressing
-Which assertion is relevant for REST Api
-	Schema Compliance
-For Web Service, what two things Schema Compliance compares
-	Response and WSDL
 
-#More Assertions
-Service Level Agreement (SLA) = Measures response time for call service (timing)(Applicable for ALL environment)
+#Assertions - Other
+
+# Assertions can be CHANGED at Runtime
+Service Level Agreement assertion (SLA) = Measures response time for call service (timing)(Applicable for ALL environment)
 	Confirma how quickly results are returned
 	5000 = 5 seconds
 	10000 = 10 seconds
@@ -251,38 +285,37 @@ Sensitive Information Exposure = Security - validates no sensitive information i
 	soapui Preferences includes library of global sensitive information that should not be visible to others
 	Measures in Tokens
 	Making sure its not returning any sensitive information 
+	Sometimes Services will come under attack. SLA assertion will determine that if in case Services are attacked, 
+		whether it reveals/expose sensative information.
+	Ideally, when testing SLA assertion, we want SLA assertion return Zero/Blank, meaning no sensitive information exposed 
 Script Assertion - if Assertion you need is not in readyapi build in, Script allows to build custom assertions
 	Must include Boolean true or false value
+	Groovy Script must evaluate to a Boolean Value
 	Whenever script validates, it will process as an assertion
 Assertion TestStep = allows to apply assertions to individual teststeps (Combines assertions)
 	Allows to apply assertions to REQUEST 
 	AND/OR Boolean Conditions are allowed to be used in this assertion teststep
+	Assertions can be combined into Groups using "Assertion TestStep"
 JDBC and JMS Assertions both check that relevant headers and status codes are received
 
+JSM Assertion:	determines if there is any Status or Timeout issues when interacting with message busses
+	JMS Status
+	JMS Timeout 
+JDBC Assertions: determines if there is any Status or Timeout issues. If operations has timed out. 
+	JDBC Status
+	JDBC Timeout 
 
 HTTP Header Equals - Validates Header assertion. Validates the value its expecting from Header
 HTTP Header Exists   - Value in Header object might change like Date, Time. This validates that Value in Header Object actually exist in Header
 
-Quiz
-Issue a call to *database*, ensure there is no errors. what assertions use
-	JDBC
-Attacker might learn about your application server technology. What assertion
-	Sensitive Information Exposure
-Assertion does not offer exact assertion that you need. What to do
-	Write a script assertion
-What language is used to write script assertions
-	Groovy
-You want to Group all Assertions and process them at one time. What assertion
-	Use the Assertions Teststep
-Two Boolean conditions that can be used in Assertion Teststep
-	And, Or
-You are interacting with message Bus, which assertion targets type of communication
-	JMS
-How can you easily share your custom-built security tokens with colleagues
-	Export your global sensitive information tokens to a file
 
 #Data-Driven Testing
+
 Test with Real Data
+	Better to use realistic data to exercise data issue that can happen in production
+		Using same data over and over - its same as using same exact step in every scenario/ Must be dynamic 
+		If used Variety of Data, you can see dynamic performance and how program reacts to different data 
+		Using same data risks of data using Cached results therefore can give false results 
 	Measure realistic performance
 	Determine database delays (latency)
 	Properly exercise business logic - when using variety of data, you can see distinct performance and bugs
@@ -312,35 +345,40 @@ DataSource Types:
 	Data Generator = Creates randomized data  - can be on the fly
 		Lets you create Test Data within soapui itself
 		Allows to combine data with generated values
+
 Data-Driven Testing requires data and defined properties from DataSource which combines with DataSource Loop
+	Requires defining properties
 JDBC drivers enable RDBMS connections
 Property names can be created automatically from relational database
+Create in-lined test data with Grid DataSource
+Data Generator can create random test input for you
 
-Quiz
-soapui able to create your properties for you with DataSource type?
-	Data Connection 
-Which DataSource lets you create test data within soapui
-	Data Generator
-What is Menu Command to associate information with API calls
-	Get Data
-Test Data is in COMMA separated format. What right DataSource to use
-	File
-You have millions of test records to send to API. Which DataSource is best
-	Data Connection
-Need to create and transmit RANDOM number. Which way is easy
-	Use Data Generator Data Source
-How can easily skip over first row of spreadsheet that contains column names
-	Configure DataSource to start in row 1
-You've installed new brand of database. What does soap need to connect to it
-	a JDBC driver
+#DataSink Types:
+	Data Connection & JDBC - Save Information to a database
+	Excel - Output data to a spreadsheet
+	File - Store Test Data in a flat file (like txt)
+	Property - Place information into a property
+	SubReport - Feed Data to a reports
+	Groovy - Provide information as input to a script
+#Data Focused TestSteps: WorkFlow
+	DataSource
+	DataSink (optional)
+	DataSource Loop
+	DataGen (superseeded by DataSource)
 	
 	
 #Virtual Services
+
 Sometimes user can't connect to a service to test it. OR Service hasn't been written yet, OR service has bugs but can't quiet test yet
 ^ This is why you need Virtual Services. 
 It lets you build robust tests
 It create mock service
-		
+
+#Once Mock Services are defined (created), JETTY will deploy it (JETTY is intalled behind it)
+	Requirement for SOAP - all needed is WSDL file
+	Requirement for REST - all need is Sample Call (endpoint)
+
+# Before, earlier SOAPUI Pro 5.1.2 - it was called Mock Service, NOW its called Service V 
 #Mock Services and Responses
 Mock service response are completely configurable
 Responses are usually hard coded. NO matter how many times you send request with different data,
@@ -385,22 +423,10 @@ Multiple virtual reponses can be defined
 Virtual services may be deployed to central site
 Scripting lets you create extensive business logic for virtual services
 
-Quiz
-What type of service will soapui generate from url <http//highling.com/:80/meal/xml/customer?locator=645325&type=child>
-	REST
-What is difference between SOAP and REST virtual API 
-	SOAP virtual API require WSDL; REST virtual API require Swagger or Sample API call
-Soapui uses which technology to host Virtual API 
-	Jetty
-What is easy way to simulate error message from SOAP virtual API 
-	Define SOAP Fault message
-What must you adjust to invoke virtual Api
-	the Endpoint for your request
-What level of support you need from Developers to setup Soap virtual API 
-	WSDL for API 
 
 #Security
-Soapui support these technieques
+
+# Soapui support these technieques:
 HTTPS
 HTTPS with Client Authentication
 WS-Security UsernameToken
@@ -408,6 +434,7 @@ WS-Security TimeStamp
 WS-Security XML Encryption
 WS-Security XML Digital Signature
 SAML
+
 #Soapui security wizard contain build in attacks. 
 	Designed to cause service to Crash
 	Designed to return details about its implementations for more targeted attacks
@@ -448,26 +475,123 @@ But you can apply all assertions to Security Scan
 	- Dont let soapui automatically generate your scans
 Security scans can be created from TestCases
 
-Quiz
-How does soapui support WS-Security standard
-	by recognizing and processing a variety of WS-security headers
-What wire protocol implements Security Sockets Layer (SSL)
-	HTTPS
-Project needs to transmit different security headers to Web Service APIs provided by several partners. 
-Each partner uses its own security setting. What to do
-	Create and set up multiple WS-Security configurations
-Which assertion is most meaningful when using soapui security wizard
-	Sensitive information Exposure
-What is drawback to letting soapui automatically generate security scans
-	An overwhelming amount of error details
-An attack that is attempts to run server-side code known
-	an injection attack
-Which scan will attempt to execute code in your server database
-	SQL injection
-A security scan that sends string to an element that expects an integer known	
-	Invalid Type
-Which is best tactic to ensure success with soapui security wizard
-	Start with small scan and then build on it as you proceed
+
+# Groovy
+
+Supports object-oriented and script-style programming
+Supports GUI development
+Integrates with Java libraries
+
+Resources to Learn Groovy:
+	groovy.codehaus.org
+	https://www.soapui.org/apidocs/overview=summary.html - about soapui api
+	Groovy can do anything
+Groovy is like Java but with numerous improvements
+Groovy is the mainly scripting language for Api
+Groovy scripting is available throughout the environment
+Now, these days, Groovy is becoming less necessary 
+
+
+# Refactoring
+
+Refactoring means keep messaging and schema up to date. It helps to Manage Changes.
+	New Elements introduced
+	Old Elements has been removed
+	Renaming operations/Projects
+
+Sometimes Web services change so Refactoring is introduced. 
+#Reloading vs Refactoring WSLD
+- Reloading brings fresh copy of WSDL - SImply reload WSDL if no changes been made
+	- "Update Definition" is a menu option (same as reload) - Right-click on Project
+- Refactoring brings fresh copy AND lets you update all affected objects in a project
+		If file/WSDL has changes/changes been made, Refactoring is way to do it (Reload)
+		You can Refactor messages, schema, XPath 
+		Refactoring requires NEW version of WSDL file 
+	- "Refactor Definition" is a menu option	
+			- It detects when messages have Changed/Renamed/Added/Removed
+			- May need to work with Developers to understand changes in WSDL
+			- Before Replacing/Refactoring Definition - work with Devs to be sure its Correct File Name
+			
+
+# Monitoring
+
+Monitoring helps better understand of Live APIs
+It can help user guide to find tune your strategies
+Acquire realistic data to drive future tests
+Make sure when test is running, all APIs are working properly
+Provides great visibility to operator when program is running
+Monitoring can also be applied in production
+
+# Monitoring embeded with several programs:
+	HTTP Monitoring	
+	Apache TcpMon
+	AlertSite - mainlhy for production purposes (applied in production)(For Websites)
+			It can monitor api's availability/accuracy/Performance - 24/7 in production 
+	
+# HTTP Monitor can listen and capture traffic To/From Api (between Client and Server)
+	- Works even in VIRTUAL API (even if both on your computer)
+	- mainly used by API testers
+	- it can monitor these protocols: (covers pretty much every type of protocol)
+			HTML
+			Soap
+			Javascript
+			XML
+			JSON
+			AMF
+HTTP monitor can be easy setup - requirements:
+	- Proxy must be configured properly (Set to Manual Proxy from Preferences settings)
+			- Set Proxy to Manual
+			- Set Port to 8081 or some other
+			- Launch HTTP Monitor from menu
+			- Make sure Ports are matching
+			- Set check for Set as Global Proxy 
+			- When done, HTTP Monitoring will be running in background, waiting for project to start execuring
+			- When done with Monitoring, Set Proxy back to "None" or its previous setting 
+			
+	- SoapUI NG PRO is running along HTTP Monitor 
+			Message traffic can be created inside the WebSite server or on SOAPUI
+# Great thing about HTTP Monitoring on Live system:
+	YOu can quickly gather huge collection of actual production request and responses 
+	They can form the basis of test data for future quality assurance 
+# Http monitoring is for developing and testing
+# Captured messages can be used for Test Data
+# Responses can be added to Virtual API
+# Remember to turn Proxy Off (prvious config or to NONE) when done with HTTP Monitoring 
+
+
+# Reporting
+
+API offers several different report types:
+	JUnit-Style Report  - Outputs to HTML
+	Data Export --- Can be imported into Other tools
+	Jaspersoft Report  - include in SoapUI pro, also in print version 
+	
+Reports can be launched from different levels:
+	Project
+	TestSuite
+	TestCase
+	LoadTest
+
+Reports can be customized from File -> Preference -> SoapUI PRO setting 
+Reports stored in three possible places:
+	In Project file	
+	On File system
+		- $soap_home/bin/reports
+		- $soap_home/bin/subreports
+	
+Reports can be run from command line or within product
+	Advantage of launching reports from command line : Tie-in with automation build scripts
+Reporting is GOAL of Effective Testing
+Reporting keeps everyone UP-to-Date: Development, QA, User
+	Provides easy undertand format
+SoapUI provides helpful colorded report
+	It records in detail, exact reasons for failed TestSteps
+# Jasper reports can be extensively customized and available for Print
+# You may configure reports to provide comprehensive error detail
+# Data exports can populate external reporting tools (excel, crystal, etc.)
+# Jasper reports can be configurable with XML
+
+
 
 ------------------	
 UDEMY - Learn API & WebService Testing
@@ -624,7 +748,7 @@ HEADER
 503 - Service Unavailable
 504 - Gate Timeout
 
-# Method
+# Method7
 	HEAD - Fetch (GET) only HEADER & BODY data from the application
 		Header includes - Data time, format, encryption and more...
 	OPTIONS - Finds which REQUESTS METHODS  server supports 
@@ -645,6 +769,8 @@ Saxon - collection of tools for processing XML documents. Main Component is XSLT
 Hermes - Hermes has implemented web services to communicate with external applications. 
 	Advantage of using WEB SERVICES are to reduce coupling between external applications and Hermes - 
 	And to allow external applications to integrate Hermes seamlessly using any programming languages that support sending SOAP Messages
+	Hermes - interacts with message bus - requires proper setting for endpoint
+	HermesJMS makes possible to send and receive messages to and from JMS queues
 ----------------------------------------------------------------
 # Query VS Path Parameter Resource (both GET)
 
@@ -657,3 +783,4 @@ Query Parameter - used to sort/filter those resources
 		"London" = Value       After ? it is Parameters 
 		Query Parameters in Results - usually includes [] - as an Array 
 ---------------------------------------------------------------------
+Event Handlers

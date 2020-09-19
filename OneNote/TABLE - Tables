@@ -1,0 +1,100 @@
+-- TABLES - Table --
+
+
+#Hazmat - Weight, DOT ID, Container Desc
+--as400
+Select CSWGT, DOTID2, CNTDESC from jbrdata.jhazitem
+Vs
+Call JRT193 
+Enter Line, Item, and Return Code
+
+# AS400 tables vs Postgres tables and what they triggered by 
+https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/iSM+-+Technical+Design+Specifications+-+400+Down#iSM-TechnicalDesignSpecifications-400Down-SynchronizationServices
+#JHBORH - today's Stock Transfer order
+#JORHSH - Stock Transfer/Retail Invoices from past 90 days
+#JCUST - Customer numbers with variety of options and account users (Professionals)
+#JRCUST - Customer Retail Phone Number and info
+#JRWDSHPR - O'Rewards Info, email, shopping ID, Loyal ID
+
+#JRTCM - is the summary of all Return credit memos. After Day End runs, all records goes into 
+JQOH file
+#JQOH - includes files from green screen (Jobber Quantity ON Hand Changes)
+#JDORHD - Dealer system Order Detail - Has to do with FCO - First Call Online - Mainly dealers go thru that screen process
+#JDORHH - Dealer system Order Header - Has to do with FCO - First Call Online - Mainly dealers go thru that screen process
+
+#JSPRC - Special Price File (SPAC - D would mean DELETED)- Contains Pricing for all Customers
+#JPOSND - contains Customer information being deleted, not human readable. Only for corporate readable
+
+#JBRDATA.JQOH - Jobber Quantity On Hand Changes (Quantity on Hand)
+#JBRDATA.JBATRY - Jobber Battery Mater File (Stocking Batteries)
+#JCSHDR - UserName - POS Login ID and Number 
+#JIHIST - Provides information about the item Popularity. How often, how big it sells. Decide whether to return back to DC or keep
+         in store. 
+#JCUST-CMDCFG - Deferred Core Customers
+	-CMDCFG = "Y"
+	-CMPRCD = "Y" - Procurement card customer
+	-Must have Procurement card assign to them.
+#Tax compliance
+	JCUST - CMTAXC = R
+	And JIMAST - IMTAXCLASS = 'TPP'
+		Will return <blank> for CMTAXC as NO tax applied
+# OTHERS
+JDPFIL - Daily Pay File (Daily/Weekly Pay Account Statement Reports)
+	In JSON - "dailyPayBalance" - (Daily Pay Account Summary report pulling from "dailyPayBalance")
+---------------------------------------------------------------
+*** JCUST ***
+
+CMEMP - Employee Account
+CMTYPE - Customer Type (Dealer/Jobber/User)
+CMBRCH - Branch Account - If its <blank> then its NOT Store or Warehouse
+CMCODC - C.O.D. Cash on Delivery - Cash Customer - Pay as soon as Part is delivered/picked up
+CMCUS# - Customer Number
+CMPRCD - Pecurament card - Card that Company has to purchase stuff with
+--------------------------------------------------------------
+*** Promotions/Backoffice/Enactor ***
+
+FROM enactor.promotions
+Or
+FROM promotions
+-----------------------------------
++SYSDEV2  = Corporate Server - DWPOSDATA library
++DWPOSDATA (Store side) - Server DATA where information is stored
+
++REWARDS (uses PostCresql --> checks rewards)
++AS400 is Server DATA where information is stored but slowly moving to POSDATA
++BACKOFFICE is Server DATA that rarely used now (Effects OPS)
+
+++JBRDATA.JORHSH = Contains Historical Invoices for the past 90 days
+Anything is Bellow 500000 is Customer/Professional Invoices
+Anything is Above 500000 are Stock Transfer Invoices
+After 90 days, the system gets wiped out and transfers to Sysdev2
+
+JBRDATA.JECOMMO - online orders info details. Online Orders would show up on 9999
+Ship to store may/Customer Pick up option shows up in 9990 TB
+    JORHSH - associated with JECOMMO
+--------------------------------------------------------------------------------------
+** RETURNS **
+
+JALTRT - Alternate Returns
+JMISCRT - Misc. Returns Credit File
+JCRDIT - Jobber New Returns Credit File
+JRTDET - Jobber Returns Scanned Items Detail
+JLIFT - Lift Returns Worksheet File
+JRTRN - Returns Master File
+JWCRET - Warranty/Core Returns File
+JRTCM - Returns Credit Memo File
+JRTFIL - Jobber Stocklift Control File
+JRTSHT - Jobber Returns Shortages
+JDFRCOR - Deferred Core Items/Customer File
+
+
+JCRDIT - Table that holds Items - New Returns Credit File (Items  that needs to be returned back to DC or Stay in Store for reSell)
+   - CRSRET - Suggested Returns (Determines if those items needs to be returned back to DC) 
+   - CRAQTY - Actual Return Qty
+   - CRKQTY - Keep Qty (Do not return)
+
+JCKVDL - Driver License info (driver_license table on postgres 9982 box) - Data from Tender as "Check" 
+
+# Competitor Override tables: - Price override
+	JBRDATA.JMMCST and 
+	JBRDATA. JMMCSTT

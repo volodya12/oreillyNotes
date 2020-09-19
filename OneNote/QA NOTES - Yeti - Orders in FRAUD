@@ -1,0 +1,19 @@
+-- QA Notes - Yeti - Orders in FRAUD --
+
+# Check if order made it to FRAUD (if order did not make it to Store
+--Yeti 
+select o.external_id,
+       o.created,
+       o.status as order_status,
+       fe.status as fraud_status
+from "order" o
+    join fraud_evaluation fe on o.fraud_evaluation_id = fe.id
+where o.external_id = 'K10049108R86086';
+
+# order in JSON format (ship to home)
+--yeti
+Select * from order_json where external_id = 'K10049109R58592'
+
+# Yeti order - Ship to home
+--yeti
+select * from "order" where external_id='K10049109R58592'

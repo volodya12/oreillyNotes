@@ -1,0 +1,25 @@
+JIRA SEARCH - Bug/Test Search
+
+Bug Search 
+
+Type = Bug
+Component = 'anything relevant to bug'
+Text ~ 'text it might contain' 
+Description ~ 'title of bug'
+Priority (Optional) = Minor, Major, Blocker, Critical, Trivia
+Bug Class (Optional) = Production, QA, QA Automation, Development
+
+
+Search anything FAST
+
+Type - test case template, bug ... 
+Status - Ready for Review
+Priority - Blocker, Critical, Major, Minor, Trivial, Unprioritized
+Resolution - Bug Resolved/Unresolved
+"QA Test Case Type" - Routine, Query, End to End, Appearance ...
+Project (in or =)
+Build Number
+
+Order By DESC
+Order by CreatedDate DESC
+

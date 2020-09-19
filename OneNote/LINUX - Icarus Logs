@@ -1,0 +1,14 @@
+LINUX - Icarus logs
+
+# less /home/tomcat/EnactorPOS/icarus.log
+Go to very bottom (pg down)
+
+Results for ICARUS FAILED - almost at very bottom
+
+2020-07-29 01:45:55,694 icarus install did not complete successfully
+2020-07-29 01:45:55,703 install tasks failed with code: 3
+
+# Icarus User interface
+http://10.98.92.252:27777/#/
+
+It will not show FAIL/SUCCESSFUL - just shows when started

@@ -1,0 +1,119 @@
+-- QA NOTES - Entire Laser Printer Invoice --
+
+# Professional Customer - Invoice
+	- Verifying Laser Printed Invoice (ENTIRE INVOICE) VS AS400 Table
+	- Make sure information on Laser Invoice paper is matching in AS400 DB 
+	- PTEST-123132: - Routine - Verifies entire Laser Paper Receipt
+	- Verify Promotional Message
+	- Verify Payment Type and Amount Tendered when Customer paid
+
+-- AS400
+Select Case
+        When (Lower(:fleet.delivery.management), JHDELC) = ('false', 'Y') Then 2 -- Print 2 copies if fleet.delivery.management is false and the invoice is marked for delivery.
+        When (JHPAYC, JHCSCC, JHCODC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('', '', '', '', 0, '', 0, 'N') Then 2 -- Print 2 copies if the invoice is a charge transaction.
+        When JHTAX = 'Q' Then 2 -- Print 2 copies if a taxed customer was price-overriden to non-tax.
+        Else 1
+        End As "Copies",
+'Store '||J.CNACCT||', '||Trim(J.CNADR2)||',' As "StoreAddress",
+Trim(J.CNCITY)||', '||J.CNST||' '||Substring(J.CNZIP, 1, 5)||'      ('||J.CNAREA||') '||Left(J.CNPHON, 3)||'-'||Right(J.CNPHON, 4) As "StCityPhone",
+J.CNACCT||'-'||H.JHINV# As "StInv",
+Case
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHMFP) = ('I', '', '', 0, '', 'N') And (JHCSCC = 'Y' Or JHCODC = 'Y') And JHTAMT >= 0 Then 'CASH SALE'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHMFP) = ('C', '', '', 0, '', 'N') And (JHCSCC = 'Y' Or JHCODC = 'Y') And JHTAMT <= 0 Then 'CASH REFUND'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('I', '', '', 0, '', 0, 'N') Then 'CHARGE SALE'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('C', '', '', 0, '', 0, 'N') Then 'CREDIT TO ACCOUNT'
+        When (JHTYPE, JHPAYC, JHCHGC, JHGC, JHTAMT, JHMFP) = ('I', '', '', '', 0, 'N') And JHCHK# > 0 Then 'CHECK SALE'
+        When (JHTYPE, JHPAYC, JHCHGC, JHGC, JHTAMT, JHMFP) = ('C', '', '', '', 0, 'N') And JHCHK# > 0 Then 'CHECK REFUND'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('I', '', 'Y', 0, '', 0, 'N') Then 'CHG. CARD SALE'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('C', '', 'Y', 0, '', 0, 'N') Then 'CHG. CARD REFUND'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('I', '', 'D', 0, '', 0, 'N') Then 'DBT. CARD SALE'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('C', '', 'D', 0, '', 0, 'N') Then 'DBT. CARD REFUND'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('I', '', 'F', 0, '', 0, 'N') Then 'FLT. CARD SALE'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('C', '', 'F', 0, '', 0, 'N') Then 'FLT. CARD REFUND'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('I', '', '', 0, 'Y', 0, 'N') Then 'GIFT CARD SALE'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('C', '', '', 0, 'Y', 0, 'N') Then 'GIFT CD REFUND'
+        When (JHTYPE, JHPAYC, JHMFP) = ('I', '', 'Y') Then 'MULTIPMT TYPES'
+        When (JHTYPE, JHPAYC, JHMFP) = ('C', '', 'Y') Then 'MULTI RFD TYPES'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHMFP) = ('C', 'Y', '', 0, '', 'N') Then 'POA CASH'
+        When (JHTYPE, JHPAYC, JHCHGC, JHGC, JHMFP) = ('C', 'Y', '', '', 'N') And JHCHK# > 0 Then 'POA CHECK'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHMFP) = ('C', 'Y', 'Y', 0, '', 'N') Then 'POA CHG CARD'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHMFP) = ('C', 'Y', 'D', 0, '', 'N') Then 'POA DBT CARD'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHMFP) = ('C', 'Y', 'F', 0, '', 'N') Then 'POA FLT. CARD'
+        When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHMFP) = ('C', 'Y', '', 0, 'Y', 'N') Then 'POA GIFT CARD'
+        Else 'UNKNOWN'
+        End As "SaleType",
+Substring(H.JHSDAT, 5, 2)||'/'||Substring(H.JHSDAT, 7, 2)||'/'||Substring(H.JHSDAT, 1, 4)||' '||
+        Case
+                When (Char_Length(H.JHOTIM) <= 2) Then '12:'||Substring(H.JHOTIM, 2, 2)||' AM'
+                When (Char_Length(H.JHOTIM) = 3) Then Substring(H.JHOTIM, 1, 1)||':'||Substring(H.JHOTIM, 2, 2)||' AM'
+                When (Char_Length(H.JHOTIM) = 4) And Substring (H.JHOTIM, 1, 2) < 12 Then Substring(H.JHOTIM, 1, 2)||':'||Substring(H.JHOTIM, 3, 2)||' AM'
+                When (Char_Length(H.JHOTIM) = 4) And Substring (H.JHOTIM, 1, 2) = 12 Then '12'||':'||Substring(H.JHOTIM, 2, 2)||' PM'
+                When (Char_Length(H.JHOTIM) = 4) And Substring (H.JHOTIM, 1, 2) Between 13 And 21 Then Substring(Char(H.JHOTIM - 1200), 1, 1)||':'||Substring(H.JHOTIM, 3, 2)||' PM'
+                When (Char_Length(H.JHOTIM) = 4) And Substring (H.JHOTIM, 1, 2) >= 22 Then Substring(Char(H.JHOTIM - 1200), 1, 2)||':'||Substring(H.JHOTIM, 3, 2)||' PM'
+                Else Null
+        End As "InvDateTime",
+H.JHSHPV, H.JHCUSTPO, C.CMNAME, C.CMADR1, C.CMADR2, Trim(C.CMCITY)||', '||C.CMST||' '||Substring(C.CMZIP, 1, 5) As "CCityStateZip",
+Case
+        When C.CMPHON != 0 Then '('||C.CMAREA||') '||Substring(C.CMPHON, 1, 3)||'-'||Substring(C.CMPHON, 4, 4)
+        Else ''
+End As "CPhone",
+H.JHCCNO, H.JHCUS#, H.JHPNAM, H.JHSPIN,
+(Select Sum(JDQTYS) From JBRDATA.JORHSD Where JDINV# = :Invoice And JDLINE != 'TAX')||
+        Case
+                When (Select Sum(JDQTYS) From JBRDATA.JORHSD Where JDINV# = :Invoice) = 1 Then ' Item'
+                Else ' Items'
+        End As "ItemQty",
+Case
+        When (JHPAYC, JHCSCC, JHCODC, JHCHGC, JHCHK#, JHGC, JHTAMT, JHMFP) = ('', '', '', '', 0, '', 0, 'N') Then 'Y'  -- Signature line.
+        When (Lower(:fleet.delivery.management), JHDELC) = ('false', 'Y') Then 'Y'
+        Else 'N'
+        End As "SignatureLine",
+(Select Sum(JDTOTA) From JBRDATA.JORHSD Where JDINV# = :Invoice) As "SubTotal",
+H.JHTTAX - IfNull((Select Sum(JDTOTA) From JBRDATA.JORHSD Where JDINV# = :Invoice And JDLINE = 'TAX'), 0) As "Tax", --Subtract fees from tax because they're invoiced as line-items.
+H.JHITOT,
+Case
+        When C.CMBRCH = 'Y' Or C.CMEMP = 'Y' Then ''
+        Else 'WWW.FIRSTCALLONLINE.COM'
+        End As "WebAddress",
+Case
+        When C.CMBRCH = 'Y' Or C.CMEMP = 'Y' Then 'Please visit www.oreillyauto.com/warranty for warranty details'
+        Else 'Please visit www.firstcallonline.com/warranty for warranty details'
+        End As "WarrantyAddress"
+From JBRDATA.JORHSH As H --Invoice header file.
+Join JBRDATA.JCONFG As J --Store information file.
+On J.CNACCT = (Select CNACCT From JBRDATA.JCONFG)
+Join JBRDATA.JCUST As C --Customer file.
+On C.CMCUS# = H.JHCUS#
+Where H.JHINV# = :Invoice
+
+# Verify Promotional Message - Displays bellow the Laser Printed Receipt, Just above the Barcode
+DSPDTAARA INVMSG2A
+
+# Verify Payment Type and Amount Tendered when Customer paid
+
+--AS400
+With Tbl As (Select JHINV#, JOSEQ,
+        Case
+                When (JHTYPE, JHPAYC, JHCHGC, JHCHK#, JHGC, JHMFP) = ('C', 'Y', '', 0, '', 'N') Then 'Cash'||':'||JHITOT -- Cash POA.  Use JHITOT because JHTAMT on POAs is 0.
+                When (JHCHGC, JHGC, JHMFP) = ('', '', 'N') And JHCHK# > 0 Then 'Check #'||JHCHK#||':'||JHITOT -- Check transactions
+                When (JHCHK#, JHGC, JHMFP) = (0, '', 'N') And JHCHGC != '' Then (Select CCTYPE From JBRDATA.JCCVALID Where Decimal(Left(Trim(Char(JHACNT)), 6)) Between CCLOWR And CCHIGHR)||' #'||Right(Trim(Char(JHACNT)), 4)||':'||JHITOT -- Charge card transactions.
+                When (JHCHGC, JHCHK#, JHGC, JHMFP) = ('', 0, 'Y', 'N') Then 'Gift/Promo #'||Replace(Trim(JODTL), 'X', '')||':'||JOAMT -- Gift Card transaction.
+                When (JHCHGC, JHCHK#, JHGC, JHMFP) = ('', 0, '', 'N') And (JHCSCC = 'Y' Or JHCODC = 'Y') And JHITOT <> 0 Then 'Cash'||':'||JHITOT -- Cash transaction.
+                When JHMFP = 'Y' Then (Case -- Multiple forms of payment transaction.
+                        When Trim(JOTYPE) = 'CASH' Then 'Cash'
+                        When Trim(JOTYPE) = 'CHECK' Then 'Check #'||Trim(Replace(JODTL, 'CHECK # ', ''))
+                        When Trim(JOTYPE) = 'CREDIT CARD' Or Trim(JOTYPE) = 'DEBIT CARD' Then Left(JODTL, 4)||' #'||Right(JODTL, 4)
+                        When Trim(JOTYPE) = 'GIFT CARD' Then 'Gift/Promo #'||Right(Trim(Char(JOGCACC)), 4)
+                        End)||':'||JOAMT
+                Else ':'
+                End As TA
+        From JBRDATA.JORHSH -- Invoice header file.
+        Left Join JBRDATA.JORPMT -- Payment file.
+        On JHINV# = JOINV
+        Where JHINV# = :Invoice)
+
+Select Substring(TA, 1, Locate(':', TA) - 1) As "Type",
+        Substring(TA, Locate(':', TA) + 1) As "Amount"
+From Tbl
+
+

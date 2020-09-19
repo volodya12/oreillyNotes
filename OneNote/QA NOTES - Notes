@@ -1,0 +1,205 @@
+-- QA Notes - Notes ---
+
+
+#Ctrl + Shift + J = add Test Case Link
+#Linux is .254 (enactor OPS)
+#iSerius (Test System) is .1 (green screen)
+#Legacy Table = AS400
+#Production Box 9990 (One Version down from Current Version)(Version being Tested)
+#(Confluence) Retail QA Team - project pages
+#(Confluence) IT Retail Solution Design Team - Documentation, select project referring to
+
+# Project Epics: "QA Project"
+AS400Down = RQAT-10895, RQAT-10896 (9982 -175 - 2891/9876 -134 - 4040)
+Inventory Phase 2 = RQAT-11309, RQAT-11310
+
+# 9998 is for Inventory Phase 2. RQAT-11310 is Epic. May use for DayEnd issue
+
+# dadams38 - nonAuthorized user, nonmanager
+# dcox - manager, authorized
+
+# 1536 S Glenstone ave, 65804
+# 1115 National St, Springfield, 65804
+
+# Why imports fail to run. Comments in this issue ISM-8078
+# Icarus User interface
+http://10.98.92.252:27777/#/
+	- It will not show FAIL/SUCCESSFUL - just shows when started
+
+#Find Invoice Number from previous dates (inOPS) ---- Find Item---
+	- Purchase Inquiry -> Must Know: Date Range, Customer or Line & Item
+	- Recall Transaction - "Saved Transactions" move there
+		○ Recall Transaction -> Advance Search - Search for All Invoices by Date, CustomerNumber, Item
+	- Management Functions -> Transaction Research Tool - Must Know: Date, Dollar Range, Payment Type
+		○ This Tool searches for Line & Item was purchased on Invoice
+	- Reprint Invoice/Receipt - Displays Line & Item purchased on Invoice
+	- Display Item Number - Displays Item Description/Details
+	
+#What to do when done Testing: (ask the Lead first)
+	-Rerun Failed test cases (after patch applied)
+	-Retest Bugs (remediate)
+	-Test Mods
+	-Ask if Other Projects need help (Contact Charlie)
+#Unlimited time - Zoom
+https://oreillyauto.zoom.us/j/98770645429?pwd=Y3FvelN6Q0hwd2czbVV3QkRGUlBHdz09 - 987 7064 5429 / 905918
+
+-------------------------------------------------------------
+	
+Swagger - Net Price Calculator (NPC)
+	- PTEST-176500
+	http://10.##.##.254:18090/NetPriceCalculator/swagger-ui.html#!/net45price45controller/getNetPriceUsingPOST_1
+	{
+  "caller": "POS",
+  "customerNumber": <Customer>,
+  "customerType": "<CMTYPE>",
+  "isEmployee": false,
+  "isMilitary": false,
+  "isStore": false,
+  "item": "<Item>",
+  "line": "<Line>",
+  "pubNumbers": [
+    0
+  ],
+  "storeNumber": <TestBox>
+}
+	- Find CMTYPE in JCUST where CMCUS# = CustomerNumber
+
+#NonManager | nonAuthorized user Roles (what they cannot do)
+Price override
+Large Refund
+Any Returns - Cash
+Return Without Receipt
+Expired Warranty
+Tender as Check
+Terminal Cash Management - Counter Checkout
+Terminal Cash Management - Float
+Terminal Cash Management - Petty Cash IN
+Terminal Cash Management - Petty Cash OUT
+Employee Purchase with TM account
+Add/Load New Pro Customer into OPS - and more Pro Cust Functions
+there could be more
+ 
+# Computer Support - 417-862-2674 (8495)
+# If POS needs Maintenance/Improvement - Open under Epic Link: RQAT-6462  Maintenance/Support-2019
+https://jira.oreillyauto.com/secure/Dashboard.jspa?selectPageId=34720 - Maintenance link - 2020
+
+#Changing Date/Time on Linux  LTEST-2072
+In Linux, Key "date" (no quotes) to see current date set on Linux
+
+#Access to G drive from Home - \\OAFS4\isdoc\QA Team\
+#Access to P:\ drive from Home: Click "VPN - Remap Drives", let it load, it will then disappear. In Explorer, Key: \\oafs4
+Now you can access P: drive: P:\Information Technology\1Exchange\Deanna\POS Training Videos
+
+# G:\QA Team\Software\Putty, copy the 2 .reg files to your desktop and run them, that should take care of it
+	- For Putty, to add <Host name>, <IP Address> that is needed
+#Network Access for Mac Users  https://cp-portal.oreillyauto.com/connect/PortalMain
+#Sudo su tomcat -c"/usr/local/oreilly/bin/enactor/pos/bin/importLegacyUpdates.sh"
+
+# Confluence page drop down - Create 
+Click "Create" -> Key <name> -> click Update 
+Click on <name> -> Edit -> Click Plus symbol, Other Macro, "Create From Template" -> key template name
+Click <name> -> Delete everything -> Select Other Macro -> "Expand" -> paste link into Expand - Name project page
+
+#AS400 - Invoicing
+JORHSH/JORHSD
+JCCINF.CCREF# - invoice# (Credit Card Only)
+JORPMT.JOINV - multiple payment
+JORPMTOV.JRTINV - multiple payment w/override
+JSHPTO - ship to
+JIHIST - History after sale
+JIAHST - Additional history file
+JHBORH/JHBORD - Stock Transfer
+JECOMMO - Online Invoice
+JCONFG - info about store
+
+#SysDev2 - Invoicing
+DWPOSDATA - Invoice_number
+JDXMIT/JHXMIT - invoicing (jorhsh/jorhsd)
+JCCXMIT - Invoice Info (JCCINF - Credit Card) 
+JPMTXMIT - Multiple Payment (Invoice_number)
+
+
+##Connecting to server from home (Putty session)
+username@hostname or IP address
+Type: vkalmykov@storegw3
+Type: "yes" for connection
+Type: your password
+
+@here the ISM-6213 issue has QBATCH blocked on 9990. can we get some direction on that, please?
+#Tag Devs in Retail_Pos chat if its really important
+
+# Daily Customer Cannot be Loaded into the OPS (Store) 
+Currently, Daily Account Customers should only be loaded at one store, To get them Loading different stores, they must contact 'Credit department' but that will cause account balance issue. 
+# COD Customers - If Removed - will not load Backup, Need to have Dev do it
+
+# How to write JSON Queries
+SELECT data->>'activityCode' as activityCode, data->>'enabled' as enabled 
+from public.customers where data->>'customerNumber' = '196801'
+
+# Mods needed
+Reason why we don't make actual mods on other ppl TC's - we do in some cases
+	- Less time for Reviewer to do 'Test Case Reviews'
+	- The TC creator will never learn his mistakes, whats being changed on his Test and will continue to 
+		make same mistakes and miss steps. 
+	- Maybe there is a reason why they written it that way, and it may not need Mods or Changes
+
+# Test Cases to properly write Verification steps/heading/labels and more
+1. PTEST-223131 
+2. PTEST-67982
+3. project in ("POS Tests", "iSeries Tests", "Retail Quality Assurance Team", "OPS Retail") AND type = "Test Case Template" AND "QA Test Case Type" = Appearance AND reporter = BLIETZ and text ~ reports
+
+# MDM pass
+Your pc sign in passa
+#Zoom
+vkalmykov@oreillyauto.com
+F0lderico
+#retaildata-postgres
+Or3illy
+#pricingData
+User: pricing
+Pr1c1ng
+#Datawhse
+vkalmykov
+Reduct1ve1
+#Sysdev
+#Backoffice/Enactor/PosData
+Pass:enactor
+#SmartBear
+vkalmykov@oreillyauto.com
+F0lderico
+
+# Why use Tail command
+- when testing is perfomed, tailing allows user to view the output
+- It is good to Verify Null Point Exception (for Java)
+- If user uses tail command, and sees error during test execution, it needs to be investigated
+- Tail logs in comments ISM-6944
+
+- tail command
+tail -f /usr/local/oreilly/logs/enactor/999X.ws1XXX.20200629.1.HHMMSS.log
+
+# Connection to Database on Linux Side NOT DBViz (establish connection)
+1. Ssh to csa-t-pg-retail-1 (Corp to Store Connection) pass: <PC Log in>
+2. Key: psql -d retail
+3. Set up the connection and password by keying: alter role vkalmykov with password 'or3illy';
+4. Or3illy is my password for csa-t-pg-retail-1 connection. Ctrl+d to end
+5. Key "exit" ssh
+6. If you can't connect in Dbviz then Network Team request must be made
+7. Use it on Linux
+8. Ssh to csa-t-pg-retail-1
+9. Password is log in to pc pass
+10. Key: psql -d retail 
+11. Then enter SQL command. (;) must include at the end or it won't run
+12. Ex: select * from sales_orders.customer_po_number_mask;
+
+# Execute Sql Queries on Linux - RetailData - Postgres
+PGPASSWORD=or3illy psql --host=localhost -U posuser -d retaildata 
+
+# Run sql queries on linux server
+https://dev.mysql.com/doc/refman/5.7/en/mysql.html
+
+# mysql -u DBUSER -h DBSERVERNAME_OR_IP -p
+it should be this mysql -u posuser -h retailData -p  (retaildata)
+
+
+# This Linux command will Query from AS400 Database using Linux (replace query in " " in green)
+java -cp /usr/local/oreilly/bin/retail/java:/usr/local/oreilly/jars/jt400.jar as400JdbcQuery as400 "select (select cnacct from jbrdata/jconfg) str, pucus#, puname from jbrdata/jpurnm where pucus# = '1128396'"

@@ -1,0 +1,22 @@
+JIRA SEARCH - Confluence settings
+
+Click big + to the very right
+Select "Other Macros"
+
+	- Expand - Creates arrow to expand
+	- Status - Shows Status as in "in progress" "closed" "open" "on hold" like on project page
+	- Advanced Tables - Table plus
+	- "Insert Jira Issue/Filter" to show report of Bugs/Issues/Test Cases made and More
+
+
+
+
+
+
+
+
+	- To have "Expand" macros on Confluence Personal Page
+		1 Step. Create Project Template
+		2 Step. Content Report Table
+		
+

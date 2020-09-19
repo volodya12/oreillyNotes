@@ -1,0 +1,21 @@
+LINUX - DayEnd on Linux 
+
+	1. Option 1
+	2. Enter store number
+	3. Option 5 for DayEnd
+	4. Option 1 for DayEnd logs
+Will show list of Sequence
+Dayend goes thru 8 sequence total
+Dayend copies all files to Linux (that is why I run dayend everyday)
+
+-rw-r--r-- 1 root root 161916549 Jun  3 07:04 jde2seq1.savf.lzma
+-rw-r--r-- 1 root root 161896111 Jun  3 07:12 jde2seq2.savf.lzma
+-rw-r--r-- 1 root root  48291919 Jun  3 07:12 jde2seq3.savf.lzma
+-rw-r--r-- 1 root root  10872859 Jun  3 07:12 jde2seq4.savf.lzma
+-rw-r--r-- 1 root root  29550000 Jun  3 07:12 jde2seq5.savf.lzma
+-rw-r--r-- 1 root root    591327 Jun  3 07:12 jde2seq6.savf.lzma
+-rw-r--r-- 1 root root        23 Jun  3 07:12 jde2seq7.savf.lzma
+-rw-r--r-- 1 root root        23 Jun  3 07:12 jde2seq8.savf.lzma
+
+Shows Date and Time dayend started/ran/completed
+

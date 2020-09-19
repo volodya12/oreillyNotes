@@ -1,0 +1,17 @@
+LINUX - Tomcat
+
+#Kill "tomcatOreilly"
+	- Be sure to call out in chat that you about to Kill OPS (tomcat)
+	- This command restarts OPS and some behind the scene processors
+sudo su -c "/usr/local/oreilly/bin/stopPointOfSale.sh; /usr/local/oreilly/bin/stopOreillyTomcat.sh"
+
+#Kill Enactor/Stop enactor Tomcat/Restart enactor tomcat
+	- Stops entire Enactor including CCT (bigger than OreillyTomcat)
+	- sudo /usr/local/oreilly/bin/stopEnactorTomcat.sh
+
+
+# Start/Stop Oreilly Tomcat/Hearbeat
+Option 1 from linux
+Option 3 RMI Menu
+Option F Stop Oreilly tomcat and Heartbeat. It will Automatically Restart itself within 2 min
+

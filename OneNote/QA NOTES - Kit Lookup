@@ -1,0 +1,13 @@
+-- QA Notes - Kit Look Up --
+
+# Brake Kit
+- Kit must contain 2 items to consider complete, Brake pads and Brake rotors
+# A/C Kit 
+- Kit must contain 3 items. Compressor, Accumulator (or A/C Condenser with Accumulator) and Expansion (or Orifice) Tube
+# Additional items can be added to the A/C Kit and included in the kit pricing if they fall within the promotion that is being used for the kit discount.
+# Link bellow contains information about the Kit and Navigation to Select Kit from Catalog - (additional link within this link bellow)
+https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/Retail+Catalog+-+Virtual+Kits+Documentation+-+Functional+Specifications
+
+#Items in the basket (price) cannot be the same on Catalog (sell price)
+- Catalog shows original price, but when added into the basket, and returned back to VR, the NPC is calculating price based on promotions available and Customer type
+- Kits only available for Professional customer with specific requirements - Located in BACKOFFICE    (not retail customers)

@@ -1,0 +1,149 @@
+-- Green Screen - Green Screen (AS400) --
+
+-- Green Screen Commands --
+
+(AS/400)(iSeries)
+10.99.90.1
+Terminal/Job: QPADEV0004 - appears right before you sign in (pay attention next time - for job log use)
+System: 9990
+
+# CFGTCP (#1) - what test box your connected to via Ozark Session 
+# add * (asterisk) at the end of command, if not sure the full location name (source name)
+
+# Checking Pype out of Sequence - should match Sysdev2
+(as/400)
+Dspdtaara jposndseq
+
+#Exit from sysdev2 (corporate)- key in "endcnn"
+# Standard User - QSECOFR
+# Programer User - QPGMR
+
+#Allows user to show full results (description) of property
+	when user cannot see it fully. (Ex: Location on AS400: rq jorhsd)
+Telnet (19)
+Sign in: ozkdev
+user: vkalmykov
+pass: <your password> 
+Key #3
+FILE: QDDSSRC
+LIBRARY: JBRSRC
+NAME (Table name): JORHSD
+TYPE: *ALL
+Enter
+Key: #5 
+At top, key: Column name: jdpcde, then Press Shift + F4 
+
+## Moving Stock Item BACK to NonStock - Item_Master https://confluence.oreillyauto.com/display/~BLIETZ/Change+An+Item+From+Stocking+to+Non-Stock
+Telnet (19) Ozkdev
+CALL SETJOBLIBL
+Choose ISMITEM2 - set the library (Y) then Enter then F3
+CALL INVEN_TEST
+Press Shft+F6 or F18 - for Select Store
+To set STOCKING to NONStocking - use 17 - updateNonStockingWebItem
+To set NONStocking to STOCKING - use 6 - updateStockingWebItem
+	- Key Line/Item - Press Enter - Press F6 to UPdate -> F12 to Cancel/Back
+	- To sign out, Key: endcnn
+
+# List Price (listprice) DSPDTAARA LSTDIV - List Price Divide %
+# Large Refund - DSPDTAARA JLRGRFDA
+
+##When typing command in Green screen - may use 'Value' as output
+ex: chgdtaara jckinemla value ('itsupportrequests@oreillyauto.com')
+-this means changing data area - email value to ^. When typing email in the value, email will not fit. 
+Way of fixing is using "Value" command
+
+#DSPJOBLOG - displays job logs, All COMMANDS typed, and Messages displayed
+
+# Good Tricks on AS400
+Shift + Esc - shows command line
+#3 - Displays Your DSPJOBLOG (Key 10)
+#1 & 2 - Opens up SECOND session of AS400 - must log in again. BUT it leaves the OLD SESSION running in the background
+	- Must sign out #90 to go back to OLD session
+	- Must remember that you are running TWO sessions
+
+# Display Jobs
+Shift + ESC - pull up Line Command
+Shift + ESC + 3 - Displays ALL Job accessed/Typed/Commands Typed
+#3-14
+
+#Adjust QOH via Green screen
+Call jim104
+Enter all necessary information
+Double check quantity adjustment in the VR or in JIMAST
+
+#Displays command line
+ Shift + F9 
+------------------------------------------------------- DayEnd / Run_PO -------------------------
+#Initiate DayEnd/Month End/Year End Report
+	Qsecofr	
+	Dspmnu mst001m	
+	Key: 11, 12, or 13
+	Key 17 - print copy of month end
+
+# If you End RUN_PO
+Start RUN_PO with this command
+	SBMJOB CMD(CALL PGM(JPO300C)) JOB(RUN_PO) JOBD(QBATCH).
+RUN_PO should be in DLYW status
+
+# Run back the "RUN_PO"
+dspmnu mst001m
+type: #4  Purchase Order And Receival Menu
+Type: #13  Start Automatic Orders Program
+Hit: Y for yes
+-- OR run this command --
+SBMJOB CMD(CALL PGM(JPO300C)) JOB(RUN_PO) JOBD(QBATCH)
+
+- ####### Key 5 <enter>, #10 <enter>, F10, Shift-F6 (To view job log green screen)
+# Run command - will show each job that has a lock 
+wrkobjlck jcs301upda *dtaara
+
+-----------------------------------------------------------------------
+# Change store number/change other info/receipt information
+
++To Lock JPOSNDW when SWITCHING STORE NUMBER - very important (it Locks the Pype)
+-In GREEN SCREEN (thin client): copy/paste command bellow (command will disappear)
+1. ALCOBJ OBJ((JBRDATA/JPOSNDW *FILE *EXCL))
+2. Call jis101 
+3. Change Store number (enter)
+4. Do NOT sign off from "legacy system" otherwise it will unlock the Pype. 
+
+---------------------------------------------------------------------------
+ # Check Store Rules (store Schedule) Time change
+	- Check time on system
+	- Rq strrules (enter)(enter)
+	- To change time on System, Go to Linux, it has curl coommand
+
+
+#Check Store Rules (store Schedule/ Store hours)
+Rq strrules (enter)(enter)
+	(Messages from brian: what is the time on the system?
+	it could be automatically kicked-off if the system clock (as/400) shows one or two hours )
+	someone could have changed it for a test)
+
+#CPYF FROMFILE(<LIB>/JCOMMLNX) TOFILE(<LIB>/JCOMMLNX) CRTFILE(*YES) - Copy file FROM and TO
+#CRTLIB LIB(TESTRQAWTW) TEXT('Retail QA Library - WTW Orders') - Create Library
+
+------------------------------  Functional Commands
+#F4 - Tell you what full name of that command, Prompts screen displays before the Action starts
+#F11 - Shows Acronyms for actual commands
+	Ex: cpyf - copy file, mbropt - member option, crtfile - create file, dspfd - display file description
+
+#F9 - Previous command - keep pressing till your see your command
+#F1 - Gives you description of whatever anything curser is on
+#Do it now, immediate
+  *immed  
+#Do it when its convenient
+ *cntrld 
+--------------------------------------------------------------------
+# Create Stock Order in Green Screen (Including Emergency Post)
+dspmnu mst001m - 4 - 15
+PTEST-79456 (steps 2-8, 10-18)
+PTEST-74196 -- Emergency post --
+username: manager
+First must check in order #4 - #15 - F5
+Second, in emergency post, Check in order 4 - 27 - F5 (i think)
+Third, back to Stock order, Complete order 4 - 15 - F9
+#####call jpo120 '' - Stock Orders, Merge orders####
+
+# Move item back from JIMAST to JNSPR (back to JNSPR)
+call chglib/movjnspr parm('LINE' 'ITEM')

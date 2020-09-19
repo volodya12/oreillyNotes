@@ -1,0 +1,76 @@
+-- QA Notes - Vocab & Item_master --
+
+# Vocab
+
+Intermittent - irregular, broken
+Rectify - to correct, to fix
+Reluctant  - unwilling, neoxotno
+Comprise - contain, soderzhat
+Misconception - seeing wrong, nedorozymenie
+Recant - deny
+Distinguish - differentiate, razlichat
+Convoluted - complicated, complex
+Concurrently - odnovremenno, at same time
+Foresee - predict, expect
+Retroactive - effect from the past date
+Proprietary - owned, owner
+Hence- consequently, therefore, v itoge
+Borked - attack, defeated
+Obstruct - blocked, hold up, stopped, halted, cut off
+
+# Item_master
+
+Search_terms
+	productId 'GAT_21517'
+	alphanumericItem '21517'
+	alphanumericLine 'GAT'
+Quantity
+	autoloadCount
+	quantityOnHand
+	quantityPerCar
+	quantityOnOrder
+	maxOrderQuantity
+	minOrderQuantity
+	quantityOnBackorder
+	jobberDivideQuantity
+	fixedWarehouseSellQuantity
+	storeWarehouseSellQuantity
+Status
+	Active 'true'
+	Autoload 'false'
+	saleItem
+	taxClass 'TPP'
+	warrantyCode '1Y'
+	hazardousWasteType 'N'
+Inventory_control
+	trendCode
+	saleItemType '0'
+	supplierCode '35'
+	controlNumber '192960000'
+	popularityCode 'B'
+	supercededItem
+	supercededLine
+	itemMessageCode
+	productLineCode '3'
+	standardPackage '1'
+	manufacturerItem '42611517'
+	manufacturerLine 
+	manualOverrideCode
+	productLineSubcode '0'
+	outFrontMerchandise 'false'
+	relatedItemsGroupCode '45'
+Description
+	itemDescription 'Coolant Hose'
+	pointOfSaleDescription <shows in OPS>
+Barcode_quantities
+	<barcode Numbers> <quantity> (1, 2, 3..)
+Statistics
+	dateLastSold 'mmddyy'
+	dateLastReturned '0'
+	recordDateLoaded mdd
+Physical_attributes
+	Unit
+	Weight
+	jobberUnitOfMeasure 'EA' 'ST'
+Cost
+	storeCost '8.69'

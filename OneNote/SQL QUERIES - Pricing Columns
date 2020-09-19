@@ -1,0 +1,35 @@
+SQL QUERIES - Pricing Columns
+
+Library: netpricecalculator - PricingData 
+Tables:
+Line_item (id, line, item)
+Store_specific_price (line_item_id, retail_price, retail_core_price, professional_price)
+Enterprise_price (line_item_id, Retail/Professional/Core/Factory/Store Price/Jobber/ ---> Price
+
+
+Select *
+From netpricecalculator.line_item i
+Inner Join netpricecalculator.store_specific_price p
+On i.id = p.line_item_id
+Inner Join netpricecalculator.enterprise_price e
+On i.id = e.line_item_id
+Where (i.line, i.item) = (Upper(:Line), Upper(:Item))
+--- All fields are:
+ ^
+Id 44859
+Line A1
+Item 48-207
+Plcd 29
+Subc 0
+Line_item_id 44859
+Retail_price 67.99
+retail_core_price 23.00
+professional_price 64.41
+line_item_id 44859
+retail_enterprise_price 0.00
+retail_core_enterprise_price 0.00
+professional_enterprise_price 0.00
+factory_jobber_enterprise_price 64.41
+store_jobber_enterprise_price 48.50
+jobber_core_enterprise_price 23.00
+commodity_enterprise_price 0.00

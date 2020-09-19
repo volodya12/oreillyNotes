@@ -1,0 +1,73 @@
+-- LINUX - CCT Card Log --
+
+	less /usr/local/oreilly/tomcat/logs/cct.log
+	
+	<L3ProductName>
+	<L3ProductDescription>
+	<Time>
+	<SignatureFlag>
+	<CardType>
+	<L3ProductTotalAmount> and Much More
+	
+	• This is CCT log RESPONSE (that’s how it look like, usually at the bottom of the listing
+    </TransactionSummary>
+    <TicketProductData>
+        <TicketCount>1</TicketCount>
+        <Tickets>
+            <Ticket>
+                <FleetProductCount>2</FleetProductCount>
+                <FleetProducts>
+                    <FleetProduct>
+                        <FleetProductSeqNo>1</FleetProductSeqNo>
+                        <FleetProductDataType></FleetProductDataType>
+                        <FleetServiceLevel>S</FleetServiceLevel>
+                        <FleetNACSCode>100</FleetNACSCode>
+                        <FleetProductName>WIX_51348</FleetProductName>
+                        <FleetUnitOfMeasure>U</FleetUnitOfMeasure>
+                        <FleetProductQuantity>1</FleetProductQuantity>
+                        <FleetProductUnitPrice>8.99</FleetProductUnitPrice>
+                        <FleetProductTotalAmount>8.99</FleetProductTotalAmount>
+                    </FleetProduct>
+                    <FleetProduct>
+                        <FleetProductSeqNo>2</FleetProductSeqNo>
+                        <FleetProductDataType></FleetProductDataType>
+                        <FleetServiceLevel>S</FleetServiceLevel>
+                        <FleetNACSCode>950</FleetNACSCode>
+                        <FleetProductName>TAX_TAX</FleetProductName>
+                        <FleetProductQuantity>1</FleetProductQuantity>
+                        <FleetProductUnitPrice>0.73</FleetProductUnitPrice>
+                        <FleetProductTotalAmount>0.73</FleetProductTotalAmount>
+                    </FleetProduct>
+                </FleetProducts>
+                <Level3ProductCount>1</Level3ProductCount>
+                <Level3Products>
+                    <Level3Product>
+                        <L3ProductSeqNo>1</L3ProductSeqNo>
+                        <L3ProductCode>36409</L3ProductCode>
+                        <L3ProductName>WIX_51348</L3ProductName>
+                        <L3ProductDescription>OIL FILTER</L3ProductDescription>
+                        <L3ProductQuantity>1</L3ProductQuantity>
+                        <L3UnitOfMeasure>U</L3UnitOfMeasure>
+                        <L3ProductUnitPrice>8.99</L3ProductUnitPrice>
+                        <L3ProductDiscount>0</L3ProductDiscount>
+                        <L3ProductTax>0</L3ProductTax>
+                        <L3ProductTaxRate>0</L3ProductTaxRate>
+                        <L3ProductTotalAmount>8.99</L3ProductTotalAmount>
+                    </Level3Product>
+                </Level3Products>
+            </Ticket>
+        </Tickets>
+    </TicketProductData>
+
+	• Below this code, is bunch of information about transaction, card being used, Error code, can be found. 
+	• <ResponseCode>20006<ResponseCode> OR
+	292202405331386581<R>20006<AC>000000<B>0.00<AV><S><X>INVALID ACCOUNT NUMBER
+	- If its all Zeroes, then the code means success. 
+		○ 20006 code means "Invalid Account Number". This is declining on the CCT. 20006 code indicates declined at processor. This isn't an O'Reilly application problem"
+	• <ResponseText>SYSTEM MALFUNCTION OR TIMEOUT<ResponseText> - This is the Error Code. Reason why Card is not working
+	• <processorResponseCode>909<processorResponseCode - this code means its Bank of American system problem. We are third party and Aurus
+	• <MaskedCardNumber>708886xxxxxxxxx2714<MaskedCardNumber> - This is the Card number that was used
+	• 1234567 - Imprint Slip number (if manual card was keyed) - For Fleet Card
+	• <CardType>VGF<CardType> - this is Voyager Fleet Card 
+	• <CCTID>1<CCTID> - Your CCT lane number
+	• <POSID>ws134<POSID> - Workstation number

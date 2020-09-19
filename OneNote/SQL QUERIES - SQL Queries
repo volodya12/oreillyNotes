@@ -1,0 +1,1180 @@
+-- SQL Queries - SQL Queries --
+
+-- SQL Queries --
+
+
+# Add "upper" in Query WHERE = upper(:line)
+USE *INSERT* Clause
+
+-- AS/400 Query
+Insert Into JBRDATA.JORHSH
+(JHVORD, JHVORT, JHVINV, JHVSHP, JHVINS, JHVSUP)  -> add columns (fields) which you want to be inserted)
+Values(282, 'S', 111282, 0, 'WP', 35); --> Values for Specific Fields
+
+UNION Clause vs JOIN Clause:
+UNION = Must have same tables, same order within SELECT. It combines all data within two or three tables INTO one table
+EX: Select imitem, imline
+from jbrdata.jimast
+union
+select jnitem, jnline
+from jbrdata.jnspr
+
+#Philip Peters confluence page - Different Queries
+https://confluence.oreillyauto.com/display/~PPETERS2/Retail+QA+Query+Routine+Repository
+
+ 
+****** ACTUAL QUERIES ******
+***************************************************************************
+# when AS400 is down, the Invoices that are still created, and stored in queue, unprocessed file
+--retaildata
+	1. select invoice_id from retaildata.public.invoice where invoice_data-> 'legacyId' ->> 'invoiceNumber' = :Invoice; 
+	2. select * from invoice_unprocessed_by_as400 where invoice_id = CAST(:InvoiceID AS INT)
+	
+# Active Customers on corporate side (or if customer exist in CMASTER, then its good)
+-- Sysdev2
+Select * from arsys1.cmaster where ccust# = <CustomerNumber>
+
+Table: creccd - blank=active
+
+# Find out if Invoice made it thru DayEnd
+--RetailData
+Select invoice_data#>>'{legacyId, invoiceNumber}' as "InvoiceNumber", day_end
+from invoice
+where invoice_data#>>'{legacyId, invoiceNumber}' = :invoice
+
+# Non-Loaded Pro Customers - some could be already loaded
+--sysdev2
+select * from arsys1.cmaster 
+where ccust# > 20000 
+and creccd = '' 
+and cctype <> 'O' 
+and creccd = ' ' 
+and cwekly not in ('D', 'W') 
+and cstore = ' ' 
+and ctercd <> 28 
+and cspeca = ' ' 
+and CBRACT = ' ' 
+AND CSLSNO <> 999 
+and CCUST# not like '888%' 
+and LENGTH(TRIM(CSTATE)) = 2 
+and csort not in (select csort 
+from arsys1.cmaster 
+group by csort 
+having count(csort) > 1 ) 
+order by CCUST# 
+
+--------------------------------------------  Professional Customers  ----------------------------
+#All Invoices for Specific Pro Customer
+--Sysdev
+Select *  -- CUSTOMER_NUMBER, RETAIL_CUSTOMER_NUMBER, INVOICE_NUMBER
+from dwposdata.jhxmit
+where CUSTOMER_NUMBER = :ProCust
+#All Invoices for Specific Retail Customer (via Retail Customer Number)
+--sysdev
+Select *  -- CUSTOMER_NUMBER, RETAIL_CUSTOMER_NUMBER, INVOICE_NUMBER
+from dwposdata.jhxmit
+where retail_customer_number = :RCN
+
+
+Professional Customer Non-COD - On Account - Charge Customer
+
+-- AS400 Query
+SELECT * FROM JBRDATA.JCUST
+WHERE CMBRCH != 'Y'
+AND CMTYPE != 'J' AND CMCODC != 'Y'
+
+Professional Customer COD 
+
+-- AS400 Query
+SELECT * FROM JBRDATA.JCUST
+WHERE CMBRCH != 'Y'
+AND CMTYPE != 'J' 
+AND CMCODC = 'Y'
+AND CMTAXC = 'Y'
+
+#Daily/Weekly Professional Customers (daily weekly)
+--AS400
+SELECT *
+FROM JBRDATA.JCUST
+WHERE CMDWC = 'D' OR CMDWC = 'W'
+
+# Professional Customer Number
+--Retaildata
+SELECT data->> 'customerNumber' as customerNumber 
+FROM Customers where data->> 'codCode' != 'Y' 
+and data->> 'customerType' !='J' 
+and data->> 'branchAccount' != 'Y'
+
+_______________________Determine if ProCustomer is about to be Deleted/Removed
+--RetailData
+SELECT data->>'activityCode' as activityCode, data->>'enabled' as enabled 
+from public.customers where data->>'customerNumber' = '189300'
+
+Output: ActivityCode = D (after dayend, customer will be removed, Linux command is provided to bypass dayend)
+Output: Enabled = False (Customer is no longer Valid/Enabled
+	If Enabled = True (Customer is still Valid)
+------------------------- Petty Cash Account -----------------------
+#Petty Cash account (pity)
+
+--AS400
+SELECT *
+FROM JBRDATA.jpcacct
+
+#Petty Cash account and more other fields
+
+Select * from jbrdata.jcust
+where cmname like 'PC%' AND CMCUS# LIKE '999%'
+---------------------------------------------------------------
+------------------------------- Retail Customer -----------------------------------
+#Retail Customer
+
+Select JRCPHN
+From JBRDATA.JRCUST
+Where JRCPHN != 9999999999
+Order By JRCPHN DESC
+
+#Query for O'Rewards Retail Customer
+Retail Customer With Shopper Account
+
+-- AS400 Query
+SELECT * FROM JBRDATA.JRCUST
+WHERE EXISTS
+        (SELECT * FROM JBRDATA.JRWDSHPR
+        WHERE JBRDATA.JRCUST.JRCRCN = JBRDATA.JRWDSHPR.CUSTID)
+
+#Retail Customer with Shopper account
+-- AS400 Query
+SELECT LOYALID, JRCFNM FROM JBRDATA.JRWDSHPR
+LEFT JOIN JBRDATA.JRCUST ON custid  = jrcrcn
+WHERE custid IS NOT NULL 
+AND JRCFNM IS NOT NULL
+
+#Query for LoyalID (O'Reward number)(Oreward)
+
+SELECT LOYALID, JRCFNM FROM JBRDATA.JRWDSHPR
+LEFT JOIN JBRDATA.JRCUST ON custid  = jrcrcn
+WHERE custid IS NOT NULL 
+AND JRCFNM IS NOT NULL
+
+O'Rewards Retail Customers (orewards)
+
+-- AS400 Query
+SELECT * FROM JBRDATA.JRCUST
+WHERE EXISTS
+        (SELECT * FROM JBRDATA.JRWDSHPR
+        WHERE JBRDATA.JRCUST.JRCRCN = JBRDATA.JRWDSHPR.CUSTID)
+
+#Non-Orewards Customer
+-- AS400 Query
+SELECT * FROM JBRDATA.JRCUST
+WHERE JRCZIP != '90001'
+AND NOT EXISTS
+        (SELECT * FROM JBRDATA.JRWDSHPR
+        WHERE JBRDATA.JRCUST.JRCRCN = JBRDATA.JRWDSHPR.CUSTID)
+
+#Looking for Specific Customer by Retail Customer Number (RCN)
+-- Orewards
+Select *
+from orw_customers
+where rcn = 2591000074
+
+(Expand "Rewards", under Public-Table- "orw_customers" and may look under different Tables for other details)
+
+# Select Active Orewards customers
+-- orewards
+SELECT C.CARDNUMBER, C.HOMEPHONE, C.EMAIL, C.FIRSTNAME, C.LASTNAME, A.ADDRESS1, A.ADDRESS2, A.CITY, A.STATE, A.ZIP, A.RCN
+FROM ORW_CUSTOMERS C
+INNER JOIN ORW_CUSTOMER_ADDRESS A
+ON C.RCN = A.RCN
+WHERE C.STATUS = 'A'
+AND CARDNUMBER > 999999999
+AND A.ZIP != ''
+AND A.CITY IS NOT NULL
+AND A.STATE IS NOT NULL
+AND C.EMAIL NOT LIKE '%SNAIL%'
+AND FIRSTNAME NOT LIKE '%QA%'
+AND LASTNAME NOT LIKE '%AUTO%'
+
+----------------------------------------------------------------------------------------------------
+
+# Special Order - 'Spcl Ordr' Items - For Catalog (Items not in JIMAST or JNSPR)
+-- SysDev2
+SELECT WHNLINE, WHNITEM, WHNUSR 
+FROM GPDATATST.WHNONSTK
+
+#Parts required to Age Restriction Prompt
+
+-- BackOffice Query
+select Product_Id, Group_Id
+from ENACTOR.PRODUCTPRODUCTGROUPS
+where Group_Id = 'CHECK_ID_ALERT'
+order by Product_Id
+
+#Gift Card stored on Corporate level (GC#, Pin, Balance)
+--sysdev2
+SELECT GCAVLBAL, GCACCT, GCPIN 
+FROM DWPOSDATA.GCMSTR
+
+
+# Customer Address information
+--BackOffice/Sysdev2
+select * from enactor.customeraddresses
+where customer_number = '10240'
+
+----------------------------------------------------------------------
+#Query for Battery:
+--AS/400 Query
+SELECT imline, imitem
+FROM jbrdata.jimast
+JOIN jbrdata.jbatry
+ON imline = jbline 
+AND implcd = jbplcd 
+AND imsubc = jbsubc
+WHERE imqoh > 0
+
+#Select Stocking Battery
+
+-- AS/400 Query
+Select IMLINE, IMITEM, IMQOH
+From JBRDATA.JBATRY -- This defines a "battery" to our POS.
+Inner Join JBRDATA.JIMAST -- Item Master file.
+On (JBLINE, JBSUBC, JBPLCD) = (IMLINE, IMSUBC, IMPLCD)
+Where IMMAX > 0 -- Stocking Items only.
+And IMQOH > 0 -- Items with QOH only.
+Order By RAND() -- Randomize the results.
+Fetch First 1 Row Only -- Select only one item.
+
+Query for stocking batteries that have a 2-year warranty and are equal to or more than 11lbs
+
+-- AS400 Query
+SELECT i.IMLINE, i.IMITEM, i.IMUSER, i.IMPOSD
+FROM JBRDATA.JIMAST i
+WHERE EXISTS
+(SELECT * FROM JBRDATA.JBATRY b
+WHERE i.imline = b.jbline
+AND i.IMPLCD = b.JBPLCD
+AND i.IMSUBC = b.JBSUBC)
+AND i.IMWGT >= 11
+AND i.IMWARR = '2Y'
+AND i.IMPOSD = 'BATTERY'
+
+# Items WITH Core
+Select *
+From jbrdata.jimast
+where (imline, imsubc, implcd) not in
+        (Select jbline, jbsubc, jbplcd
+        from jbrdata.jbatry)
+and imcorp > 0
+and imcorc > 0
+and imqoh > 0
+
+#Select Non-Battery Item With Core
+--as400
+SELECT i.imline, i.imitem
+FROM jbrdata.jimast i
+WHERE NOT EXISTS
+(SELECT * FROM jbrdata.jbatry b
+WHERE i.imline = b.jbline
+AND i.implcd = b.jbplcd
+AND i.imsubc = b.jbsubc)
+AND imcorc > 0
+AND imcorp > 0
+
+# Select Item with Core
+--AS/400 Query
+SELECT * FROM jbrdata.jimast 
+WHERE imcorp > 0 AND imqoh > 2
+
+-------------------------------------------------------------------------------------------
+#NonStock Item with Core 
+
+-- AS/400 Query
+SELECT N.JNLINE, N.JNITEM, N.JNCORE, N.JNCORC
+FROM JBRDATA.JNSPR N
+WHERE NOT EXISTS
+(SELECT * FROM JBRDATA.JBATRY B
+WHERE N.JNLINE = B.JBLINE
+AND N.JNPLCD = B.JBPLCD
+AND N.JNSUBC = B.JBSUBC)
+AND JNCORC > 0
+AND JNCORE > JNCORC
+
+# Item WITHOUT Core
+Select *
+From JBRDATA.JIMAST
+Where (IMLINE, IMSUBC, IMPLCD) Not In (
+        Select JBLINE, JBSUBC, JBPLCD
+        From JBRDATA.JBATRY 
+        )
+And IMMAX > 0 
+And IMQOH > 0 
+And IMCORP = 0 And IMCORC = 0
+
+#NonStock Item without core
+
+-- AS/400 Query
+SELECT N.JNLINE, N.JNITEM, N.JNCORE, N.JNCORC
+FROM JBRDATA.JNSPR N
+WHERE NOT EXISTS
+(SELECT * FROM JBRDATA.JBATRY B
+WHERE N.JNLINE = B.JBLINE
+AND N.JNPLCD = B.JBPLCD
+AND N.JNSUBC = B.JBSUBC)
+AND JNCORC = 0
+AND JNCORE = 0
+
+----------------------------------------------- OPP Item - Item sourcing ---------------------------------
+
+#Finds Non-Stock items in Store but Vendors would have them (No Pricing will show in VR, must do Item Sourcing)
+OPP Item
+--Sysdev2
+SELECT * 
+FROM oppdata.nonstkqoh
+WHERE vndqoh > 0
+AND (oline,oitem) NOT IN (SELECT line,item FROM oppdata.dwwmast WHERE wms_qoh > 0)
+
+
+#Find Item not at any O'Reilly Location (Items coming from Vendor)
+All Vendors are in Sysdev -> OPPDATA table
+--SYSDEV2 Query
+SELECT * 
+FROM oppdata.nonstkqoh
+WHERE vndqoh > 0
+AND (oline,oitem) NOT IN (SELECT line,item FROM oppdata.dwwmast WHERE wms_qoh > 0)
+
+#Obtain  Tracker ID for an invoice (Bill Later or Item Sourcing tracker)(Whenever item being transferred from one to another store)
+--Sysdev2
+SELECT *
+FROM dwdatatst.OPPITEM 
+WHERE LINE = 'AC' 
+AND ITEM = '34111'
+AND TRACKER_ID LIKE '20200407%'
+ORDER BY TRACKER_ID DESC
+LIMIT 1
+
+# Event Log Order Created - OPPEVENT
+-- SYSDEV2 Query
+SELECT *
+FROM dwdatatst.OPPEVENT
+WHERE TRACKER_ID = ':Tracker_ID'
+AND EVENT_CODE = 'ORD_CRT'
+-- Replace :Tracker_ID with the Tracker_ID
+
+Use this to find an item that can be ordered from opp
+--Sysdev
+SELECT DISTINCT LINE, ITEM
+FROM oppdata.dwwmast w
+INNER JOIN probasef.wflod l
+ON w.line = l.ldvrsn
+AND w.item = l.lditem
+WHERE w.whs = :OrderLocation
+AND w.wms_qoh > 0
+AND l.ldavlq > 0 
+
+# OPP - Order Maintenance - Verify Data from item souce returned to Order maintenance
+-- SYSDEV2 Query
+SELECT DISTINCT ORDER_RECEIVED_DATE, ORDER_METHOD, t.CUSTOMER, h.SUPPLIER_TYPE, h.SUPPLIER, ESTIMATED_ARRIVAL_TIME, t.REQUESTED_BY_USER, i.LINE, i.ITEM, SELLING_PRICE, QUANTITY_REQUESTED
+FROM dwdatatst.OPPORDD d
+LEFT OUTER JOIN dwdatatst.OPPORDA a
+ON (d.TRACKER_ID = a.TRACKER_ID)
+LEFT OUTER JOIN dwdatatst.OPPORDH h
+ON (d.TRACKER_ID = h.TRACKER_ID)
+LEFT OUTER JOIN dwdatatst.OPPRQLOC q
+ON (d.TRACKER_ID = q.TRACKER_ID AND h.SUPPLIER = q.SUPPLIER)
+LEFT OUTER JOIN dwdatatst.OPPTRACK t
+ON (d.TRACKER_ID = t.TRACKER_ID)
+LEFT OUTER JOIN dwdatatst.OPPITEM i
+ON (d.TRACKER_ID = i.TRACKER_ID)
+WHERE d.TRACKER_ID = ':TRACKER_ID'
+
+-------------------------------------------------------------------------------------
+
+#Set Flag to Prevent Price Override
+
+-- PosData Query
+Insert into customer_flag_assignment
+values (:customernumber, CURRENT_TIMESTAMP, "SYSTEM", "6")
+
+------OR this one----------Bottom is better one cuz it has 'taseCaseNumber'
+-- PosData Query--Setting Flag
+INSERT INTO POSDATA.CUSTOMER_FLAG_ASSIGNMENT 
+(CUSTOMER_NUMBER, CREATED_TS, UPDATED_BY, FLAG_ID)
+SELECT :customernumber, 
+CURRENT_TIMESTAMP, :testCaseNumber, 6 
+FROM DUAL
+WHERE NOT EXISTS 
+(SELECT * FROM POSDATA.CUSTOMER_FLAG_ASSIGNMENT 
+WHERE CUSTOMER_NUMBER = :customernumber AND FLAG_ID = 6)
+
+# Determine if VERTEX(tax failed over)-SubTotal and TotalTax should be Way off from each other (in numbers)
+VERTEX is Set to 100% to determine how far off tax fails over. (Bug:OPSR-4741, TC:PTEST-98634)
+
+SELECT DISTINCT JHVTX
+FROM JBRDATA.JORHSH 
+WHERE JHSDAT > '20190307'  - Date which invoice was made. Select today's date or other dates
+AND JHVTX = '1'            - 1 means it FAILED/0 means it is SUCCESSFULL
+AND JHINV# = :Invoice      - check if that particular invoice FAILED or NOT (optional)
+
+# Find bad data for JYI507.(BAD DATA CAN CAUSE SOME PROGRAMS TO STUCK IN QBATCH)
+--as400
+Select *
+From JBRDATA.JINITM
+Where ITOQOH > 500
+(QOH = 1000 would be too much already)
+
+# Show ALL products with Overridden Price (price override)
+--AS400
+SELECT OVCCNO,
+SUM(OVQTY) AS "TotalQty",
+SUM(OVSUGG * OVQTY) AS "SuggestedTotal",
+SUM(OVAMT * OVQTY) AS "EnteredTotal",
+SUM((OVAMT - OVSUGG) * OVQTY) AS "DifferenceTotal"
+FROM JBRDATA.JPOVRDW
+WHERE OVSUGG != 0
+GROUP BY OVCCNO
+ORDER BY SUM((OVAMT - OVSUGG) * OVQTY) ASC
+
+
+-------------------------- FCO ------------------------------------------------------------------------- 
+Change store number on FCO to different Test Box. It will update Test1 and Test2
+--Sysdev2--
+Queries: (sysdev2)  - Point FCO account to any test box or Store (342500 - Vlad)
+	update fcostg_dw.dlrctl set dlrstr = 4047 Where dlrcus = 342500
+	update fcostg_oz1.dlrctl set dlrstr = 4047 Where dlrcus = 342500
+-----------------------------------------------------------------------------------------
+
+#Fix bad data for JYI507.
+--as400
+Update JBRDATA.JINITM j
+Set ITOQOH = (
+        Select IMQOH
+        From JBRDATA.JIMAST
+        Where (IMLINE, IMITEM) = (j.ITLINE, j.ITITEM))
+Where ITOQOH > 100
+
+#Verify it is set to "D" after DayEnd is ran  (Delete from backoffice after DayEnd)
+
+SELECT * FROM JBRDATA.BOKEYITEM
+WHERE LINE = :LINE AND ITEM = :ITEM
+
+#Find Warranty Part
+
+-- AS400
+select <Columns>
+from jbrdata.jimast i
+inner join jbrdata.jimwar w
+on i.imwarr = w.wrcode
+where w.wrcovper >= wrfrrp and w.wrcovper > 0
+and not exists
+(SELECT * FROM jbrdata.jbatry b
+WHERE i.imline = b.jbline
+AND i.implcd = b.jbplcd
+AND i.imsubc = b.jbsubc)
+order by rand()
+fetch first 5 rows only
+
+# Changing Time/Date - Date
+
+Update <library>.<table>
+Set <column> = current_date - interval 90 day
+where <column> = :whatever
+
+-------------------------------------- Online Store --------------------------------
+# Update the Qty on hand for Online Orders
+--sysdev2
+UPDATE DWDATA.DWSMAST SET QOH = :qoh
+where STR# = :storeNum and LINE =  :line and ITEM# = :item
+
+--sysdev2
+UPDATE DWDATA.DWSMAST SET MAX = :maxQty 
+where STR# = :storeNum and LINE =  :line and ITEM# = :item
+
+------------------------------------- Coupons ---------------------------------------------------
+
+	1. Query for Valid Coupons
+
+--SYSDEV2 Query
+SELECT c.id, promo_event_number, description, max_coupon_seq_number,min_invoice_amount,dollars_off 
+FROM dwdatatst.s c
+JOIN dwdatatst.couponoffers o
+ON c.id = o.coupon_id
+WHERE end_date < CURRENT_DATE AND max_coupon_seq_number > 99 AND cpn_type = 1
+
+	2. Query for Used Coupons (Query used after query above)
+	
+	--SYSDEV2 Query
+SELECT * FROM dwdatatst.processedcoupons
+WHERE coupon_id = <id>
+ORDER BY coupon_seq_number
+	
+# Pull Valid Coupon Group
+  -- Sysdev2
+SELECT c.id, promo_event_number, description, max_coupon_seq_number,min_invoice_amount,dollars_off 
+FROM dwdatatst.coupons c
+JOIN dwdatatst.couponoffers o
+ON c.id = o.coupon_id
+WHERE end_date > CURRENT_DATE 
+AND start_date <= CURRENT_DATE AND max_coupon_seq_number > 99 AND cpn_type = 1
+
+For clear steps and queries for Coupons, look into "QA Note" tab. Query also includes obtaining Sequence number
+-----------------------------------------------------------------------------------------
+-------------------------------------- Invoice Verification both JORHSH and JORHSD -------------------------------
+#Data Verification - JORHSD and JORHSH for Sale and Return
+--AS400
+SELECT JDNETP, JDNETA, JDCORR, JDNETC, JDTOTA, JDINV#, JHTYPE, JDQTYR, JDRETC
+FROM JBRDATA.JORHSD
+JOIN JBRDATA.JORHSH
+ON JDINV# = JHINV#
+WHERE JDINV# = :SALES_INVOICE_NUMBER OR JDINV# = :RETURN_INVOICE_NUMBER
+
+# Pulls Invoice Information
+
+-- AS/400 Query
+With Totals As (Select Max(JDINV#) As TOTALINV, Sum(JDTOTA) As SUM_JDTOTA, Sum(JDTTAX) As SUM_JDTTAX
+        From JBRDATA.JORHSD
+        Where JDINV# = :Invoice)
+
+Select JDSEQ#, JDLINE, JDITEM, JDTC, JDMOVR, JDQTYS,
+        JDNETP, IMUSER,
+        JDCORR, IMCORP,
+        JDNETA, JDNETP * JDQTYS As CK_JDNETA,
+        JDTOTA, JDNETA + (JDCORR * JDQTYS) As CK_JDTOTA,
+        JDTTAX, Cast(Round((Cast(JDTOTA As Decimal(14, 8)) * :TaxRate), 2) As Decimal(7, 2)) As CK_JDTTAX,
+        JHTAMT, SUM_JDTOTA + SUM_JDTTAX As CK_JHTAMT,
+        JHITOT, JHTAMT,
+        JHTTAX, SUM_JDTTAX As CK_JHTTAX
+From JBRDATA.JORHSH
+Join JBRDATA.JORHSD
+On JHINV# = JDINV#
+Join JBRDATA.JIMAST
+On (JDLINE, JDITEM) = (IMLINE, IMITEM)
+Join Totals
+On JDINV# = TOTALINV
+Where JHINV# = :Invoice
+
+
+--This TC verifies that Item is moved from JNSPR to JIMAST (PTEST-79001 = Verification - Item Loaded)--
+--Move ITEM from JIMAST back to JNSPR (PTEST-79001 = Data Preparation - Reverse Autoload)--
+
+Another way of using Variable (EX: Semicolon(:))
+
+Select * 
+From JBRDATA.${tableName}$
+Where imline = ${Line||AC||String}$
+AND imitem = ${Item||41-110||String}
+
+----------------------- NPC Pricing Data ------------------------------------------------------------------
+# Verify if Part exists in PRICING Database
+--Pricing Query
+select *
+from netpricecalculator.line_item
+where line = :Line
+and item = :Item
+
+# Verify PRICING for Retail Customer in PRICING Database (Without Pro Cust)
+-- PricingData Query
+Select i.line, i.item,
+        (p.retail_price / (
+        Select pricing_value
+        from netpricecalculator.pricing_value
+        where pricing_value_type = 'list_price_divide_factor'
+        ))::Decimal(9,2) As "ListPrice",
+        p.retail_price, p.retail_core_price, jobber_core_enterprise_price
+From netpricecalculator.line_item i
+Inner Join netpricecalculator.store_specific_price p
+On i.id = p.line_item_id
+Inner Join netpricecalculator.enterprise_price e
+On i.id = e.line_item_id
+Where (i.line, i.item) = (Upper(:Line), Upper(:Item))
+----------------------------------------------------------------------------------
+
+Regular Customer that Can be DELETED and REINSERTED
+
+SELECT * 
+FROM jbrdata.jcust 
+WHERE cmdwc NOT IN ('D', 'W') 
+AND cmbrch != 'Y' 
+AND cmdcfg NOT IN ('Y', 'N')
+
+To Find out Store Number
+
+-- AS/400 Query
+Select CNACCT
+From JBRDATA.JCONFG
+
+#Select Employee Customer Account
+
+-- AS/400 Query
+Select CMCUS#, CMNAME
+From JBRDATA.JCUST
+Where CMEMP = 'Y'
+And CMCODC = 'Y' 
+AND CMTYPE = 'J'
+AND CMBRCH != 'Y'
+
+
+Stocking Item with Warranty
+
+SELECT imitem, imline, imwarr 
+FROM jbrdata.jimast
+WHERE imqoh >=1
+AND imwarr IS NOT NULL (or IMWARR != '')
+
+Stocking Items - best query
+
+--AS/400 Query
+SELECT IMITEM, IMLINE, IMJUM, IMQOH
+FROM JBRDATA.JIMAST
+WHERE IMQOH >=1
+
+Finding First listed Stock Item in JIMAST
+
+Select IMLINE, IMITEM
+FROM JBRDATA.JIMAST
+ORDER BY IMLINE ASC, IMITEM ASC
+FETCH FIRST 1 ROW ONLY
+
+Removing Customer from Credit Account
+
+--AS/400 Query
+DELETE FROM jbrdata.jcrck
+WHERE cxcus# = :customerNumber
+
+Add Customer to Credit Account (related ^^)
+
+--AS/400 Query
+INSERT INTO JBRDATA.JCRCK (CXCUS#)
+VALUES (:customerNumber)
+
+Stocking Items
+
+--AS/400 Query
+Select IMLINE, IMITEM
+From JBRDATA.JIMAST --Inventory Master file.
+Where IMMAX > 1 --Stocking Items only.
+
+Non-Stocking Items
+
+-- AS/400 Query
+Select JNLINE, JNITEM
+From JBRDATA.JNSPR --Non-stock Pricing file.
+Where JNUSER != 0.00 --Exclude parts without pricing.
+
+---------------------------------------- Deferred Customers ----------------------------------------
+
+Find Deferred Core Account - COD (PTEST-138402)
+
+--AS400
+SELECT *
+FROM JBRDATA.JCUST 
+WHERE CMCUS# >=20000 
+AND CMDCFG = 'Y'
+AND CMCODC = 'Y'
+AND CMPRCD = 'Y'
+AND CMDCPD >= 1
+
+Find Deferred Core Account - COD - W/ Procurement Card
+
+--AS400
+SELECT *
+FROM JBRDATA.JCUST 
+WHERE CMCUS# >=20000 
+AND CMDCFG = 'Y'
+AND CMCODC = 'Y'
+AND CMPRCD = 'Y'
+AND CMDCPD >= 1
+
+Find Deferred Core Account - NonCOD
+
+--AS400
+SELECT *
+FROM JBRDATA.JCUST 
+WHERE CMCUS# >=20000 
+AND CMDCFG = 'Y'
+AND CMCODC = ''
+AND CMPRCD = ''
+AND CMDCPD >= 1
+
+Find Deferred Core Account - Non-COD - W/ Procurement card
+
+--AS400
+SELECT *
+FROM JBRDATA.JCUST 
+WHERE CMCUS# >=20000 
+AND CMDCFG = 'Y'
+AND CMCODC = ''
+AND CMPRCD = 'Y'
+AND CMDCPD >= 1
+
+Non-COD Deferred Core Customer - more results will show
+
+--AS/400 Query
+SELECT *
+FROM jbrdata.jcust 
+WHERE cmtype != 'J' 
+AND cmcodc = ''
+AND cmdcfg = 'Y'
+
+Deferred Core Customer
+
+--AS400 Query
+SELECT *
+FROM JBRDATA.JCUST
+WHERE CMDCFG = 'Y'
+AND CMBRCH = ''
+AND CMTYPE != 'J'
+AND CMCODC = 'Y' 
+AND CMPRCD = 'Y' 
+
+CMPRCD = procurement card
+CMCODC != 'Y' - ON Account
+CMDCFG = Deferred Core Flag
+
+---------------------------Change Deferred Core due Date - will show up in Past Deferred Core window in OPS -----------
+Step 1. Change Core Due Date - Change the due date for the core items - Core is past Due
+
+--AS/400 Query
+UPDATE jbrdata.jdfrcor
+SET dcdudt = (CURRENT_DATE - 1 DAY)
+WHERE dcinv = <invoice#>
+
+Step 2. Deferred Core Invoice Date Change - Update the deferred core invoice date to a day before the due date
+	- Invoice date will be updated to past due
+--AS400 Query
+UPDATE JBRDATA.JDFRCOR
+SET DCINDT = '<yyyy-mm-dd>'
+WHERE DCINV = '<Invoice Number>'
+--------------------------------------------------------------
+Deferred Core Due Date and Deferred Core Price
+
+--AS400
+SELECT
+DCDUDT AS coreDueDate, 
+DCCORE AS deferredCorePrice
+FROM JBRDATA.JDFRCOR
+WHERE DCINV = :Invoice
+AND DCLINE = :Line
+AND DCITEM = :Item
+
+###Example of INNER JOIN###
+
+SELECT i.line, i.item, j.retail_price
+FROM netpricecalculator.line_item i
+INNER JOIN netpricecalculator.store_specific_price j
+ON i.id = j.line_item_id
+WHERE i.line = upper(:line)
+AND i.item = upper(:item)
+
+Clear Past Due Deferred Cores
+
+-- AS400 Query
+UPDATE JBRDATA.JDFRCOR  
+SET DCRCOD = 'S'
+SET DCRCOD = 'S'
+WHERE DCRCOD = ''
+
+-- AS/400 Query
+Select JHTTAX, JHITOT
+From JBRDATA.JORHSH
+Where JHINV# = :Invoice1
+
+Find Tax Rate for specific Store
+
+-- QAA query - Automation database
+SELECT RATE
+FROM QAA.STORE_TAX
+WHERE STORE = :CNACCT
+
+Raising the QOH (Quantity On Hand) on a selected part
+
+--AS/400 Query
+Update JBRDATA.JIMAST
+Set IMQOH = Case
+        When IMQOH > 0 Then (IMQOH + 1)
+        Else 1
+End
+Where (IMLINE, IMITEM) = (Upper(:Line), Upper(:Item))
+
+----------------------------------------------Gift Cards ----------------------------------------
+#Query for Active Gift Cards
+
+-- SysDev2 Query
+SELECT GCAVLBAL, GCACCT, GCPIN
+FROM DWPOSDATA.GCMSTR
+WHERE GCSTAT = 'A'
+AND GCAVLBAL < 300
+AND GCACCT > 999999999999999
+
+Unusable Gift Cards
+
+-- SYSDEV2 Query
+SELECT GCAVLBAL, GCACCT, GCPIN
+FROM DWPOSDATA.GCMSTR
+WHERE GCSTAT = 'A'
+AND GCACCT > 999999999999999
+
+Update Gift Card balance to what is needed
+
+-- SYSDEV2 Query
+UPDATE DWPOSDATA.GCMSTR
+SET GCAVLBAL = :Amount
+WHERE GCACCT = :GiftCard#
+AND GCSTAT = 'A'
+
+^^Gift Cards to use:^^
+Variable	Gift Card Number	PIN
+GC1	9042-6340-9717-9656	1234
+GC2	9166-3331-8774-7064	1234
+GC3	9223-4519-2761-1641	1234
+
+
+Unusable Gift Cards (Active GC with Balance UP to $500)
+
+-- SYSDEV2 Query
+SELECT GCAVLBAL, GCACCT, GCPIN
+FROM DWPOSDATA.GCMSTR
+WHERE GCSTAT = 'A' AND GCAVLBAL >= :invoiceTotal AND GCAVLBAL <= 500
+ORDER BY GCAVLBAL DESC
+
+Active Gift Cards with Balance of 500
+
+-- SYSDEV2 Query
+SELECT GCAVLBAL, GCACCT, GCPIN
+FROM DWPOSDATA.GCMSTR
+WHERE GCSTAT = 'A' AND GCAVLBAL > 0 AND GCAVLBAL <= 500
+ORDER BY GCAVLBAL DESC
+
+# Active Gift Card
+-- SYSDEV2 Query
+SELECT gcacct, gcavlbal, gcpin FROM dwposdata.gcmstr where gcstat = 'A' order by gcacct desc
+
+---------------------------------------------------------------------------------
+Change the Quantity On Hand (QOH)
+
+-- AS400 Query
+Update JBRDATA.JIMAST
+Set IMQOH = :Quantity
+Where (IMLINE, IMITEM) = (:Line1, :Item1)
+
+Item Sourcing - DC # set for specific store as Default
+
+-- Sysdev2 query
+SELECT * FROM gpdata.srmtle
+WHERE SRSTR = :store#
+-------------------------------------------- Promotions -------------------------------------------------
+
+## Find Promotion Item in BackOffice 
+Item with Core. Finds out Core Price and If item is Stock or NonStock
+PTEST-172870
+
+# Promotion Item for Retail Customer - Backoffice
+PTEST-172782
+
+#Search for Specific Promotion
+--Back Office
+SELECT XML 
+FROM enactor.promotions 
+WHERE XML LIKE '%Government%' 
+AND Promotion_Id LIKE '0099992067000001DS'
+
+#View Promotion according to the fields bellow
+ -filtering: Agriculture, ends in 'PO', Description '4 group', may additionally add filter such as '%maximumTriggersPerTransaction>1%'
+ 
+--Back Office -
+SELECT XML 
+FROM enactor.promotions 
+WHERE XML LIKE '%Agriculture%'
+AND Promotion_Id LIKE '%PO' 
+AND Description LIKE '%4 GROUP%'
+
+#View Promotion via promotion.ID
+
+Select *
+FROM promotions
+where promotions.promotion_id = '0099992058000001ID'
+
+#Display Promotions with ID of your own
+
+SELECT promotions.promotion_id, products.Product_Id, promotions.Description,
+CAST(EXTRACTVALUE(promotions.xml,'/retail:promotion/retail:multibuyReward/retail:rewardValue') / 100 AS DECIMAL(8,2))DiscountValue,
+EXTRACTVALUE(promotions.xml,'/retail:promotion/retail:multibuyReward/retail:rewardType[1]') DiscountType,
+EXTRACTVALUE(promotions.xml,'/retail:promotion/retail:multibuyReward/retail:thresholdValue[1]') MinQty,
+EXTRACTVALUE(promotions.xml,'/retail:promotion/retail:multibuyReward/retail:maximumThresholdValue[1]') MaxQty
+FROM promotionproducts AS products
+JOIN    (SELECT MAX(multibuy_reward_id) AS MAX,promotion_id
+        FROM enactor.promotionproducts
+        GROUP BY promotion_id) AS cnt
+        ON products.promotion_id = cnt.promotion_id
+JOIN enactor.promotions promotions
+ON products.promotion_id = promotions.promotion_id
+JOIN enactor.products items
+ON products.product_id = items.product_id
+WHERE start_date <= CURRENT_DATE 
+AND end_date >= CURRENT_DATE
+AND promotions.promotion_id = <enter promotionID>
+----------------------------------------------------------------------------------------------------
+
+#District Sourcing Locations for Specific Stores
+
+-- Sysdev2 query
+SELECT * FROM dwdatatst.tnstore
+WHERE DISTRICT_NUMBER = (Select DISTRICT_NUMBER from 
+dwdatatst.tnstore where STORE_NUMBER = :store)
+-- Replace :store with store number associated with 
+the test box
+
+#Triggering Conceal/Verify PO_number Flag and More
+
+-- POSDATA --
+Update posdata.customer_flag_assignment
+Set flag_id = 3
+Where customer_number = :customer_number
+# Viewing available options ^^^^^^
+Select * from posdata.customer_flag
+
+------------------------------------------------------- Event Ticket ------------------------------
+#Select Event Tickets
+
+-- AS/400 Query
+SELECT IMLINE, IMITEM, IMUSER, IMQOH, IMWARR, IMPOSD
+FROM JBRDATA.JIMAST
+WHERE IMLINE = 'TKT'
+
+AND 
+Gives Customer Information Account (for Event Ticket)
+
+-- AS/400 Query
+SELECT CMCUS#, CMNAME, CMADR2, CMADR1, CMCITY, CMST, CMZIP
+FROM JBRDATA.JCUST
+WHERE "CMCUS#" = 999518
+-------------------------------------------------------------------------------------------------------
+# Tax Exempt Professional Customer - Type A
+
+--AS400
+SELECT CMCUS#, CMTYPE, CMNAME
+FROM JBRDATA.JCUST
+WHERE CMTAXC <> 'Y'
+AND CMTYPE = 'A'
+AND CMCUS# NOT BETWEEN 999000 AND 1000000
+
+--------------------------------------  Barcode (AS400) -------------------------------------------------------
+# Barcodes for ITEM_MASTER found in 'Inventory - ITEM_MASTER' tab
+
+#Scan Stock Item with Scanner - Data Verification  
+PTEST-193696
+
+#Find Items with Barcode in AS400 and Create Barcode to Scan
+PTEST-79009
+Groups: 
+Data Preparation - Find AS400 Barcodes
+Data Preparation - Create UPC-A Barcode
+
+# Find Barcode on AS400 for LINE and ITEM
+
+WITH AllBAR ( LINE, ITEM, BARCODE, SCANQTY, STATUS)
+AS
+(SELECT IMLINE,IMITEM,IMBC15,'1' AS SCANQTY,'PRIMARY' AS STATUS
+FROM JBRDATA.JIMAST i
+UNION
+SELECT ALLINE,ALITEM,ALBARC,ALQTY,'SECONDARY' AS STATUS
+FROM JBRDATA.JALTBC a)
+
+SELECT i.IMLINE,i.IMITEM,i.IMPOSD,i.IMDESC,
+i.IMMIN,i.IMMAX,ab.BARCODE AS ORIGINBC,ab.STATUS,
+CASE WHEN LENGTH(VARCHAR(ab.BARCODE))>12 THEN 'CODE-128' 
+ELSE 'UPC-A' END AS BCTYPE,
+CASE WHEN LENGTH(VARCHAR(ab.BARCODE))>12 THEN ab.BARCODE||'%' 
+ELSE RIGHT('0000'||VARCHAR(ab.BARCODE),12) END AS BARCODE,
+ab.SCANQTY
+FROM JBRDATA.JIMAST i
+JOIN ALLBAR ab ON i.IMLINE = ab.LINE AND i.IMITEM = ab.ITEM
+WHERE i.IMLINE = :LINE
+AND i.IMITEM = :ITEM
+ORDER BY BARCODE ASC
+
+# Select Item for Barcode (Barcode# included)
+--AS/400 Query
+SELECT A.*, S.IMQOH
+FROM JBRDATA.JALTBC A
+INNER JOIN JBRDATA.JIMAST S
+ON A.ALITEM = S.IMITEM AND A.ALLINE = S.IMLINE
+WHERE S.IMQOH > 1 AND A.ALQTY > 1
+
+# Select Unused Return License Plate Number++ (ITEST-792)
+License plates = the Barcode that attached to a Bin. When item gets returned to store, 
+It is being scanned and placed in the Bin, then the License plate is scanned to record that item, of how many returned
+
+-- AS/400 Query
+With LPT As (
+        Select Distinct RTDLP# As LP
+        From JBRDATA.JRTDET
+        Union
+        Select Distinct ACLP# As LP
+        From JBRDATA.JALTRT)
+
+Select (Max(LP) + 1) As "NewLP"
+From LPT
+
+
+------------------------ Other --------------------------------
+# Finds ITEMS with multiple LINE numbers corresponding - When key ITEM only, the "Item/Line Selection"
+	Popup will appear. - This query is testing that screen
+--AS400
+SELECT IMITEM, IMLINE
+FROM JBRDATA.JIMAST
+WHERE IMQOH > 1 AND IMITEM IN 
+(
+    SELECT IMITEM
+    FROM JBRDATA.JIMAST
+    GROUP BY IMITEM
+    HAVING COUNT(*) > 1
+)
+
+# Add Record to JINVHRTRC - Hart Count receive files (then call JYI510 to create report)
+--AS400
+Insert Into JBRDATA.JINVHRTRC (RCSTORE, RCLINE, RCITEM, RCQOH)
+VALUES (
+        (
+                Select CNACCT
+                From JBRDATA.JCONFG),
+        Upper(:Line), Upper(:Item),
+        (
+                Select IMQOH
+                From JBRDATA.JIMAST
+                Where (IMLINE, IMITEM) = (Upper(:Line), Upper(:Item))) + 2)
+OR
+--AS400
+Update jbrdata.JINVHRTRC
+Set RCQOH = 2
+Where RCLine = :line
+And RCItem = :Item
+
+#QOH updated in Item_master will reflect in JINVMOV (same as 'call jim103)
+--AS400
+select * from jbrdata.jinvmov
+where ivline = :line
+and ivitem = :item
+
+# Mixed Paint Item Number
+--Enactor Query
+SELECT <COLUMNS> FROM ENACTOR.PRODUCTPRODUCTGROUPS 
+WHERE GROUP_ID = 'MIXED_PAINT' 
+ORDER BY Product_Id ASC
+
+PTEST-128508 - Return Unused Backup and Recovery Invoice Number
+----------------------------------------------------
+# Clears Omitted Ticket Data in Current Date - Items that are being omitted from VR
+(in case user entered Item into VR in production store or not where it needed, there is ability to clear that data)
+
+-- PosData Query
+Delete From transaction_activity_detail
+Where tx_id In (
+        Select ID
+        From transaction_activity
+        Where created_ts >= Current_Date
+        )
+
+#Omitted Invoices Count - Amount of Omitted invoices recorded
+--PosData
+SELECT COUNT(a.id) AS Omitted_Invoices
+FROM transaction_activity a
+JOIN transaction_activity_detail d
+ON a.id = d.tx_id
+WHERE created_ts >= CURRENT_DATE AND (action_taken IN (1,2,3,4) OR customer_type = 'E') 
+AND quantity >= 0
+
+# Omitted Ticket Records
+-- AS400
+SELECT * FROM transaction_activity
+ORDER BY created_ts ASC
+
+#Change Dates on Omitted Tickets for More than 90 Days - Run DayEnd - Tickets will purge
+	- It’s the rule, any reports, after 90 days, gets purged - saved in specific database
+--PosData
+UPDATE transaction_activity
+SET cusiness_date = REPLACE(DATE_SUB(CURRENT_DATE,INTERVAL 90 DAY),'-','') 
+WHERE id = :id
+
+# Query for Omitted tickets that are 90 days old
+--PosData
+SELECT * FROM transaction_activity
+WHERE business_date <= REPLACE(DATE_SUB(CURRENT_DATE,INTERVAL 90 DAY),'-','') 
+
+#View Active Omitted/Void Tickets
+	- PosData
+Select Concat(line, ' ', item) As "LineItem",
+IfNull(day_end_qty_on_hand, 0) As "QOH",
+quantity, unit_of_measure,
+Case
+        -- Convert action_taken values to actions.
+        When action_taken = 1 Then 'Save'
+        When action_taken = 2 Then 'Omit'
+        When action_taken = 3 Then 'Void'
+        When action_taken = 4 Then 'Quote'
+        When action_taken = 5 Then 'Purge'
+        Else 'Undefined'
+        End As "Type",
+ext_price
+From transaction_activity t
+Inner Join transaction_activity_detail d
+On t.id = d.tx_id
+-- Pull the current date from the system and use it for selecting records.
+Where business_date = Date_Format(Current_Date, "%Y%m%d")
+And print_flag Is Not Null
+
+
+#Find out listPrice (List Price)
+--as400
+Select IMLINE As "line", IMITEM As "item", Decimal(Round((IMUSER / (Cast(:LSTDIV As Decimal(7, 2)) * .01)), 2), 7, 2) 
+As "ListPrice", IMUSER As "retail_price", IMCORP As "retail_core_price", IMCORC As "jobber_core_enterprise_price"
+From JBRDATA.JIMAST
+Where (IMLINE, IMITEM) = (Upper(:Line), Upper(:Item))
+
+LSTDIV = 59
+-----------------------------------------------------------------
+# Select Freon (Refrigerant) part for vehicle
+-- BackOffice Query
+select Product_Id, Group_Id
+from ENACTOR.PRODUCTPRODUCTGROUPS
+where Group_Id = 'FREON_PROMPT'
+order by Product_Id
+
+Ensure the Freon Part is Loaded in JIMAST
+-- AS/400 Query
+SELECT IMLINE, IMITEM, IMUSER, IMQOH, IMWARR, IMPOSD
+FROM JBRDATA.JIMAST
+WHERE IMLINE = :lineCode
+AND IMITEM = :itemNumber
+--------------------------------------------------------
+# Flight Restricted Items (air restricted)
+--sysdev
+SELECT d.line,d.item,wms_qoh
+FROM oppdata.dwwmast d
+JOIN dwdatatst.oppitem o
+ON d.line = o.line AND d.item = o.item
+WHERE whs = 18 AND wms_qoh = 0 
+AND FLIGHT_RESTRICTED = 'Y' AND HAZMAT = 'Y'
+AND (d.line,d.item) NOT IN
+(SELECT line,item# FROM oppdata.dwsmast
+WHERE str# = :store# AND qoh > 0)
+
+# Store hours (schedule) - Store hours can also be store in BackOffice and Sysdev2
+--AS400
+SELECT effdate,closemon,closetue,closewed,closethr,closefri 
+FROM jbrdata.strrules
+WHERE effdate < CURRENT_DATE
+ORDER BY effdate DESC
+
+#GreenScreen
+Rq strrules
+
+Store hours in Backoffice - Whatever information is in the Backoffice, will display on the Thermal Receipt
+Store hours in Sysdev2 - Whatever store hours is on Corporate, can be changed if transmit, and other 
+corporate services needs to run. 
+	- Change hours on corporate and user can test Corporate services which are allocated to run at certain hours
+-------------------------------------------------------------------
+
++++++++++++++QUERY TO EXPAND TABLES IN VB VISUALIZER (THE QUICKER WAY)++++++++++++++++
+Select SYSTEM_TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, COLUMN_TEXT 
+From QSYS2.SYSCOLUMNS
+Where TABLE_NAME = Upper(:Table)

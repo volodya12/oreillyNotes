@@ -1,0 +1,61 @@
+-- QA Notes - Fix Pype Seq. --
+
+# If NO INVOICES ending up in SYSDEV2 - Pype could be broken or Store changed  and invoices sent to different box and Sequence is out of order
+	- Sysdev - Check Sequence number (must match with AS400 Box)
+	Select * from pypetest.strseq
+	where ssstr# = 4043
+	
+	- On TestBox AS400 - Telnet into System (10.xx.xx.1)
+		- Dspdtaara jposndseq
+			§ Value: <example: 6226809 - this should match sysdev (query)
+
+	1. -- Sysdev2 - To Find Stores in Error (if Pype broken)
+select sts.store_number, sts.reference_name, sts.stat from
+(select a.store_number, a.reference_name,
+(case
+  when st.status is null then 'GOOD'
+  else st.status
+end) as stat
+from gpdata.store a
+left join
+(select * from pypetest.procmon b
+where (b.application, b.store_number, b.status_timestamp) in
+(select application, store_number, max(status_timestamp) from pypetest.procmon
+group by application, store_number)) as st
+on a.store_number = st.store_number and st.application = 'PIPE_ON_PYPE'
+where a.store_number > 99)as sts
+where sts.stat <> 'GOOD'
+order by sts.store_number
+
+	2. --Sysdev2 (To see the files in error for a particular store, use this query:)
+SELECT * FROM pypetest.pipeerr
+where store_number = :storeNumber
+order by file_name
+
+Results: 
+pype_004047_0889769_0889789.CSV  - ignore '0'
+pype_004047_0889790_0889795.CSV 
+pype_004047_0889817_0889825.CSV 
+pype_004047_0889826_0889834.CSV 
+
+The first file in the list will be the sequence we are looking for.
+
+	3. -- Sysdev2 (Use the following query to update the sequence:)
+update pypetest.strseq
+set ssseq# = 889768
+where ssstr# = :storeNumber
+
+<Ssseq#> = the sequence number from the first file in STEP 2 query - 1
+<Ssstr#> - Store number
+
+	- May want to repeat several times (reRunning step 3 - updating <ssseq#> until all records from Step 3 - pypetest.pipeerr Are Gone. 
+
+	4. Verify Sequence number from this query with AS400
+	--sysdev
+	Select * from pypetest.strseq where ssstr# = :storeNumber
+	
+	With GreenScreen
+	Dspdtaara jposndseq
+
+	
+

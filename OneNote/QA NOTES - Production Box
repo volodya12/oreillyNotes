@@ -1,0 +1,12 @@
+-- QA Notes - Production Box --
+
+Command for Current Version:
+	getVersions.sh
+
+	- Production box would always have the One Version down from Current version
+	- LOOK for POSREST version
+		EX: Current version being Tested is Enactor/Posrest 2.11.0
+			Production Version would be Enactor/Posrest 2.10.7 (one version down)
+#If want to connect to ACTUAL production box
+	- Store 255 - SSH only Private Session (.254)
+	- Do NOT run any Invoices, it may mess up their inventory 

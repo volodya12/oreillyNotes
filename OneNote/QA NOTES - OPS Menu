@@ -1,0 +1,147 @@
+-- QA Notes - OPS Menu --
+
+Purchase Inquiry - Customer Search  /Cancel/Back
+			§ Customer# (professional)/ Store#/ Invoice#/ Line & Item/ Date Range
+			§ Customer Search - Phone# (Retail)/ Orewards#/ First name/ Last Name/ Email/ Professional#
+			§ Search Invoices/Customers/Update Customers info
+Search transactions or Items based on Customer (Invoice)
+	- Finds Sales/History of Customer purchase or Item Purchase
+	- Enter Professional customer and It will pull up all items sold to that customer
+	- Enter Invoice Number
+	- Enter Line and Item number
+	
+Recall Transaction - Saved transaction or Items that has not been purchased 
+	- When item is entered on screen with or without customer, and customer don't have money yet or decides to purchase it later, Hit "Omit/Save" button and click "Save Transaction"
+	- More ideal way, Enter Customer information first in "Customer Inquiry & Maintenance" 
+	And then enter Item number into VR. After, transaction can be saved under specific customer name. 
+Transaction Recall - Returns - Return with Store Number and Invoice Number
+
+Adding Card on File - Management Function -> Customer Maintenance -> Enter Customer Number -> Card On File Maintenance -> Add
+
+Payment on Account - Customer Inquiry & Maintenance -> Payment on Account
+Order Maintenance - Is a window where all OPP - Item Sourcing - 
+Research/Other -  Stock Transfer
+	Stock Transfer allows TM to create stock transfer from one store to another store. It’s a type of transaction. 
+	Transaction is requesting an inventory from store and receiving the inventory at the other store. 
+	The items stock transferred to another store will be received into their computer and added to on hand, the communications must be up. At the same time, the Hub Route is created. 
+Management Functions -> Item Costing
+		- Item Costing is when ITEM does not have price (not costed)(Item entered in VR), TM has to source it - 
+Item Sourcing - and ask Customer Service for price. In TeamNet (special website - Tyler R knows), responds with information back to TM via POS in "Order Maintenance" and Confirms it, Customer Pays for it. 
+
+Returns -> New Return is a also known as Smart Return
+Gift Card Balance - Research/Other -> Gift Card Balance Inquiry
+Gift Card Reload - Research/Other -> Issue Gift Card
+
+Research/Other - Contains Change Tender, and bunch more
+Petty Cash In/Out - Locates in Terminal Cash Management
+Change Tender - Click "Research/Other" -> Click "Change Tender" -> Key: <Invoice Number> enter ->Click "Select" -> will display "Tender Selection" 
+
+			 POS Work-Flow
+When Professional Customer used - Finish Invoice - Displays "Change Additional Information"
+                  (Check Box for Delivery, Ship Via, Special Instructions, Purchase Order #)
+	- If Delivery is checked
+		- Ship to Addresses field activated with existing addresses or need to add one
+		- Buttons activated 
+			§  Change default Ship-To Address
+			§ Add New Ship-To Address
+			§ Update Ship-To Address
+			§ Delete Ship-To Address
+			§ Ship Via Field - Deactivated
+	- If No Delivery box Checked - Press Continue - Tender Selection Screen
+	- Sale (Card on File) - Make sale as Full payment - Click "Card on File" - Select Full amount and Press Enter - Select Card type and Click OK - Sign on CCT 
+
+Selecting Retail Customer:
+	- Click "Customer Inquiry & Maintenance"->Display "Professional Customer Inquiry"->Click "Retail Search"
+	Displays "Retail Customer Search"->Enter <Phone#>->Continue->Displays List of Customers->Select Customer and Click Continue->Displays "Customer Inquiry & Maintenance"->Click "Invoice"->Back to VR
+When Retail Customer used - 
+Finish Invoice - Displays "Retail Customer Search" 
+	• Enter Phone # - Press Continue - Displays "Retail Customer Search" with Customer LIST to choose from.
+               (Update Customer, Add Customer)
+	- If Click Update Customer
+			§ O'Rewards Card #
+			§ First Name/Last Name/Email
+			§ Address 1/Address 2
+			§ ZipCode
+	• No Phone Entered - Press Continue - Displays "No Customer Selected" prompt - Click "Continue Without Customer"
+		- Displays "Tender Selection"  with Payment options
+	- If Click Add Customer
+			§ All Same fields present as if user Updating Customer Besides Phone # - already filled
+Continue with Selected Customer - Displays "Enroll Customer as O'Rewards" pop-up - Continue without Enrolling" - Displays "Tender Selection" window
+
+Tender Selection Screen
+Cash/Credit, Debit & Fleet/Check/Gift Card/Coupon
+	- "Cancel" - Displays "Main VR
+	- "Change Additional Information" - Displays "Change additional Information" -Ship via, Purchase Order, Special Instructions
+	- "Track this Purchase" - Displays "Retail Customer Search"
+	- "Backup & Recovery" - Displays "Enter Manual Invoice number" 
+
+Returns - 
+-New Return - Displays "Customer Search"
+		- Enter Phone #, O'Reward Customer, Name/Last name, Or Professional Number
+		- Displays "Customer Search" (Select customer, Click Continue) -> Displays "Returns" (Enter Line/Item) -> Click "Return Item" -> Display "Returns" (Title: Please select a Return type… STATUS = "Not Found Locally" or "Ready")
+		- ->Click "OK"->Display "Item Not Found" ->Click "Return Without Receipt" -> Status changed to "Return Without Receipt"
+		- Click "Continue" ->Displays "Manager Approval" ->Click "OK"-> Displays "Sales or Return Invoice" -> Click "Finish Invoice"
+-Warranty Return - Displays "Customer Search"
+-Core Return - Displays "Customer Search"
+-Warranty Replacement - Displays "Customer Search"
+-Transaction Recall - Displays "Transaction Search"
+	- Enter "Original Store Number" and "Original Invoice Number" -> Click "Search" -> Displayed "Transaction Search" with Invoice information
+	- Click Warranty Return -> Item is crossed off -> Click "OK" -> Displays "Sales or Return Invoice" with Item
+	- Click New Return -> Select which Items to Return (if its multiple items on invoice) -> Click New Return -> Item Crossed off - "OK" -> Main VR with "New Return" displays -> Finish invoice (same process as Sale)
+		- If Sale invoice had Customer Entered -> User Navigates "Tender Selection" -> Select Full Price Amount -> Return Completes (Back to Main VR)
+		- If No Customer were Entered -> Displays "Retail Customer Search" -> Enter Phone# ->Select Customer and Continue -> Continue Without Enrolling pop-up -> Displays "Transaction Search" -> Select Full Price amount -> Return Completes (Back to Main VR)
+			§ IF Return is Large amount (Pro Customer only), After "Finish Invoice"- new window shows "Approval Required" with Description "Large Refund" -> Click "OK" (Currently set to 45.00)
+			User will be directed to "Change Additional Information" window (Enter PO Number if needed)
+			§ If Return as Cash - Click "$##.##" Full Amount" -> Transaction Completes
+			§ If Return as Card - Click "Return To Card" button -> Refund <amount> Confirmation screen -> Click "Continue" -> Transaction Completes
+			§ Or Button "Override Entire Transaction" -> Cash/Credit, Debit & Fleet, Gift Card
+	- Click "Warranty Replacement" - Click OK - Back to VR - Price will become "0" - Finish Invoice - If ProCust- will display "Change Additional Information" - Continue - Click "Print Invoice"
+	- Billing Error Correction - > Enter Counter Number
+	- Recycled Battery Return - Core Battery Item Return displayed on VR -> Click Continue
+	- Return to Card - Click "Return to Card" - Displays Confirmation screen of Automatic Refund back to same card - Click "Continue"
+
+CCT Swipe Card
+Select "Credit, Debit & Fleet" -> Displays additional tender optons
+Select the full amount to be tendered -> Click <##.##> full amount -> A Confirmation prompt is displayed on the CCT
+Confirm the amount on CCT -> Press the green button on the CCT -> The "Insert/Swipe Card" screen is displayed on CCT
+Swipe the Credit Card -> Swipe Card -> Signature prompt is displayed on the CCT
+Enter Signature -> Draw an "X" across the signature box then Press green Button on CCT -> Transaction completes and invoice is printed
+
+              FCO work flow
+Link to FCO website 
+https://www-test-1.firstcallonline.com/FirstCallOnline/
+
+Test Case for FCO  PTEST-138295
+Use Groups for Creating Order: 
+	- Navigation - Place FCO Order
+	- Online store - Customer Data Information (optional)
+	- Navigation - Log-In to O'Reilly Parts System (OPS)
+	- Navigation - Select Order
+	- Navigation - OPS - Complete Online Order
+	- Data Verification - Special instructions
+	- Data Verification - Purchase Order
+	- Navigation info - Tender Selection - Cash
+	
+	FREON Work Flow
+Enter Freon Part (FRE R12-12) - Enter Customer Number
+	- Finish Invoice -> Displays "Refrigerant Purchase Authorization" prompt -> Must Enter
+	-  <Certified Purchase's Full name>
+	- <Tech Certification Card#>
+	- <Tech Certification Card Date (YYYY-MM-DD)> 
+	- Click OK -> Displays "Approved Required" - Click "OK"
+	- If Retail Customer (enter phone#) IF Pro Cust (Change Additional Information)
+
+# Tax Exemption
+Enter Retail Customer, Enter Item ->Click "Discounts/Overrides"->Select "Activate Tax Exemption"->Key"Test"->Finish Invoice->Continue without Enrolling->Cash->Displays "Tender Selection" Non-Taxable Cash Sale Information->Key: Tax ID, Organization, Name, Zip, Address1,2, Country, Phone-> Click "OK"->Displays "Tender Selection"-> Enter full amount <$##.##>-> Back to Sales or Return Invoice
+
+# Reports -> # 7 from main menu
+1. Daily Reports -> Displays "Date" column with Days of the week listed -> Click "All Reports"
+2. Inventory Reports 
+	1. Daily Returns Packet  -> Click "All Reports"
+	2. Stock Lift Items Not Deleted -> Click "All Reports"
+	3. Stock Lift Items Deleted - > Click "All Reports"
+3. Other
+	1. Quotes/Omitted Ticket Report - Full -> Click on them, Days of Week will display -Click "View"
+	2. Non-Cash Refund Audit ->  Click on them, Days of Week will display - Click "View"
+	3. Sales By Hour Report - Click "View"
+

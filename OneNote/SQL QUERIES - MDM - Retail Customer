@@ -1,0 +1,128 @@
+-- SQL Queries - MDM Retail Customer --
+
+RQAT-8093 - Epic
+ALL MDM Queries: description ~ RQAT8093 AND "qa test case type" = Query 
+
+PTEST-146387 -  Select Non-O'Rewards Retail Customer
+PTEST-146349 - Select O'Rewards Customer (ret_acct_nmbr=RCN, Acct_nmbr =Oreward Card#=O'Rewards)
+PTEST-159848 - Orewards Retail Customer with Email
+PTEST-152576 - Find Retail Customer Information by RCN - Retail Customer Number
+
+PTEST-146314 - Finds Retail Customer Information by Phone - Input: frst_nm, lst_nm, ret_acct.acct_nmbr (Get RCN - Retail Customer Number)
+PTEST-153181 - Finds Retail Customer by Name
+PTEST-154318 - Finds Retail Customer by Address
+PTEST-146430 - Select Random Unused Phone Number from Sysdev and MDM
+PTEST-158788 - Delete Store Cache Data MDM
+PTEST-150603 - Select Store Cache Data MDM
+PTEST-146479 - Select Random UnUsed O'Rewards Number (Range: L, Qty: 1)
+PTEST-147580 - Select Random ZipCode/City/State on AS400
+PTEST-154738 - Select Retail Customer that has multiple phone numbers
+PTEST-155003  Select Retail Customer With Multiple Addresses
+PTEST-146314 - MDM Query - Verify MDM Customer
+ADD: phn_num, loy_acct.acct_nmbr loy_acct_nmbr, frst_nm, lst_nm, elec_addr, addr_ln_1, addr_ln_2, city, st_prov_cd, pstl_cd, addr.cntry_cd, ret_acct.acct_nmbr ret_acct_nmbr
+Output: Phone#, Loyal Acct Num, First, Last, email, address 1 and 2, City, State, Zip, Country, Retail Cust Num. 
+
+# Full JSON Invoicing
+-- RetailData
+Select jsonb_pretty(invoice_data) from invoice inv 
+WHERE inv.invoice_data#>>'{legacyId, invoiceNumber}' = :Invoice 
+
+# RetailCustomer with Multiple Addresses: frst_nm, lst_nm, addr_ln_1, addr_ln_2, city, st_prov_cd, pstl_cd"
+
+# Input for MDM:
+phn_num, frst_nm, lst_nm, elec_addr, addr_ln_1, addr_ln_2, city, st_prov_cd, pstl_cd, addr.cntry_cd, ret_acct.acct_nmbr ret_acct_nmbr, loy_acct.acct_nmbr
+Output: Phone#, First, Last, Email, Address 1,2, City, State, Zip, Country, Retail Cust Num, Account Num
+
+#Input fields for Verification - MDM - Retail Customer By Phone
+ret_acct.acct_nmbr ret_acct_nmbr, loy_acct.acct_nmbr loy_acct_nmbr, frst_nm, mdl_nm, lst_nm, addr_ln_1, addr_ln_2, pstl_cd, addr.cntry_cd
+Output: Retail Cust Num, Loyal Acct Num, First, Middle, Last, Address 1,2, Zip, Country
+
+	- Rewards number is typically 9 numbers, less then RCN - ret_acct_numbr. 
+	- Tip: if "cntry_cd" wont' work, ADD "addr.cntry_cd"
+
+#Find Warranty Part
+
+-- AS400
+select <Columns>
+from jbrdata.jimast i
+inner join jbrdata.jimwar w
+on i.imwarr = w.wrcode
+where w.wrcovper >= wrfrrp and w.wrcovper > 0
+and not exists
+(SELECT * FROM jbrdata.jbatry b
+WHERE i.imline = b.jbline
+AND i.implcd = b.jbplcd
+AND i.imsubc = b.jbsubc)
+order by rand()
+fetch first 5 rows only
+
+# Store Cache - Customer info Located on Store Side
+-- Retaildata
+select id, description, type, 
+data -> 'firstName' ->> 0 as firstname,
+data -> 'middleName' ->> 0 as middlename,
+data -> 'lastName' ->> 0 as lastname,
+data -> 'emails' as email,
+data -> 'mdmId' as mdmid,
+data -> 'phoneNumbers' as phone,
+data -> 'customerNumbers' as customernumber,
+data -> 'cardNumbers' as cardnumber,
+data -> 'addresses' -> 0 ->> 'line1' as line1,
+data -> 'addresses' -> 0 ->> 'line2' as line2,
+data -> 'addresses' -> 0 ->> 'city' as city,
+data -> 'addresses' -> 0 ->> 'state' as state,
+data -> 'addresses' -> 0 ->> 'zipCode' as zipcode,
+data -> 'addresses' -> 0 ->> 'countryCode' as countrycode
+from public.customers
+where data -> 'phoneNumbers' ->> 0 = cast(:phoneNumber as varchar(10))
+
+# Unused Retail Customers
+-- mdm
+SELECT randPhn
+FROM (
+        SELECT area_code||prefix||TRUNC(DBMS_RANDOM.VALUE(1000,9999)) AS randPhn
+        FROM orsadmin3.c_s_lkp_fone
+        ORDER BY dbms_random.value
+        FETCH FIRST 100 ROWS ONLY
+) seed
+LEFT JOIN orsadmin3.c_b_phn phn
+ON seed.randPhn = phn.phn_num
+WHERE rowid_object IS NULL
+FETCH FIRST :QUANTITY ROWS ONLY
+
+# MDM Query - Select Random Retail Phone Number
+SELECT phn_num, frst_nm, lst_nm
+FROM
+(
+        SELECT rowid_object,pty_fk,acct_fk
+        FROM orsadmin3.c_b_pty_acct
+        SAMPLE BLOCK(1)
+        WHERE pty_acct_tp_cd = 'R'
+        AND hub_state_ind = 1
+        FETCH FIRST 200 ROWS ONLY
+) pty_acct
+LEFT JOIN orsadmin3.c_b_pty_acct loy_pty_acct
+ON pty_acct.pty_fk = loy_pty_acct.pty_fk AND loy_pty_acct.pty_acct_tp_cd = 'L'
+JOIN orsadmin3.c_b_acct ret_acct
+ON pty_acct.acct_fk = ret_acct.rowid_object AND ret_acct.acct_tp_cd = 'R'
+JOIN orsadmin3.c_b_pty pty
+ON pty_acct.pty_fk = pty.rowid_object AND pty.hub_state_ind = 1
+LEFT JOIN orsadmin3.c_b_pty_phn pty_phn
+ON pty.rowid_object = pty_phn.pty_fk AND pty_phn.hub_state_ind = 1
+LEFT JOIN orsadmin3.c_b_phn phn
+ON pty_phn.phn_fk = phn.rowid_object AND phn.hub_state_ind = 1
+LEFT JOIN orsadmin3.c_b_pty_addr pty_addr
+ON pty.rowid_object = pty_addr.pty_fk AND pty_addr.hub_state_ind = 1
+LEFT JOIN orsadmin3.c_b_addr addr
+ON pty_addr.addr_fk = addr.rowid_object AND addr.hub_state_ind = 1
+LEFT JOIN orsadmin3.c_b_pty_elec_addr pty_elec_addr
+ON pty.rowid_object = pty_elec_addr.pty_fk AND pty_elec_addr.hub_state_ind = 1
+LEFT JOIN orsadmin3.c_b_elec_addr elec_addr
+ON pty_elec_addr.elec_addr_fk = elec_addr.rowid_object AND elec_addr.hub_state_ind = 1
+WHERE loy_pty_acct.rowid_object IS NULL
+FETCH FIRST ROW ONLY
+
+# Find random address https://www.bestrandoms.com/random-address - for MDM Testing
+	- MDM database does not accept unknown addresses, it must be valid address
+
+

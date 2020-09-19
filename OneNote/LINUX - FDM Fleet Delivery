@@ -1,0 +1,17 @@
+LINUX - FDM/Fleet Delivery 
+
+# Fleet.Delivery.Management (DFM)or (FDM) = a special barcode that includes on Printing Receipt page for tracking the order. 
+
+
+#Check Whether DFM is Active or Not (True or False) - More about FDM in QA Notes - Item Costed
+grep 'fleet.delivery.management' /opt/tomcat8/lib/properties/config.properties
+
+#Set DFM to "True" ------ (call out in the chat)
+1. sudo sed -i -e 's/fleet.delivery.management=false/fleet.delivery.management=true/g' /opt/tomcat8/lib/properties/config.properties
+2. TomcatOreilly must be killed (restarted) to take effect. Pretty much you restarting the server  to take effect with DFM Enabled. 
+3. Initiate Killing Tomcat:
+sudo su -c "/usr/local/oreilly/bin/stopPointOfSale.sh; /usr/local/oreilly/bin/stopOreillyTomcat.sh"
+4. The "Heartbeats" program will restart in few minutes. 
+
+#Setting Fleet Delivery back to FALSE - Kill TomcatOreilly to take effect. 
+5. sudo sed -i -e 's/fleet.delivery.management=<current value>/fleet.delivery.management=<original value>/g' /opt/tomcat8/lib/properties/config.properties

@@ -1,0 +1,170 @@
+-- QA Notes - Legacy Pype --
+
+Pype = Linux Server
+Pipe = AS400
+
+#Postgres is (Enactor) (Store)
+
+#"Retail" is a                Database (Store)
+#csa-t-pg-retail-1 is a Database Server (Corp to Store - Pype)
+#Postgres - "Retaildata" - Database (Store to Corp - Pype)
+#10.99.90.254 is a Database Server (Store to Corp - Pype)
+
+Pype writes to Pipe
+
+# SQL Query to run Pype Messages
+--Corp to Store
+Select type, destination, origin, created_ts, batch, modified_ts
+from pype.pype_messages 
+where created_ts > '2020-03-02'  
+and destination = :TestBox
+order by created_ts desc
+
+-- From Store to Corp
+--<testbox> RetailData
+Select priority, type, destination, created_ts, modified_ts status, batch 
+from pype_messages where created_ts > '2020-03-02'  
+and type = :MessageType
+order by created_ts desc
+
+Legacy Pipe - Invoices being sent from Store to Corporate
+Promotions Call Home Process - Corporate sends promotions to Store, later Store (calls home to Corporate for validation) if those are the right promotions and if they still active
+
+Batch_config = contains different types of Events that are being transmitted from and to Store
+Catalogsignal_pype_messages - includes invoices from Catalog, SOLR, RCAT
+Oreillyevent_pype_messages - includes most of the OPS events (clicks) done in OPS 
+Pype_messages - includes Invoice, LegacyPipe and other types of invoices (FCO, Online) being send from Test Boxes to Corporate. 
+	- Along with invoice information
+	- It takes few seconds to appear in Pype_messages
+Pype_processor_failures - contains messages that did not make it to Store or Corporate, failed to do so.                                                                                                                              =               Something went wrong within a pype or system that prevents messages being sent to Corporate
+
+Regression - when to run - may take up few hours - no disruptive testing during
+	• Run Regression after Patch has been applied to make sure no CODE has been broken
+	• Start Testing Pype
+	• Run Another Regression after testing has been done (if any bugs has been submitted, and code changed)
+	• If no bugs are found, regression may not need to be ran (cuz no code has been changed)
+	• Check Legacy Pype (invoices) make sure they are being sent from Stores to Corporate and Responses are being made. 
+
+Pype 3.7
+
+Search for "Pype Documentation" for more details
+
+https://confluence.oreillyauto.com/display/RetailProductionSupportTeam/ifsPype+at+store+-+John%27s+take
+	• sprint = 2413
+	• Pype Messages greater than 16mb will not be accepted thru pype
+	• Failed accepted more than 16mb messages will be recorded in Log
+	- Greg will make a Curl command (linux command) for me to test that Log, to see the Failed_error_messages greater than 16mb logged
+	- Less /usr/local/oreilly/tomcat/logs/storePypeService.log
+	• Only
+			- Batch_config
+			- Pype_messages
+			- Pype_processor_failure
+	• Will be moved to New Posgres .war file called "StorePypeService.war"
+	
+Test: (prod) - Pricing 1.0.7 must be installed first
+	• Create Project page
+				□ Add/Create Online Orders
+				□ Run Regression after patch installed
+				□ See Pype_messages during Regression, to see if its going thru
+		
+	• Messages over 16mb, Pype rejects them, it records in Error log - Ask Greg to Create 16mb message and Sent, ask for curl command to check logs
+	• Keep on EYE on "OreillyEvents_pype_messages" make sure they coming thru, It will Automatically     auto-populate
+Pype_messages:
+	• bopisRequest - online order being made (Ability to have Outage window) - need to be tested (SQL query at bottom)
+	• bopisResponse - online order (BOPIS),  responded to the online order via OPS
+	• CustomerUpdate - 
+	it's pro customers corp to store
+	it's for when they make changes to po masks
+	po masks are changed in fco
+	and when they make changes to those, it sends the new values to stores using pype
+	• salesOrder - FCO order submitted
+	• salesOrderAction - TM responds to FCO order 
+	• OreillyEvents - being triggered automatically as user interacts with POS
+	• Invoice/LegacyPipe - any invoice been made on VR
+	• hubRoutineMessage - Corporate sends Hub Routes to a hub Stores, that triggers the pype_message
+		- curl -X POST https://storeservices-test.oreillyauto.com/HubRoutingCorp/sendUpdatesForStore/<store number>
+				□ Where <store Number> is store (testbox connected to Hub Store)
+				□ Zach Jones
+	• entsearch_health_note - If SOLR is not functioning well, broken, or Items aren't pulled up, it sends a             message (health_note) to SOLR Team stating SOLR is in bad health
+			- It also sends out health_note when its in good state, like, when indexing is done.
+			- Messages surfaces in an internal app SORL team uses that will eventually send emails to the team for certain things
+			- That internal app reads a solr index where pype sends them
+			- Daniel Hollingsworth
+	• catalogSignal - tracks events from enduser (searching, clicking on search results, etc)
+			- curl -H "Content-Type: application/json" -d '{"sessionId":"2ede0435-572a-4b4a-a400-6472dc925746","clientPlatform":"TEST","storeNumber":0,"userId":"qa","counterNumber":123456}' 'http://localhost:38080/catalog-search/trackingService/trackCartAdd/ScannedItem?line=FOO&iterm-nbr=123'
+			- Daniel Hollingsworth
+	• oppOrderEvent - Create OPP - Item Sourcing - Special Order transaction
+			- Zach Jones
+	• oppMQFailure - if user placed an order in SpecialOrderUI and instead of sending the order json, they just sent down an empty string - which is nothing. 
+			- This is how it looks like: 
+			{"reason":"Empty payload.","storeNumber":269,"occurredDateString":"2020-02-27 09:20:02"}
+			- Command to Simulate this process: 
+			curl -H "Content-Type: application/json" -X POST -d "" localhost:18080/OPPRetailSupport/message
+	• transactionActivity - triggers in pype everytime the /sendToCorporate Method is called as part of      DayEnd process - which sends Omitted ticket data to corporate
+		- Omit Invoices -> Change date to 90 Days old, Run DayEnd -> Pype_messages
+		-  curl -i -s -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d '{"origin":"2891","destination":"corp","priority":"SECOND", "type":"transactionActivity","body":"[{\"table_name\": \"OMTRANDTL\", \"id\": 11913, \"tx_id\": 8952, \"sequence\": 1, \"line\": \"WIX\", \"item\": \"51551\", \"quantity\": 1, \"ext_price\": 10.99, \"day_end_qty_on_hand\": 2, \"unit_of_measure\": \"EA\", \"print_flag\": null, \"store_number\": 259, \"updated_ts\": 1582895789000}]"}' http://localhost:18080/storePypeService/save
+	• All Pricing/Promotions Pype messages - Coordinate with Miles Grimes and He'll distribute each task message among his team. 
+	• Regression will include - customerUpdates, oppOrderEvents,Catalog- if its latest version, ItemUpdates - Pricing wise 
+	• itemUpdate - 
+			- ITEMUPDATE job I am familiar with is called by merchandise when they are in the process of loading an item.  It updates the CNDRSTR (CARB) file on Datawhse and a trigger fires off an update to the CNDRSTRCHG file, which is used to write pype updates to the stores. 
+			- Billy Henry helped me out. It has to do with CARB
+			- https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/CARB+Messaging+Technical+Specifications+and+Notes
+	• rewardsCustomerAction - parts of ISM Retail project. - Not part of Pype 3.7
+		- Could be When Customer enrolls into O'Rewards
+		- Could be When O'Rewards Customer makes invoice purchase
+		- Could be When O'Rewards Customer is being Updated
+	• Pype_unregister_store - it is unused at the moment
+		- Could be When new store has been created and it needs transmit of all Data from Corporate
+	• Verify messages in 
+				□ Batch_config
+				□ Pype_messages
+				□ Pype_processor_failure
+	• Verify Invoices from
+				□ (BOPIS) Online - Ship to Home/Ship to Store     YETI?
+				□ FCO - Delivery/Pick up
+				□ Catalog/SOLR/Category
+				□ Any POS Invoices - made thru Regression
+	• Will need to config the Maintenances window - when Pype locks and No messages are being sent over to pype. 
+		- Configure Maintenance window (outage) for about 5-10 minutes, 
+		- Send invoices. 
+		- Unlock the pype, See the processors starts back up
+		- When time is changed in Outage window, in pype_messages, the batch column will show nothing
+	And notice created_ts will show timing and modified_ts will show timing. Pay attention to that. 
+	Only bopisRequest- the only one that has Outrage window (Outage window)
+	
+	
+	• Promotions PhoneHome process (Miles Grimes)
+				□ PhoneHome call - Corporate sends Promotions flags (PhomeHome) to Store via Transmit and When store open, PhoneHome will see those flags and update those promotions on Store Side. 
+				□ Daily, a heartbeat trigger will cause the receiver war to collect all unprocessed promotions from the promotion staging tables set by Corporate. Once collected, the information will be put into a List<Promotion>
+				□ In Pype_messages, Under "types" will show us "PromotionAudit" and "Promotion"
+				□ Paula Palmer helped on Promotions and promotionAudit
+				□ Max Green simulated "promotions" thru pype
+				□ NPCWEBSRV-3555 - Devs assigned to individual Pricing Task
+				□ Confluence on Promotions to Store https://confluence.oreillyauto.com/display/ISPricing/Promotions+Store+Processing+Design
+				□ https://confluence.oreillyauto.com/display/ISPricing/Promotions+Verification+Design
+				
+	- Steps to simulate: 
+			- Run Curl command
+				□  curl http://localhost:18080/posrest/promo/activeBO &> /dev/null
+			- Let Miles Grimes know that you ran command and have him work the magic on Corporate side
+			- Once he's done, messages will come thru in Pype_messages
+			- Typically, PhoneHome runs every hours, but to speed up that process, Miles is helping me with that. 
+			- If Miles Grimes is not available to Simulate (create) Promotions on corporate side and send message thru Pype, then Max Green, or Karen Smith is back up. 
+	• This is what I've been asking people who are involved or some partake in PYPE process
+			- Do you know what "catalogSignal" and "entsearch_health_note" is, in Pype?
+			- Is there a way we can simulate that process to trigger the pype_messaging?
+			- Maybe run curl command that would simulate that 
+			
+
+	•  bopisRequece (store to Corp) to specific timing for Outrage (SQL)
+
+UPDATE batch_config SET json = '{"messageType":"bopisRequest","batchSize":10,"endPointUrls":["http://linux:18080/posrest/PickupInStoreService/endpoint"],"keepRunning":true,"pollingInterval":1,"outageWindows":[{"dayOfTheWeek":null,"startTime":"23:00","durationMinutes":60},{"dayOfTheWeek":null,"startTime":"0:00","durationMinutes":60},{"dayOfTheWeek":null,"startTime":"1:00","durationMinutes":60},{"dayOfTheWeek":null,"startTime":"2:00","durationMinutes":60},{"dayOfTheWeek":null,"startTime":"3:00","durationMinutes":60},{"dayOfTheWeek":null,"startTime":"4:00","durationMinutes":60}]}', modified_ts = NOW() WHERE message_type = 'bopisRequest' AND batch_type = 'PROCESSOR';
+
+Change 23:00 to your timing
+Change 60 to duration as much as needed
+
+Closing Project
+Regression Analysis - All "Need Functional Review" Test Cases need to be reviewed and approved or bugged
+All Bugs must be Remediated and Closed
+An Approval email must be send to 
+

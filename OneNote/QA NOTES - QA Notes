@@ -1,0 +1,1119 @@
+-- QA Notes - QA Notes --
+
+-- QA Notes --
+
+# Integration Testing - Testing involves Test Cases merged from other projects (not all Test Cases), to make sure 
+old/recent functionalities that was added to previous project and been signed off to production are still working in 
+New Release. 
+
+# Sanity Check - Rational (good/expected/reasonable) behavior. Nothing is broken, working as expected
+# USER ACCEPTANCE TESTING (UAT) Known as (Beta Testing, End User Testing) - Last Phase of Testing. Testers test software to make sure it can handle
+required tasks in Real World Scenerios. (Most final and critical procedure before software is rolled out to market)
+
+#SMOKE TESTING = Done before Regression Testing. It aims to ensure that MOST important functions are working. The result of this testing 
+is to decide if a build is stable enough to proceed with further testing. 
+
+# REGRESSION TESTING - making sure that older programming still works with new changes
+	-This Testing makes sure that product works fine as previously with newly added features/changed features
+	- we need more than smoke. We're using regression as a means to generate transactions. 
+	We need to generate invoice messages, and we need to generate events. At a bare minimum, we need to run bulk. 
+	- For PYPE testing - Smoke and Bulk Testing will be just fine (Bulk - is portion of regression)
+#To set Price Override Price restriction for particular customer, SQL query is in "SQL Queris" tab
+	- Flag is set in the POSDATA db, Table: "customer_flag_assignment"
+
+# Check with Typewriters, BSA, if there is only one Data Table is used or SEVERAL Tables to pull Data Information from
+#Items in history are being deleted after 90 days by dayend
+
+# NO TAX show on Deferred Core Customer
+# Approval Required prompt will display when Large Return is processing, Price Override, Tax Exemption and Refrigerant (Freon) Purchase
+# Autocosted is done by doing Item Sourcing with Item that don't have pricing yet (Catalog -> Item sourcing -> save invoice with Retail Customer)
+	Manual costing is done thru Management Function -> Item Costing button
+	Perform DayEnd to take effect. Autocosting (auto costing) should not happen for Items not in Item_master
+# Billing the customer (QOH will go 0 -> -1) BUT Stock transfer from another location (QOH will go -1 -> 0)
+
+# Freon Items (FRE)
+	Will give prompt when buying freon item - License information prompt to enter <Name>, <Licence #>, and 
+	<exporation date>, after prompt, it will give another prompt "Approval required" 
+	In JSON, it would be under; "freonSaleInfo"
+# Customer Type is in "Customer Type" tab
+# Customer Load Request - "No customer found" error
+-- Sysdev2
+Select * from arsys1.cmaster where ccust# = <CustomerNumber>
+	- If customer  not showing, then that's why you get that error. 
+	- The customers loaded on the test boxes did not come from sysdev2. they have been copied from box to box
+	- CRECCD - If Field is NOT blank, it will NOT Load customer
+	- The Customer Load is performed thru "Search Corporate" button  
+
+# Load customer (loadcustomer, add customer, add user, backoffice, ldap, webtesting, passwordload)
+To load customer onto Box - must know store number box associated with
+1. Look into Wikilink- under "Adding manager access to user" - Follow exact steps - BEST METHOD
+2. Second method is Go into Backoffice from different box where that user ID is present, Copy all values and 
+Add that user to Your box, (with no user), and paste the Values for that box - Backoffice
+3. Third method, Automation ppl have process of loading customer, ask them for help
+
+#Transmit
+# PSP - Production System Patch - In Production - Runs after DayEnd, and PSP kicks in around 1am to install all the patches
+that are in queue, normally patches installed in Corporate would transmit to Stores, and Installs. 
+ - Transmit usually runs in the middle of night. Ozark1 controlling transmit - it sending the files to Stores. 
+	- Transmit can run while store is selling parts (open) but not recommended, will cause lockups, 
+		- Files/Programs that are included in Transmit:
+			§ DayEnd
+			§ JISRGZC (reorganize files)
+			§ Releasing installs/Patches
+			§ Any process that does massive updates to any files
+
+# Employee account - (Teammember, team member, workers)
+TM account is same as professional account, they stored in same table (jcust). Thought, 
+they have flag set for CMEMPC = Y, where for other accounts, it is blank. 
+
+# Retail customers and Pro customers are stored in Retaildata
+	Type = 'p' for pro and 'r' for retail
+	Retaildata are locally stored customers and MDM is corporate stored customers
+	Change/Unlock MDM account - more info in "People tab" -> Vacation
+#A daily customer's balance is calculated daily...at the store...but they also have a corporate balance, because even though the customers are SUPPOSED to pay daily...they usually don't
+JDPFIL at the store  - Daily Pay File
+Add all their invoices for a given day, and you have their daily balance
+
+##To find out store# in case someone changed it IN POS
+Go to "Reprint Invoices/Receipt" 
+Click on Invoice
+Store# will be shown at the Bottom of Invoice
+--ORF
+ Click on "Purchase Inquiry" 
+ 
+# Gift Cards - I have queries to pull Active gift cards (have few already listed), Load gift cards with money 
+ 
+# AS400 tables vs Postgres tables and what they triggered by 
+https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/iSM+-+Technical+Design+Specifications+-+400+Down#iSM-TechnicalDesignSpecifications-400Down-SynchronizationServices
+
+# Store and Forward (saf) - CCT related
+It means that in a comm down situation we will store sales up to $100 on the CCT 
+and then upload those later when the store is back online. 
+It Upload to Aurus and payment processing. We can manually kick off the upload process. In production it happens in the early AM hours
+# Store and Forward - as400Down related
+Term used to describe data flow. When as400 is down, data will be STORED in postgres, and FORWARDED to AS400 once its up. 
+Core_return is copied to jwcret table every 15 min as long as 400 is up, it will not transfer instantly, even when its goes UP 
+ 
+# Batteries in store (production) Items include dash (ex: SSB 22-73) are no longer present in stores. Item without dashes
+only, will work in stores (ex: SSB 54EX). Database issue. In test, will work both ways. 
+ #ThinClient - thinclient
+	- If properties or flags been triggered, must restart ThinClient to take effect
+
+# As400 Down - project and putting as400 database status "down" (as400down)
+	- toggling the as400 down doesn't actually shutdown or disconnect the as400. It just tells the linux box that the as400 is down so don't bother talking to it.
+            but if the as400 actually went down or was unreachable (not just a software toggle), then you wouldn't be able to run queries against it
+PTEST-215036 - Routine for Toggling AS400 Down/Up (curl command)
+
+curl http://posrest:18080/ism-bridge-war/as400/down  - Checking status of AS400
+# Past Due Inquiry, Balance Inquiry -> "Account Balance Detail" and could be other Customer report details are 
+Relied on Web Service that Finance Team developed. It would pull data from Production bc there is no Test or Dev 
+Layer to verify and see. 
+Those numbers from Account Balance detail screen only can be changed via Production stores not from here (test)
+
+#Table Sync (time, schedule, trigger, updates)
+
+Data AS400 tables and Data in Postgres tables
+https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/iSM+-+Technical+Design+Specifications+-+400+Down#iSM-TechnicalDesignSpecifications-400Down-SynchronizationServices
+
+------------------------------------------------------------------
+# Hotfix - There are average of 2-10 issues in one hotfix that has to be done by End of Day.
+	- The process is, After Hotfix patch is build and applied, We begin to test, Bulk Regression may also be running
+	- Bulk regression and Testing can happen simultaneously, with NO disruptive testing like DayEnd. 
+	- Bulk Regression is portion of Regression -takes 2.5 hrs + 30 min for Regression Review
+	- Normal Regression = Full regression- longer time
+	- Once regression is done, Testing is done, Disruptive testing may begin, Tests that require Dayend. 
+	- Hotfix is something that happens in production (stores report) and must be fixed Immediately
+	- Choosing TestBox for hotfix to test is depending on store that has whatever ENACTOR version installed
+		Ex: if its 3.5.0, then we must test on testbox with 3.5.0 version
+		Ex: if its 3.4.0 then  we must test on testbox with 3.4.0 version 
+	
+	- R3.4.0 Hotfix - All hotfixes I worked on. Bugs with QA Test notes on how to test them: 
+	- Epic Link = R3.4.0.3 (Hotfix)
+	- Labels = Ops_HotIssue and/or R3.4.0.3_Target
+		https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/R3.4.0+pilot+notes
+--------------------------------------------------------------------------
+# Backup and Recovery (button at Tender Selection) - PTEST-207888
+# Outside Purchase Ledger or Outside Purchase (OSP - Purchasing Supplies from Different companies
+	- Customer wants part that we Oreilly don't stock, they still want to purchase thru us, so we order/buy part
+	From different company and then ship it to Customer. 
+	• Select Retail customer -> Product Ordering & Inquiry -> Outside Purchase Ledger -> Create new PO (RETAILMNT-21683)
+# How hub Routing works | hub | hub manifest
+Store Generates stock transfer (QA can Generate too),  (Item Transfer)(Item Source- OPP)
+TeamNet Sets up Hub Routes
+Corporate Sends Hub Routes to hub stores
+And it triggers the Pype_message 
+
+# Hub Routes Data - datawhse and sysdev2
+Look for hubdropoff, hubmanifest, hubmanifestlocation, hubmessage, hubroute, hubrun, hubstop.
+--datawhse or sysdev
+Select * from dwdata.hubroute
+https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/Hub+Manifest+Improvements+-+Technical+Specifications
+	- This test case has steps to Create Manifest via Customer Service UI PTEST-191355
+	- Manifest can also be created thru Item Sourcing or Stock Transfer (Dayend may be required)
+	- Customer Service UI is best way for Creating Manifest
+	- ROPP-2006 - steps in comments per Tyler
+	- PTEST-191355 - Another version of placing manifest order
+
+# Find out which Box(store) is a hub store
+From Main Menu in OPS, if there is Option 27 for Hub Store - 
+
+#Information Contain data on Receipt 
+Can be pull from 
+Select * from jbrdata.jconfg
+
+# Pay with Check (Tender Selection, check number, checkbook, checksale, checktender) 
+F6 - Check -> F2 - Full amount
+Enter 777 Go -> Click "Key ABA & Acct#" F2
+Enter 122000247 Go
+Enter 008651154 Go
+
+# Large Refund - Only scenario user will get an old prompts for Refund to occur at tendering would be a non-cod customer
+that originally put the sale of the items "On Account" and then they would try to get cash back instead of putting it back on the account.
+Retail and COD customers would see the large refund approval needed at finish invoice on the manager approval prompt.
+
+# Update Drawer via SQL
+select * from jbrdata.jcshdr
+CDID = 2 = CHARP
+
+# Stores should NOT be able to override the price of the battery fee. It should be locked in. (batteryfee)
+	Even if you mouse click into price field or Tab for price of battery fee, Should still be Locked
+	Also, Stores cannot Sell or Add Battery Fees
+	1. OPSVR-2634
+	2. OPSVR-2635
+# Linuxcomm - Allows as400 to communicate with Linux server. Its Print Queue that as400 uses to talk to Linux server
+# Non-Stock (nonstock)
+	To transfer Stocking Items back to Non-stock or Non-stock to Stocking, go to Green Screen tab. 
+
+# AS400 job number located in OPS - bottom-very left corner - CNT*G_758526*L1 (just above START button)
+
+#Military Discount is 10% off
+Senior Discount is 2% off  (price of item * 0.02)
+- JORHSD - JDT2P (Discount Amount in number shown) - Senior Discount
+- JORHSD - JDT2P (2% Discount)
+- JORHSH - JHDISC (Y) - 2% Discount
+- JORHSH - JHSSDC (Y) - Senior/Military Discount
+
+#Special Order Items = That are NOT IN JIMAST or JNSPR. (they would be in Catalog DB only)
+# Find random address https://www.bestrandoms.com/random-address - for MDM Testing
+	- MDM database does not accept unknown addresses, it must be valid address
+
+PRINT/Invoice/Employee Sale (employee, tm)
+#Team Members Pro Customer- All transactions for team members will print off on Thermal Printer (instead of Laser) 
+except for (charge on account = Laser printer)
+	- POAs print on laser, regardless of COD status
+	-All Professional customers (On Account and COD and NonCOD) prints off on Laser Printer
+	-Employee purchases (Team member) purchase will have an Green Icon of Suite Case next to their Name
+	-Receipt will also say "Team Member Purchase" if employee purchased something 
+	
+#Online Store  - print invoice
+	- Invoice - Prints off on Thermal Printer
+	- Pick Ticket - Prints off on Laser Printer
+	- Pick Ticket is Paper that prints off for Team Member. To find Particular Part in store to give out to Customer.
+	- Pick Ticket tells TM where part is located, what type of part, Quantity.
+
+##Customer Information
+#Non-Professional (Retail)(999990) customer PRINTS on Thermal Receipt
+#Professional (With No Account)(999991) customer PRINTS on Thermal Receipt
+#On Receipt - No Customer information should be present
+#On "reprint Invoice/Receipt - Only <Phone number>/<Customer Number> ("999990")/"COD Customer"/"Retail Customer" are displayed
+#No address is displayed on Invoice VR
+
+#CCT - Thermal Printer
+1. Press button while restarting the printer
+2. Press button how many times you need to get to your setting
+		##To Acquire IP address for that printer is connected to ##
+Press 3 times
+Press 5 times
+Then wait for it to print IP address
+ 
+#Pity/petty Cash Account - Company Accounts
+#Markup price - The Markup Price Service takes the item cost provided by the caller and determines what price the customer should pay based on their customer group
+	ItemCost =  price that costed company to buy that Item
+	(IMSCST) StoreCost = price that warehouse sells item to the Store
+	(IMCORP) CorePrice
+	(IMCORC) CoreCost
+#ItemCost =  price that costed company to buy that Item
+#StoreCost = price that warehouse sells item to the Store OR What Store paid for the Item
+#Price/Each - Amount the customer will pay
+Example of StoreCost = If a store goes to a dealership and buys an oil filter for $5, they would put $5 in the store cost. The price field would be the recommend sale price, but you can change the sale price to any amount.
+--------------------------------------------------- Core --------------------------------------------------
+# Deferred Core Customer - Company's that PAY for deferred cores later, NOT on the spot. Like end of month	
+Any customer that starts with '999' example 999501, is an Oreilly's Customer, and typically we don't sell to Oreilly's customers. 	
+	- Item price with core example: Item: 200$ Core: 69$. Total cost would be 269$ plus tax. 
+	If core is returned (old part from the car) That 69$ will be returned back to Customer.  
+	IMCORP = Core price = is the one shows on VR as core price
+	IMCORP (core price)- store charges customer
+	IMCORC (Corporate Cost/ Core Cost)- corporate charges manufacturers
+	
+# Returns: When doing Battery as New Return - qty 3, it gives output qty of 1. It is EXPECTED for a warranty 
+or warranty replacement on a battery...BUT not for a core, and not for a new return. 
+	- The reason warranty and warranty replacement is different is because battery warranties have to be prorated based on the original purchase date
+# Core Exchange - It item comes with core, "Core Exchange" Removes Core Cost
+# Core Charge - Amount that will be refunded to customer after they bring (core) Old part back from vehicle
+	The bigger core amount or bigger core charge, better for Customer, will get more in return for old part.
+	 
+Query to Display Deferred Cores
+-- AS400
+Select *
+from jbrdata.jdfrcor
+
+AND OR
+Run following Query to change due date for Deferred Cores - Will display in "Process Past Due Deferred Cores"
+UPDATE jbrdata.jdfrcor
+SET dcdudt = (CURRENT_DATE - 1 DAY)
+WHERE dcinv = <invoice#>
+
+Run following Query to update invoice date
+
+UPDATE JBRDATA.JDFRCOR
+SET DCINDT = '<yyyy-mm-dd>'
+WHERE DCINV = '<Invoice Number>'
+           
+ --AS400 - Past Due Inquiry
+	Select *
+	from jbrdata.jcmpast
+
+#Warranty Return - if warranty return is done, the part will go back to Warehouse, and warehouse may send it back to Manufacturing for credit or repair
+	- if part that was installed but did not fit on vehicle is being returned, it will be processed as "Warranty return"
+#Warranty Replacement - Return - This will show on VR pricing as Each: 0.00 and Total: 0.00 and Tax: N
+#New Return - if New Return is done, the part may either go back on Shelf or returned to Warehouse. 
+	- if part that customer did not need anymore, it will be processed as "New Return" and go back on Shelf
+#New Return VS Transaction Recall - If customer has invoice with them, Transaction Recall is best way. 
+	If customer don't have invoice, then New Return is better
+#Core Return - Return - Item with Core has <Retail_core_price>, On VR on Core Return, Core Charge Price
+        will display as "Each" with negative sign
+	
+#Warranty code - There are specific warranty code could be found in Confluence page. "Warranty Codes"
+	- I got File downloaded in "Download" Folder
+	- Query for Warranty Description
+		- AS400
+	Select *
+	from jbrdata.jimwar
+	where wrcode = 'EnterWarrantyCode'
+
+# "Process Past Due Deferred Core" - this menu will show Cores that are expired/late, meaning if customer bought part that has a core charge,
+They will pay that Core Charge, BUT if they DONT return their core from their Vehicle within certain timeframe, That customer will NOT
+Get reimbursed for their Core (item from their vehicle) and It will display in "Display Deferred Core" 
+ 
+# Display Deferred Core - Items that were bought with Core (Core Charge) but Core Has NOT been returned to store yet
+# Shrink (Mark Deferred Cores as "Shrink" for Customer)
+An Example would be: Customer Satisfaction. If Customer Lost or didn't bring the core back, or refuse to pay for the core, employee or Manager can mark that Item as "Shrink" as if customer brought the core back, or paid for the core, and the Item would go away from the list as if process completed as normal. 
+
+#Verified Returns - New Return/Warranty Return/Transaction Recall - Customer buys an Item WITH customer info given Then Comes back to Return it. Verifying Returned item against the Invoice
+
+#Non-Verified Returns - New Return/Warranty Return - Customer makes Sale and Does Not give customer info Then Returns item without a receipt. Status must be "Not found Locally" and Must click button "Return Without Receipt 
+
+------------------------------------ Processing MFP Return Type -----------------------------------
+# Return process - Partial - Gift Card/Cash
+
+At return screen, Will give two Return Tender options (made as MFP as Sale). 
+User can Swipe, Key, Override Line to Cash, Override Entire Transaction - will allow to return money via Cash, Credit/Debit/Gift Card at Once. 
+You want to Click "Swipe/Insert Card"
+Then Click <Amount> for Cash. 
+
+# If do Smart Return - It will only do One form of payment
+
+# Return process - Partial - Credit Card/Cash
+Will give option only to "Return to Card" or "Override Entire Transaction" - Cash/Card/
+"Return to Card" will process exact amount Paid
+Then Cash - will give option to Return as exact amount paid
+
+---------------------------------------------------------------------------------------------------------
+
+#AR - Account Receivable (mainly pro customer)
+
+#When creating Task in Sprint - Key in: "Retail QA" and chose whichever is ACTIVE
+#For "End to End" QA Test Case Type- the Priority should be "Major"
+#Ext Price - Field in VR, results displayed when "Qty" multiplied by "Price" field
+
+Web Testing (Link in browser - saved)- way of logging into TeamNet as Admin or with Different User. (For testing purposes ONLY)
+Select CNACCT From JBRDATA.JCONFG
+
+RH-Maintenance - RH (Retail Hardware)- For Project status -  is when you want to report/Bug the utilities used by QA 
+Example (Printer reported): RHMAINT-1522 
+
+Calculating Price (calculation)(list)
+JDNETA = <JDQTYS> * <JDNETP>
+JDNETC = <JDQTYS> * <JDCORR>
+JDTOTA = (<JDNETA> + <JDNETC>) - <JDDISC>
+JDTCST = <JDQTYS> * <JDITMC>
+JDITMC = <IMSCST> - Store Cost
+JDCCST = <IMCORC>
+JDTCC = <JDQTYS> * <JDCCST>
+
+
+##POSREST - Basically POSREST is a service that OPS needs to function. Without is running, cannot sell parts or do much of anything in OPS
+
+##TKT items (Local Event - the once Oreilly supports - Monster truck event/Rally Race/Events that has to do with cars) - when ticket is added to VR, a customer numbered 999518 automatically be entered
+	- TKT can only be sold as Separate Invoice (No other non-ticketing "Items" can be added)
+	- Employees usually told which tickets for whatever event they have in store for sale and how to sell them (Item and line number)
+	- Those tickets located in JIMAST, same as all the other items
+	- New 'TKT' Pricing can be found in NPC Database. Query is within this notes under NPC <above> 
+	
+##YM.COM (YourMechanic.com) - Type of Customers - Professional customers. Just like Firestone, Tire shops. 
+	- They have options as "Non-Delivery Customer" check box
+	- They Buy stuff online and Must bring PO for a Match
+	- They Bring their PO. Their PO number must match when they come into Store to Pick up the Items
+#YMM - Year/Make/Model - In RCAT
+#S/E - Submodel/Engine in RCAT
+#LP - License Plate in RCAT
+
+#Tax - VR Phase 2  - The tier tax display (T1, T2, T3, NA) is being replaced with Y and N - Yes and No
+#Tax is also can be based on State, type of customer based on State, Item based on State - All tested every month as RSU
+#Tax Exemption - Cancels taxes completely from Sale (Getting rid of taxes)
+#Tax - JCUST - CMTAXC = R
+	JIMAST - IMTAXCLASS = 'TPP'
+		Means NO tax has been applied or charged
+# There are Tax Exempt customers (pro Cust) and usually have TaxCode = 'D' - Direct Permit Pay (google it)
+	- Does not charge Tax
+	- Retail Customers or other Pro Customers can be Tax Exempt thru Discounts/Overrides button
+	
+# Determine if VERTEX (tax failed over)-SubTotal and TotalTax should be Way off from each other (in numbers)
+VERTEX is Set to 100% to determine how far off tax fails over. (Bug:OPSR-4741, TC:PTEST-98634)
+	- Vertex determines the tax rate for each customer (if comms are down in stores, they use back up cache to pull taxes)
+	- Normal tax rate is usually from 6-11%. 
+	- If fail over is 99%, the TotalTax will be way off and SubTotal and TotalTax will be very close with each 
+	Other in numbers. 
+	Ex: SubTotal is 6.76 
+		TotalTax is 5.00 (tax fail over)(When normally it should be around .45 cents)
+		- Problem why Vertex (tax) failover sometimes is 
+		(It's happening because posrest isn't up before vertex initializes, so it fails to get the store number)
+		(Basically, it doesn't initialize properly, which results in the logs filling up and eating up memory.)
+# Once tax override is applied to a product (Item) - Tax is removed, then adding "Retail Customer" will remove the Tax override 
+And tax will show on VR
+
+--------------------------------------------------------------- CCT (Codes) ---------------------------------------------------------
+
+##CCT Setting Access
+1957 (enter)
+Then Enter password 125331
+
+# Token Transaction - token or number that is being recorder in the system for a specific card once it being swiped. Once the Customer decides to make a return, They will swipe the same card, if it matches the Token (number of card swiped before for purchase) it will process Return successfully. 
+
+#OriginalAurusPayTicket - Linux command that will result in number (trace invoice) that will be sent to Aurus for Credit given back to us.  
+	- In json:  AurusPayTicketNumber - 
+grep 'AurusPayTicketNumber' /usr/local/oreilly/tomcat/logs/cct.log | grep 'ws###' | egrep -io '<AurusPayTicketNumber>'[0-9]\{18\}''
+
+
+#If CCT Card Transaction will deny, but when user tries different ITEM and it Approves, then the Problem could be in Pricing Amount
+	- Certain pricing are to be denied. Refer to Derek for details
+	 
+
+**** Swipe Card (Return Invoice)***
+JCCINF - Table
+CCASRC/Authorization Source - 5 - Swipe/5 - Fleet / D - Manual/Blank - Return
+CCEMOD/EntryMode - 9 - Swipe or Card On File or Inserted /1 - Manual Entry ----Swiped/Chipped/Manual
+CCTRCD/Transaction Code = /ReturnCode - 6 - Return/  5 - Sale
+CCISN/Manual Imprint Slip Number - SW - Swiped / Manual Key - "blank"
+CCCTYP/Commercial Card Type - CreditCardType - D - Discovery/Diners card/
+					A - American Express/V - Visa/ M - MasterCard/F- Fleet
+CCCVM /EMV Card Verification Method - 0 - No Signature/1 - Signature used/2- Pin used/
+CCEMV/EMV indicator - 'Y' EMV Card (chipped
+CCTRDT/Transaction Date - MMDD
+CCATTM / Authorization time (HHMM
+CCDEBIT = 'Y' - Debit Card used
+CCCARDTKN = Not blank (bunch of numbers)
+DebitCard = True (if Debit card Swiped and ASKS for PIN number)
+JCCINF.CCAPTN - AurusPayTicketNumber
+JCCINF.CCCARDTKN - Card Token Response - cardToken
+JCCACNT/Account Number = ReferenceNumber - JSON
+
+JORHSH - Table
+JHCHGA = Y - American Express Card
+JHCHVD = Y - Discovery Card/Diner Card
+JHCHGV = Y - Visa/Master Card
+JHCHGC = Y - Credit Card Sale/F- Fleet Card/D - Debit Card
+
+# JDCAUC - Cost amount update ( should be "Y")
+
+#Card Starts with "5" (5102 8200 …) is MasterCard 
+	- Credit =Signature required/ Debit=PIN entered
+#Card Starts with "4" (4761 5300 …) is VISA
+	"4" could also be Credit
+#Diners Card same as Discovery Card (DS)
+#JHCSTC - Order Cost Code - Y=Costed/blank=Not Costed
+#IMSCST - ItemCost/StoreCost (same as ExtendedCost)
+#JHCSCC - Cash sale to Change customer Blank = No, Y= Yes
+
+#Visa Fleet or Any Fleet Card - Making a Return with Fleet Card on File, must Swipe or Key, NO card on file
+#Fleet Card - These cards not allowed to do Multiple Form of Payment (MFP)
+#Card on File as DEBIT - Will always require Signature and run as CREDIT
+# Voyager Fleet - All Voyagers are fleet cards
+
+#For a retail customer, we call the 2% discount a senior citizen discount.
+     2% discount is for professional customers but senior discount is also equal to 2%
+
+# ActivityCode: (A-Active)(C - Complete)(U - Update)(V- Viewed)(D - Delete)
+#COD customers (could be any prof. customers)(Top right screen - will NOT have "C.O.D. Customer") - Defaulted to pay 'On Account' - If tendered with "Cash" - COD Override window will show, Need reason to override. 
+	- If  (Has CMCODC = "Y")(Top right screen - will say "C.O.D. Customer) - Tendered with CASH  or Card. NO COD override window will show. 
+
+#Killing "tomcat OReilly" linux command is in "Linux" Tab
+
+# Hub Store - (Code Z) Hub is like a mini warehouse located inside a big store. 
+It is made for STORES that are FAR away from DC, so HUB supplies all near by stores for any items. 
+	- It has its own trucks, routes to delivery supplies to near by stores. 
+	- Updating/Changing Hub Store
+	https://confluence.oreillyauto.com/pages/viewpage.action?pageId=871858541 -
+
+# Tailing logs
+Tailing logs is when accessing logs from something that is already happened or ability to watch what is happening live.
+Command: tail -f /usr/local/oreilly/logs/cron/root/heartbeats.log
+Command: tail -n 1 /directory/fileName	--Replace "/directory/fileName" with the needed filepath
+
+## Hearbeats - is a program
+if posrest is not responding and has been running for more than 5 minutes heartbeats thinks it's in a bad state and restarts it
+however it shouldn't be that unresponsive. 
+
+# Website for Corporate- open with FireFox - Relevent to OPP (itemSourcing)(customer service)(special order)
+To get Pricing for Specific Item when pricing not showing/exist
+https://tntestcluster.oreillyauto.com/Home/main
+Log in as lfuzzell
+Pass: dr0ws2ap
+Go to Special Order - Select your order
+- Special order = Item Sourcing (OPP)
+
+#Special orders are located only on SYSDEV2
+- all data must be pulled from SYSDEV2
+- special orders represent Outside vendors which stored only on Corporate side - sysdev2
+- Pull data from sysdev2  for special orders items
+SELECT * 
+FROM oppdata.nonstkqoh
+WHERE vndqoh > 0
+- oppdata.dwwmast = DC Item Master List
+
+Database
+#Datawhse (server) - is to look at specific number for a particular Item (In live mode)
+#DWPOSDATA (Store side) - Server DATA where information is stored
+#POSDATA - Database contains Flags for all Customers/Professional (Price Overrides and more)
+
+# BACKOFFICE 
+Is Server that contains Promotions, information about Store/User/Roles and more. 
+If changes made in JCONFG that contains store info, it should change in Backoffice as well.
+	Then Transmit is ran and updates the Store or OPS
+#Postgres - Contains Store information for the Store
+	- Normally Pull data from "Public" library and in "Table"
+	- Postgres used for NPC enabled - NNPC comes from Postgress - To Pull Pricing 
+	-  #MDM - Master Data Management - Where All Retail Customers stored
+	- More about Store Side Cache/Retail MDM Integration can be found in "QA Process"
+# Backoffice - Promotions
+	- Log in to Backoffice
+		- User: Admin
+		- Pass: admin
+		DeviceID: BO9990
+	- https://confluence.oreillyauto.com/display/ISRetailTeam/Setup+Developer+in+BackOffice
+#Setting up different types of database
+https://confluence.oreillyauto.com/display/~JSIMPSON51/Copy+of+OS+3.0+-+Links+and+Miscellaneous
+
+# If you want to use different User id to log into POS besides CHARP
+Other users expire periodically if not used
+CHARP never seems to expire because it's the most frequently used
+You can use the webtesting interface to reset it if the QA standard password isn't working
+	- Instructions in personal web notes
+	- Assign Counter number to a Drawer for Specific user (Legacy) - Backoffice is alternative way
+	- Automation can assign drawers to boxes with their script
+https://confluence.oreillyauto.com/display/ITSupportKB/Counter+Number+not+Assigned+to+a+Drawer
+
+# Backoffice userroles, roles, user
+Sign into backoffice
+Left side (Arrow) Click to extract ->  Configuration -> Human Resources -> Users or User Roles
+"User ID" Key: <name> then Click "Apply Filter" on very left (icon), Select user and Click "Roles"
+
+# NPC - Net Calculator (CSP - Customer Segment Price (software) - determines the price for particular customer
+	- OLD NPC pulling pricing from JIMAST AS400. 
+	- The New pricing pulls from NPC database - Postgres Pricingdata
+	-  Query for NPC pricing:
+
+----------- Pype - Pipe -----------------------------------------------
+
+# Check if PYPE works 
+- everytime invoice is made, all data is sent to (store)JORHSH table, within 5 minutes, that same data is sent to (corporate-Sysdev2)DWPOSDATA.JHXMIT
+- If data (invoice) does not appear in Sysdev within 5-10 min, then PYPE is broken 
+- Check invoices in Sysdev2
+
+***** Select *
+FROM DWPOSDATA.JHXMIT
+WHERE STORE_NUMBER = :store#
+AND invoice_number = :invoice#
+
+Sysdev2(corporate)- (Every 15-20 min, Invoices from Testboxes(AS400) sent to Sysdev2)
+#Every 15-20 min, Run_PO is ran (compresses made invoices) and sent to Sysdev2
+#When PYPE has been tested, run few sale transactions to test if invoices are sent to Corporate thru Pype
+
+#View Invoice 
+	- Select *
+	FROM dwposdata.jdxmit
+	WHERE invdat = :YYYYMMDDToday'sDate 
+	AND inv# = :Invoice
+
+Select *
+from dwposdata.jhxmit
+
+#Check messages on PYPE with DB "Retail - Pype"
+	- Select * 
+	from pype_messages
+	order by modified_ts desc
+
+------------------------------------------------------------------------------------
+# Nobody session (linux .254)- is a putty session - .254 (Private Session) Or Connecting to a Thin Client
+	- When Testing on .254 session, if bug found, its better to ReTest on Thin Client, cuz things may cause by VNC
+
+Reporter = Created the Bug (QA) (Test Case Cloned/Added to Worksheet)
+
+Assignee = Fixing the Bug (Programmer) (Created/Worked on Test Case)
+
+++JBRDATA.JNSPR - Contains Non- Stock Items that are Loaded for stores
+JBRDATA.JCUST - Contains Professional customers		
+
+++9892 is a DEV box. Sometimes they might have current project version installed++
+--------------------------------------------------------------------------------------------------------------------------
+#Restricted Items (Tables)
+	- These are tables for which items can be restricted by. (Location, Store, Zip, County, State)
+	
+JRSLOG - SKU Restrictions log table
+JRSCHGS - SKU Restrictions changes table
+JRSHDR - SKU Restrictions header table --------  Main one
+JRSDESC - SKU Restrictions descriptions table
+JRSSTATE - SKU Restrictions state table
+JRSCNTY - SKU Restrictions county table
+JRSZIP - SKU Restrictions zip table
+JRSSTORE - SKU Restrictions store table
+
+Restriction Levels = 'I' means fort Just Item
+			  = 'L' means for Entire Line
+		      = 'S' means for just Sub Code
+			  = 'P' means for just Product Code
+	
+---------------------------------------------------------------------------------------------------------------------------------
+	• Change Store Number
+ To Lock JPOSNDW when SWITCHING STORE NUMBER - very important
+-In GREEN SCREEN: copy/paste command bellow
+ALCOBJ OBJ((JBRDATA/JPOSNDW *FILE *EXCL)) - This will Lock the Pype (invoices being sent to Store)
+Then, Leave it sign in, do not close the screen. 
+Log in to JIS101 and change the store to California store
+Run any invoices you need.
+Once done, JIS101, change  store back to its original number
+Sing off the Ozark1 screen, Exit out of that command. 
+
+	• CALL PGM(JISKILC) PARM('RUN_PO')
+	- Kills RUN_PO
+PGM - acronym for Program
+JISKILC - Kill switch to kill any program
+PARM - acronym for Parameter
+RUN_PO - program to kill
+RUN_PO prevents data from stores being sent to Corporate (Sysdev2)
+RUN_PO, every 15 min, runs to check to see if any PO needs to be generated 
+Killing RUN_PO will prevent QA from SEEING information from stores (SYSDEV2)
+++ONLY KILL "RUN_PO" WHEN IT IS IN "DLYW" MODE
+
+	• Check for my OREILLY COD Account in Ozark1
+At log in screen
+Oprion 3
+type: hs000m
+Option 2
+Option 1
+----------------------------------------------------------------------------------
+Stores in CA (California)
+--SysDev2 query
+SELECT STORE_NUMBER, CITY, STATE, ZIP FROM GPDATA.STORE
+WHERE STORE_NUMBER > 100 AND STATE = :state
+ORDER BY STORE_NUMBER
+
+Store Number (home store)
+-- AS/400 query
+SELECT CNACCT, CNCITY, CNST, CNZIP FROM JBRDATA.JCONFG
+
+----------------------------------- Joining two tables - how to ---------------------------------------------
+#Joining 3 tables together (How to join tables)
+
+Select distinct spcus#,s.*, imitem, imdeal, imuser, cmsprc
+from jbrdata.jsprc s
+join jbrdata.jcust 
+On spcus# = cmcus#
+join jbrdata.jimast 
+On (spline, spplcd, spsubc) = (imline, implcd, imsubc)
+
+#Joining 2 tables together (How to join tables)
+
+Select i.line, i.item, p.professional_price, p.retail_core_price
+From netpricecalculator.line_item i
+Inner join netpricecalculator.store_specific_price p
+On i.id = p.line_item_id
+Where i.item = :itemNumber
+And i.line = :lineCode
+------------------------------------------------------------------------------------------------------
+
+(Definition) 
+#Worksheet (WS) - Data that makes up a Work Order, Quote, Order, etc.
+#Work Order - This is a state of a WS. A Work Order is a WS in progress. The currently selected Work Order is analogous to a shopping cart. 
+All Work Orders are considered work in progress and have not been submitted as an Order.
+#Order - This is a state of a WS. Once a Work Order is submitted to order parts, it becomes an Order. 
+The order becomes read-only and immutable.
+
++ Create Prepack Order - Emergency Post (In Legacy System)
+PTEST-79445
+-----------------------------------------------------------------------------------------------------------------------
+
+# Z, D, P, M, S, E, Codes (in Other words "Pop Code")(Transaction code)(tran code) Item code, code item
+https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/ETE+-+Transaction+Codes+Functional
+-  Z Code = Item is picked up from DC/Hub/Store
+- P Code = Item is picked up from outside vendor/Factory order
+- M Code = Mixed Paint
+- W Code = Warranty Replacement
+- E Code = Core Exchange
+- D Code = Item cannot be Identified. Item that is NOT in Inventory
+-S Code = Machine shop parts sale
+
+# Pop Code - Popularity Code - Items being sold a lot, gains special popularity code
+	- New items keep an 'N' pop code for the first six(?) months after product launch
+	- Then, when there's enough sales data, it gets changed to 'A', 'B', 'C', 'D', or 'W'
+	
+++Verify if Z, P, E, W, D, etc Code applied
+Select * 
+From JBRDATA.JORHSD
+Where JDINV# = :invnumb
+AND JDLINE = :Line
+AND JDITEM = :Item
+
+#Item Costed (item costing)
+If Item has been marked as P Code (Picked up) or D code (Description - Unknown) and finished sale, the item will
+Appear in Management Function -> Item Costing window, saying Item needs to be costed. 
+But it will not show in JCOSTAUD cuz its already costed. 
+
+#Flyaway - is a software that Creates/Makes changes to Database
+#JavaFX is all the Newer Screens on OPS
+#Enactor is Original Screens on OPS (Point of Sale)
+#IPS is like 'Old Catalog' and SOLR and Old OPS
+# CNT (Counter) Job - Each as400 OPS session is allocated to CNT session. Killing CNT job in WRKACTJOB
+Will prevent CATALOG from running. To access CNT job, you must know which job is allocated to CNT. William knows. 
+	• CNT job normally created when the POS launches...however...if the POS launches, and say...the low side switch were to get unplugged...or the 400 lost power...that CNT session is lost.
+	• Now the fix is, Killing CNT job or if AS400 is down, Catalog would still Launch. 
+
+#Another way of using Variable (EX: Semicolon(:)) - DBViz
+Select * 
+From JBRDATA.${tableName}$
+Where imline = ${Line||AC||String}$
+AND imitem = ${Item||41-110||String}
+
+## View Store Programs/Files being used
+Files to look at/Files to pull Data from
+Key: 19
+ozkdev - store dev box
+Your username and password (enter)
+#3 (enter)
+File: qrpglesrc
+Library: jbrsrc (enter)
+Position to .... JDE300 (enter) - Day End program
+#5 (enter) (Do NOT press ENTER again!!!)
+
+Alternative way: call jrt139c (one person allowed)
+
+Run AUTOMATED DayEnd (In case user can't run Manual DayEnd)
+PTEST-21807
+Execute:
+Step 1 and 2
+And Step 56 (input proper Test box # into command line)
+AFter Day End finishes
+Execute Step 90 and verify with Step 1
+*** If day end runs in middle of day, All invoices made will be for Tomorrows day end ***
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+##Moving Item From JIMAST back to JNSPR and Verifying it
+If you do Sale, or Return, it would Autoload into JIMAST
+
+# STH - Ship to Home - After Item has been boxed and shipped thru YETI, the autoload will happen (Item must be Sourced)
+	Only then, QOH would decrease, 
+# BOPIS - the item gets added to the basket and that’s when autoload happens and QOH would be set to 0
+
+	1. call chglib/movjnspr parm('LINE' 'ITEM')
+PTEST-79001
+Step 20, 21, 22
+
+# In JINVMOV - If item is Autoload = false or Not Loaded, and when it is added to Basket with complete sale, it will show
+In JINVMOV table with second line column 'IVTRANTYPE' of 'InquiryAutoload'. But should show only once. 
+ISM-6534 - issue indicates, step 12 that 'InquiryAutoload' shows twice - wrong. 
+          The bug was opened because it happened a second time after the return was finished.
+#JINVMOV table - should have two lines for Item. First line for Autoload with Before: 0 and After: 0
+	Second line with Before: 0 and After: -1 when completing e-commerce order (ship to home or BOPIS)
+	More info about this is on Tidely Weekly - ism-7131
+	
+# QOH updated in Item_master will reflect in JINVMOV (same as 'call jim103')
+--AS400
+select * from jbrdata.jinvmov
+where ivline = :line
+and ivitem = :item
+
+
+------------------------------------------------------------
+
+##Code SQL format (Within JIRA)
+||Store||Retry Type||Status|| ->Column headers
+|{noformat}
+####{noformat}|{noformat}<Type>{noformat}|{noformat}
+Finished{noformat}|
+
+# Formatting Table{code}
++----+------------------+---------------+
+|id| customer Number| po_number|
++-----+------------------+---------------+
+{code}
+
+# {panel} or {panel:title=MyText}
+Text Here
+{panel}
+
+# To make a Text Box in Jira
+{noformat}
+Text{noformat}
+	OR
+{code}
+Text
+{code}
+
+#{code:sql|title=name}
+--AS400
+Text here
+{code}
+
+##{code:bash|title=name}
+Linux command here
+{code}
+
+##Website link format
+        [Accessing Enactor|https://confluence.oreillyauto.com]
+
+#Visual Text (emojis, colors)
+	
+* - Bold
++ - underline	
+:) smiley
+(y) thumbs up
+(/)check mark
+(flag) flag
+(*) star
+(*r) red star
+{color:#FF0000}<anythingHere>{color}
+Color: Green (#05ed62), Red (#c7170a), Blue (#1366eb)
+OR {color:red}texthere{color}
+
+Quotes: {quote}textHere{quote}
+
+# 
+| Left-Aligned  | Center Aligned  | Right Aligned |
+| :------------ |:---------------:| -----:| as much as you want ->
+| Left column 1 | this text       |  $100 |
+| Left column 2 | is              |   $10 |
+| Left column 3 | centered        |    $1 |
+OR 
+|invoice|time|date|
+|328610|142328|20200811|"51348"|"WIX"|
+
+Pasting code: {code}text here {code}
+(empty line) - produces new paragraph
+\\ - creates a line break
+(4 lines) ----  creates horizontal ruler
+(3 lines) ---  produces thick line
+   --------------------------------------------------------------------------------------
+
+#When Communications are down for OPS (comms down)
+  NO VNC (options 4), NO ssh (option 1) terminal - Nothing will work with Remote Connection
+	- Would not be able to Sign in
+	- Would not be able to Pull any Items
+	- User CAN search for customer only if they are in Store Cache. If it is, it will pull customer, if its NOT, it will not pull anything.
+	- User CAN create and update Customer. It would be store on Store System/Cache. And when comms back up,
+	Information from Cache during nightly Transmit will sent to Corporate with all updates. 
+	- Comms Down can be simulated on ThinClient - Click "Start" button, some test box may have option 
+For "Comms Down" and "Comms Up" 
+	- Refer to TOBY STANFILL
+
+----------------------------------------------------------------------------------------------------------- 
+Adding User (CHARP) as Manager and give them access to Manager -> NOtes are in TiddlyWikki
+-------------------------------------------------------------------------------------------------------
+
+#Writing Code in JIRA Format 
+{code:sql|title=TITLEGOESHERE}--CONNECTION GOES HERE -- CodeGoesHere{code} 
+
+# Adding Link inside Text in JIRA
+[name goes here|website goes here]
+---------------------------------------------------------------------------
+** Yeti **
+
+# Customer Orders an item that usually ships as a package. For Example, sparkplug, orders 1 but normally ships in 4. 
+DC sends that Package to DC Attached Store, they brake up the package into Customer QTY ordered, and ship it to Customer. 
+- The whole process is done thru YETI (website) 
+-------------------------------------------------------------------------------------------------------------
+Delivery Fleet Management (DFM)
+- tracking delivery drivers in LIVE
+	- When fleet.delivery.management is True, it will Print Barcode on Invoice for tracking
+- Map/GPS is involved to tell Exactly when driver arrives
+	sudo vim /opt/tomcat8/lib/properties/config.properties
+	Look for /fleet.delivery
+
+------------------------------  Barcode (scanning barcode with scanner)---------------------------
+#Scan Stock Item with Scanner - Data Verification  
+PTEST-193696
+
+# UPC-A and UPC-E Barcode types - only used in Store production
+Code-128 used for DC (warehouse use only)
+
+#Find Items with Barcode in AS400 and Create Barcode to Scan
+PTEST-79009
+Groups: 
+Data Preparation - Find AS400 Barcodes
+Data Preparation - Create UPC-A Barcode
+
+# If Actual Barcode is not recognized by OPS then barcode maybe 11 numbers long. As it should be 12 numbers long. 
+In Case, to fix that problem, Add '0' to the beginning of barcode number and refresh barcode page
+-------------------------------------------------------------------------------------------------------------
+
+# List price (listprice)
+To find out List Price
+Retail price or Price (without customer applied)/0.590
+	1. On greenScreen (as400) Sign in to Test System
+	2. DSPDTAARA LSTDIV - List Price Divide %
+	3. Note  for Value: ## - normally its 59
+
+# Calculate List Pricing
+List pricing = User Price / List Price Devide %
+List pricing = IMUSER / .59 (LSTDIV)
+#ListPrice - suggested price from manufacturing
+
+
+# Coupons
+Test Case for Coupons  PTEST-173516
+Bug opened with detailed steps: ISM-8421
+https://confluence.oreillyauto.com/display/eCommerceTeam/O%27Rewards+-+Coupons - from Ecomm.
+Groups: 
+Data Preparation - Obtain Sequence number for Coupon
+Data Preparation - Generating Coupon UPC number
+	The Item must be Stocking QOH > 0
+	Same Coupon number can be used several times
+	There are Query that should work for Coupons in "SQL Queries"
+Test Case for Coupons: similar to one above with shorter steps: PTEST-12811
+
+Use this confluence page with Queries that can be useful for Coupons (ETEST-82553)
+https://confluence.oreillyauto.com/display/EQAT/%28**NEW**%29+OS+3.0+Queri
+	
+	- Username for Coupon Admin, its JMCDANIEL9, Password is "dr0ws2ap"
+	- Some other test cases about coupons via JIRA Search (type = "Test Case Template" AND text ~ etest-82553)
+	- Enter Coupon number that was "Encoded" in https://tntestcluster.oreillyauto.com/ORWCouponAdmin/decoder
+	- Apply it |ID: 13708 | Event Number: 17575|Desc: $5 off $10 |Sequence: <from query and note>|
+----------------------------------------------------------------------------------
+#Brian Lietz does Weekly Maintenance
+	1. Updating QOH - with SQL 
+	2. Clearing Online Orders/FCO - OPS
+	3. Clearing PrintQ's - Green Screen - cmd: wrkoutq 
+		- Do not clear off QEZJOBLOG - its been cleaned out daily by program
+---------------------------------------------------------------------------------------------------------------------------
+#Publication Price (Price that is predominately indicates on the Magazines, Brochures, that ppl get in the mail)
+	- That normally is promotion(discount) for Items in store. 
+Publication Price is supposed to be Lower than the retail price and "Special Offer" text should display below the Item
+	- If Retail Price is Lower than Publication Price, then "Special Offer" text should NOT appear
+	- If Retail Price is Lower than Publication Price, and "Special Offer" text appears, then it’s a BUG
+--------------------------------------------------------------------------------------------------------------------------
+#Stock Transfer 
+This is when stores call each other to request Stock Item transfer
+
+Counter# (your employer number)
+Customer# (Store # you Transferring Items to)
+Caller ID (Number of employer receiving that Stock transfer)
+Ship Via (Shipping with whatever career)
+
+Check in AS400 - Stock Transfer/Hub Store order transfer/ Item transfer
+---Header---
+Select *
+From JBRDATA.JHBORH
+
+---Details---
+Select *
+From JBRDATA.JHBORD
+
+#Invoices for Stock Transfers located in "Reprint/Invoice Receipt" and Click on "Stock Transfer" button
+
+# Reason Code for Lost Sale (lostsale)
+"Lost Sale" is if customer walks in to store and wants to buy a part but that part is out of stock or not stocked in that store for
+various reasons. Item Sourcing could be done in that situation BUT customer don't want to wait and says, "ill buy from different store"
+Store/Company just lost a sale for that item. Then they would log that item into Lost Sales under Stock Transfer button.   
+	- Enter or use the drop-down to select the reason code. Only characters 'I', 'P', or 'Q' can be entered. 
+		"I" = Insufficient Inventory
+		When using the "I" reason code, quantity is limited to 20 on stocking items, 100 on non-stocking items. Exception: It item is a stocking item and JDQ > 1, quantity is limited to 10 X JDQ. 
+	- "P" = Pricing
+		If the team member uses the "P" reason code for a lost sale based on pricing reasons and F6 is selected, a competitor needs to be identified on the next screen GOE200. 
+		GOE200 - Price Override Competitor Name Selection
+	- "Q" = QOH Error 
+	- GOE105 allows team members to enter and log an item as a "Lost Sale" in OPS. If the "P" reason code is used to confirm a lost sale, GOE200 is executed for the team member to select or add a competitor. 
+	- GOE105 - Lost Sales Entry (pgm)
+------------------------------------------------------------------------------------------------------------------------------------
+#RGS - Returned Goods Slip - This is where employees would fill out forms for the record
+	- Customer wants a part that store does not stock nor in warehouse. Then Store orders it from a Vendor via Career. 
+	If Customer rejects that item for whatever reason, they have to fill out RGS sleep, and it gets returned back to Vendor. 
+	• In AS400
+	 -  dspmnu mst001m
+	 - option 17 - DC returns
+          - Option 31 - Create Returned Goods slip (RGS)
+-------------------------------------------------------------------------------------------------------------------------------
+# Other
+
+# Exclude rental tools from returns Manifest ITEST-156
+Steps 1-11 (Then Run a Day End)
+
+# WEX Cards (testing) - WEX card is like fleet card but only applies to Specific scenario, with specific Item, customer.
+Those test should be archived 
+#Purchase Order Pending Prompt (Legacy - AS400 thing) - User sign in (test case PTEST-27585)
+	- Creating stocks on Legacy
+Icarus = used like patch but runs during testing
+An application for backing up and restoring data
+An application for creating an image of machine that could then be applied to restore back to later
+	- When devs run Icarus, POS is down, and there will be no Data to pull. (Testing Stops)
+	- It takes snapshots of the environment and creates backups, and it also deploys new code commits
+
+# Add/Assign drawer number to User to Counter number OR Assign Counter Number to Drawer. 
+Connect to AS200 - Test System
+Call JCT100 - Cash drawer assignment maintenance
+Key: 777 enter
+Add: 49 - Counter number to 777 drawer number
+Enter and sign out
+
+#Verify Drawer Authorization Money float from test case PTEST-210334
+Drawer number too large for manager auth table
+-- PosData
+SELECT *
+FROM posdata.managerauthorization 
+WHERE authorization_date = CURRENT_DATE AND drawer_number = 777
+
+# Billing Error Correction = If employee messes up the order in the first place (with sale), and customer 
+returns that product, employee will FLAG that as billing error correction with his Counter Number.
+	Invoice will be written to JORHSH.JHOSNO = salesman counter number (that will indicate a 'flag')
+	Order mess up as in; sells qty of 2 instead of 1, charges for wrong item, sells different item but similar
+
+---------------------------------------------------- FCO (First Call Online) -------------------------------------------
+
+Delivery - means- Involves Professional customers that has Shops. They would call Store and ask to deliver a part to them. When we make sale on POS, Before Tender 
+Selection window, there will be a box to check for "Delivery", chose the right address and receipt will print. 
+Delivery also involves FCO Orders, online, and "Delivery" box will automatically be checked.
+
+# Create an FCO order - Test Case - PTEST-23311
+
+FCO - has specific account (username) that connected to a home store (store assigned to test box) 
+	- Each account has a store (testbox) assigned to them - Find Account assigned to your TestBox
+	- Arussel account is assigned to 9990 test box which home store is 4047
+	- FCO query for accounts is located in SQL Query tab
+	- My FCO account # 342500
+	Run the below in sysdev2 to update what account points to what box
+	- update fcostg_dw.dlrctl set dlrstr = <InsertStoreNumberHere> Where dlrcus = 342500
+	- update fcostg_oz1.dlrctl set dlrstr = <InsertStoreNumberHere> Where dlrcus = 342500
+	
+	Should get an email confirmation and a Password Reset
+	- storeTranslator - software that translates store (4033) to a Test box (9878). Contact Nolan Whaley
+	- If no FCT orders are shown in testbox, after submitting, then storeTranslator don't have a record of that TestBox
+	http://10.98.92.252:18080//storeTranslations/TEST  - To see if Testbox is on StoreTranslator and its corresponding Home Store
+
+Queries: (sysdev2)  - Point FCO account to any test box or Store 
+	update fcostg_dw.dlrctl set dlrstr = 4047 Where dlrcus = 342500
+	update fcostg_oz1.dlrctl set dlrstr = 4047 Where dlrcus = 342500
+	
+	- Bouncing tomcat - shouldn't affect FCO orders coming through
+
+# Purging Invoice Data - Invoices are purged from JCOSTAUD after 90 days
+	- Jbrdata.JCOSTAUD - Costing Audit Files
+		- Removes invoices after 90 days with 'call jis436'
+	
+	- Jbrdata.JORPMTOV - Order Entry Payment Override Files
+		- Removes invoices after 90 days with 'call JIS419 ('MMDDYY') - Set date to 90 days old'
+
+# Access Historic Invoice Inquiry 
+When an invoice is created in a store, the invoice details are saved in the store's computer system, and a copy is sent to the data warehouse computer system for permanent storage. The invoices remain viewable on the store's computer system for 90 days. Once an invoice becomes 91 days old, it is automatically removed from the store system but it remains permanently available for viewing in the data warehouse system. The Historical Invoice Inquiry system is the utility used to view invoice information on the data warehouse system.
+https://confluence.oreillyauto.com/pages/viewpage.action?pageId=20800533
+	1. Access Legacy System
+	2. Dspmnu mst001m
+	3. Key 16
+	4. Key 5
+
+ # Delivering to (shipping to) table
+jbrdata.jshpto
+
+#Petty Cash account - Accounts used to charge against for Store use supplies. 
+Petty Cash account would display in Customer Information field as <customerAccount>"PC6" <Name>
+
+EX: When ever store uses toilet paper/paper towels, when the inventory runs out in store, they order supplies from 
+Their suppliers and billing against Petty Cash Account. 
+Petty Cash Account is Services on the side that are provided specifically for Stores Not Public
+	• Petty Cash In - Something TM sold from inventory (trash/paper towels/Trash Bags/Type of Service)
+	Money goes into the Drawer (Will record in JCUST after DayEnd) - Load Petty Cash In Account
+	• Petty Cash Out - Money store pays to someone for their service (moving the Lawn, Delivery Driver)
+	Money taken out from drawer. (Will record in JCUST after DayEnd)
+	• Item Sold: 20023 - Paper Towel Sold to: 999715 - This shows are normal Invoice
+	• Petty Cash In SALE - Make Sale with Petty Customer loaded
+	
+-- AS400 - Petty Cash Accounts and Description
+SELECT *
+FROM JBRDATA.jpcacct
+--AS400 - Petty Cash account and more other fields
+Select * from jbrdata.jcust
+where cmname like 'PC%' AND CMCUS# LIKE '999%'
+--Values that Changes in JCUST from Query above ^
+Petty Cash Out
+CMMTDR - MTD Returns - number adds up
+CMYTDR - YTD Returns - number adds up
+CMLTD - Last Transaction Date
+Petty Cash In
+CMMTDP - MTD Purchases - number adds up
+CMYTDP - YTD Purchases - number adds up
+CMLTD - Last Transaction Date
+CMCODC - Type of account - Y/or Blank
+
+#IF CHARP user unable to Cancel BOPIS order its means that AS400 profile for CHARP was missing and needs
+To be created.  (cancel online order)
+
+#PO Mask
+	- FCO Customers who don't want other's to know their PO number. So they mask it (Hide it)
+	- Mainly for FCO customers
+	- PO masks can be changed in FCO only (settings)
+	- Soon as changes made to po masking, it will trigger the pype messages as "CustomerUpdate"
+	- Settings: Click on Account - Shop Preference - Under "Record Keeping" - Switch to "Yes" - Change PO Mask
+	- ------------------------------------
+	# 1.Linux command below will only work when Pro Customer is pulled from Corporate Side
+	"select * from sales_orders.customer_po_number_mask"  DB = Corporate side (not Sysdev2)
+	- To pull results via this ^ query, find how in "Notes" - connection to database on linux
+	    2.This Curl Command will work as Transmit from Corporate to Store
+		curl -i -H "content-type: application/json" "https://storeservices-test.oreillyauto.com/CustomersB/customer/loadMissingArCustomers?storeNumber=XXX" -d [YYY]
+		where XXX is the store number and YYY is the customer number
+	- Curl command means it's going to send down the data to the store on pype, just like when there's a change at corp, and triggers the pype
+	- Then find this customer in "PosData" *select * from customer_po_number_mask where customer_number = <customerNumber>*
+	- Then Enter in OPS
+	
+# PO Masking indication
+A = Letter
+N = Number
+? = Maximum Number, ex: NNN?? = 3-5 numbers
+"" = Exact word
+Special Character = Special Character (- = dash)
+ 
+# Virtual Session Identifier
+In Green Screen - top right hand corner - Title of the screen User is on
+
+System: A9964V72
+Subsystem: QINTER
+Display: QPADEV0005
+
+Display: QPADEV0001 is locking objects, (dspobjlck or wrkobjlck)
+
+#TC for Requesting Price (Pricing not showing on VR) for an Item from Customer Service and then make Sale - (item sourcing, item cost)
+When pricing is not available for store employee to look at cuz item ordered from Vendor
+	- First, try that item thru Catalog, search within catalog - if no price, use OPP - Item Sourcing
+PTEST-178060 
+	- - Should be updated in JORHSD after Item has been costed (given price)
+			§ Tables (jditmc)
+	- Query for Cost Audit (as400) in that PTEST-178060
+			§ Select * from jbrdata.jcostaud where invoice = :invoice
+			§ Item should have Cost price as well as in JORHSD
+			§ Also, Item should NOT appear in "Item Costing" menu OR that ITEM should have pricing displayed
+
+# FDM - enabled/disabled - for tracking purposes
+grep 'fleet.delivery.management' /opt/tomcat8/lib/properties/config.properties
+https://confluence.oreillyauto.com/pages/viewpage.action?pageId=690782561
+	- the logic is driven by the store being a FDM store, OR if the invoice is marked for delivery
+	- If Enabled - Should have Big QR code next to UPS barcode and "Signature Required" line right above it. 
+	- It will Laser Print two identical copies
+	- IF DISABLED - Will not have big QR code (may have "signature required" line) 
+	- If no "Signature required" line - Will print only ONE copy
+

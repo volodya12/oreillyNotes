@@ -1,0 +1,215 @@
+The first step in testing an API is to determine what sort of REST 
+requests can be made by the API and what the limitations are for each request. 
+This can be done by looking at the documentation.
+
+--------------- API TestFlow ---------------------
+#Project Name --> API V3
+	#TestSuite --> Customers
+		#TestCase --> Lookup
+			#TestSteps -> add #Assertions
+
+2000 = is in milliseconds
+2000 = same as 2 seconds
+20000 = same as 20 seconds
+55000 = same as 55 seconds
+
+	• Assertions
+		○ Contains
+			§ With Regular Expression (option)
+				□ To separate lines within regular expression, use (?m)
+				□ Beginning line ^ and Ends $
+				□ Example in here https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
+		○ Xpath Match
+			§ Select content from requests or response node and compare it with expected value
+			§ Applies only to XML data
+
+------------------------------------------Start Testing with REST API --------------------------------------------------
+##1. Use Swagger to document clearly described an API’s behavior
+
+##2. Questions to Ask API Developers when collecting information about API
+1. What endpoints are available?
+2. What HTTP verbs can I use with those endpoints?
+3. Are any of the verbs limited by authorization?
+4. Which fields are required in the requests?
+5. What are the validation limits on the fields?
+6. What response codes should I expect for a successful request?
+7. What response codes should I expect for an unsuccessful request?
+8. What sort of error messages will be returned in the body of an unsuccessful request?
+
+##3. Set up each of these requests in an API test tool
+##4. Set up "Happy path" with at least ONE correct Assertion
+		- If the response includes a body, there should be an assertion on that as well
+##5. Set up "Negative" tests (Optional but Preferred)
+
+------------------------ What includes in the Response to REST request ------------------------------
+1. HTTP header - describes the response
+	- Header includes: Access-Control headers - tell the requester what types of requests and headers will be allowed
+					 : Content- Type - the format of the information returned in the response
+					 : Server - the name of the server that responded to the request
+2. Response Code - describes the success or failure (Most common codes)
+	- 200/204 level responses indicate that the request was received, understood, and processed
+	- 400 level responses indicate that the request was received, but that there was an error from the client
+	- 500 level responses indicate that there was some sort of server error
+3. Response Body - includes requested or relevant information
+-----------------------------------------------------------------------------------------------------------------------
+#Tips using ReadyAPI
+
+- Right click on everything - you will find many other options/shortcuts
+- Structure your project - TestSuite -> TestCase -> TestSteps
+- Take time RENAMING TestSuite/TestCases to the point where by looking, you'll know what is being Tested
+	(Example: TestSuite for validating that Customer Data Updates work)
+	(Example: TestCase that tests increase of Reseller Discounts)
+- Get used to make LOTS of "Assertions" of any types (Expected Results)
+
+###Examine Logs as you Execute/Run API testing### - Learn to read LOGS
+	Save DATA
+-----------------------------------------------------------------------------------------------------------------------
+# REST API 
+- Unlike SOAP protocol which specifically uses XML, REST can work with different data format
+- JSON & XML are primary RESPONSE type SOAP UI is using  
+ ------ REST URL has three (3) main points = 'Endpoint' / Resource / Parameters  ---------
+	ex: http://maps.googleapis.com/maps/api/geocode/json?address=mailbourne
+		'Endpoint' - from: http - .com
+		'Resource' - from: maps - ?
+		'Parameters' - from: address - mailbourne
+---------------------------------------------------------------------------------------------------------------------
+THERMINALOGY
+
+# WSDL file - (Web Service Description Language)- Soap UI based files. Describes functionality of SOAP based web services. 
+ - SoapUI uses WSDL files to generate test requests, assertions, and mock services. 
+ - WSDL is soft of like Contract between the provider and the consumer of the service
+ - Determines UI behavior for Web Service
+ - SoapUI projects gets so big because they often contain the complete WSDL 
+
+
+--Swagger - documenting REST API's 
+- MockService - helps create comprehensive test cases without any resources (creates simulations)
+- Jasper - give ability create rich, highly detailed report, monitor, organize information
+- XPath - great tool for accessing, referencing, working with XML data. Extremely useful when testing API and services
+- H2 Database - Tracks test execution history. Can give accurate picture - Log reading. Ability to export data for further analysis
+	- Internal database maintained by ReadyAPI
+	- Tracks test execution history
+	- Results can be archived and loaded into other databases
+	- JDBC Drivers - (Java Database Connectivity) component that Enables Java language to interact/Access Database/Data. 
+	- Allows write program that can send SQL queries to diff. data sources
+	- Bundles Java Libraries
+	- Enable interaction with databases
+- Saxon uses XPath to process XML Data
+	- XSLT and XQuery processor
+	- Provides XPath Support
+	- XPath is extremely useful when testing API and Services
+	- JSONPath is also included
+- Groovy - Primary SoapUI scripting Language
+-HTTP Monitor - Binary protocol is NOT supported by HTTP Monitor
+
+- ReadyAPI uses JDBC Drivers to interact with Databases
+- Jetty - Web server - often used for machine to machine communications. 
+	- Java-Based Web Server
+	- Provided by Eclipse Foundation
+	- Used to host virtual services in ServiceV
+	- Works for SOAP, REST, JDBC, JMS
+- HermesJMS - component specifically designed for interacting with message bus
+	- Facilitates integration with JMS providers
+	- Makes it possible to send/receive messages to/from JMS queues
+	- Requires configuration and properly setting endpoints
+- XML - SoapUI (Projects) stored in Large XML files
+	- API stores its projects in XML file 
+- JMS - Java Message Service - formal communication that transmits between computer and network. It exchanges crucial data between computers rather than between users. 
+- Logging - Java-based logging utility: log4j
+	- ReadyAPI log
+	- HTTP log
+	- Jetty log
+	- Error log
+	- WSRM log
+	- Memory log
+	- Script log
+- Runners
+	- Enables launching major objects from the command line:
+		- testrunner
+		- loadtestrunner
+		- virtrunner
+		- securitytestrunner
+-Definitions are stored in XML file
+# Menu Tab - Header
+Integrations Tab - contains Integrations/Definitions that are installed within ReadyAPI
+Dashboard - Highly configurable overview of entire environment. 
+Projects - where user spends majority of time creating Tests. It provides overview/API/History of tests executions
+SoapUI Pro - place where user spends most of time, creating cases
+ServiceV Pro - Simulates SOAP/REST/JMS/JDBC apis
+LoadUI Pro - offers comprehensive set of predefined performance test, can be build upon soap ui test
+Navigator field - allows to search for an object
+Save - Saves Project
+Auth & Security - Configure API credentials
+Monitor APIs - Use SmartBear AlertSite to monitor APIs
+JIRA - Register an issue in JIRA
+Events - Manage message and API events
+Database - Configure project - wide database connection
+JMS - Configure JMS message bus connections
+Default environment - Edit, select environments for the project
+Proxy - Configure, enable/disable proxy for project
+
+Settings
+HTTP - control whether message can be compressed, decide authontication detail
+	- Set timeout and maximum connection details
+Proxy - firewall, configure proxy, monitor message service, to and from
+SSL - configure local keystore, Enable virtual service SSL, Certificate Store
+WSDL - control how soap ui behaves by received messages to and from web services. Cache WSDL for offline access or reduce overhead, Sample Values check box - generates basic data sent for all elements sent to web service
+REST - fine tune REST specific behaviors, and related how readyapi deals with schemas
+UI - customize soap ui interactions
+Editor - how u want to represent your information, what include on XML, font, validate responses messages, validate request messages before they are sent
+Tools - configure the path to some tools loaded on soap ui
+WS-I - (Web Services Interoperability) tool that validates WSDL, configure how it will behave.  
+WS-A (Web Service Addressing) - controls soap ui default behavior for WS-A elements 
+Global Sensitive Information Tokens - see the preconfigured list of tokens that soap ui can check for to determine if services are devulging sensitive details for attacker. User can add new tokens.
+LoadUI - tune how performance test behaves. Path to statistic results, Show cloud test price dialog, configure amount of system resources to allocate 
+Test History - keeps helpful records of test runs. Consumes lots of storage
+Virtual Service Transaction - controls how many artifact are retained. Setting help tune how test cases are performed in case of an error, manage log history and so on
+JIRA - bug an issue tracking. Inform readyapi for specific jira instances
+ReadyAPI - determine/specify which editor want to use SOAP or REST along with other behaviors and locations
+Coverage - whether coverage report should be created for you by default
+Code Template - Collection of shortcuts to make scripting easier, more for developing and extensive scripting
+JDBC drivers - contains all sorts databases/installs databases
+Debug Context filter  - provide shortcut to reduce amount of typing to debug scripts 
+Zephy Integration - design/manage to track tests.  Ability to view Test Results in JIRA
+Internal Browser - renders basic web pages. Configures the behavior. 
+
+Workspaces
+	- Collection of related projects
+	- Definitions are stored in XML files
+	- Workstations are easy to switch between projects
+-----------------------------------------
+V = test
+Log.info <variable> = prints variable
+
+## For SOAP Test - Need WSDL File - Contains ALL info about Web Service
+	- How we can access it
+	- Its functionalities
+	- What kind of request need to send
+	- What kind of response we will get
+	- Once WSLD file is loaded in ReadyAPI - it will list all Relative endpoints, functionalities
+	- SOAP Request will Scan WSLD file and ADD as many properties as written in the File
+	- SOAP Request gets Response in XML only (no JSON)
+	
+	• Steps to Follow for SOAP Project - WSLD File
+		○ Create SOAP Project using WSDL File BY click "New Project"
+			§ <Project Name>
+			§ Type: "WSDL Definition (SOAP)"
+			§ Input: <URL or Path File>
+		○ Create Test Suite
+		○ Create Test Case
+		○ Add SOAP Request (Test Step)
+		○ Input any properties into XML or FORM tab
+		○ Execute Test Case
+	
+## REST Test - Can be ran with WADL and URL file
+	- REST supports many formats; XML, JSON, HTML, RAW, OUTPUT
+	• Steps to Follow for REST Project - with given URL (endpoint)
+		○ Click "New Project"
+		○ Under "Definition" Tab - chose either "Determine Automatically" or "WADL Definition (REST)"
+		○ Or Under "Endpoint" tab - Input URL (endpoint) with Specific Method (GET …)
+		○ Create Test Suite
+		○ Create Test Case
+		○ Add REST Request (Test Step)
+		○ Input properties into FORM tab
+		○ Execute Test Case
+		○ OR Once Project Name is create, Just Click + sign next to API (on left panel under <ProjectName>)

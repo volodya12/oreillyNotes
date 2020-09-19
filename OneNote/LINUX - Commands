@@ -1,0 +1,90 @@
+LINUX - Commands 
+
+Linux Programs
+Cat
+grep
+less
+more
+head
+tail
+
+Navigation commands
+\ = represents 'space'
+Tab (double tab)
+Alias
+cd
+ls
+pwd
+chmod
+chown
+groups
+df -h
+diff
+echo
+locate
+file
+find
+finger
+tar
+gzip
+pushd
+popd
+which
+history
+Shutdown
+reboot
+
+Getting Help commands
+man
+whatis
+apropos
+--help (--help | grep size
+Watch
+Watch free -h
+Free -h
+top
+
+Working With Files
+mkdir
+rmdir
+touch
+cp
+mv
+rm
+
+Working with Users
+users
+id
+ssh
+uname
+whoami
+sudo
+su
+passwd
+ping
+ps
+w
+watch free -h (monitor e/ 2 sec)
+kill <PID>
+killall <programName>
+exit
+Ctrl+L = Clear
+Ctrl+Shft+(+) = Zoom Fontsize
+Ctrl+ (-) = Zoom out Fontsize
+
+---------------------------------------
+# Combining two Bash Commands
+
+A ; B = Run A and then B, regardless of success of A
+A && B = Run B if A succeeded
+A || B = run B if A fails
+A & = run A in background
+----------------------------------
+# Other Commands
+
+# lsblk - list all drives, devices
+# lspci = lists PCI devices 
+	-lspci | grep VGA
+# lsusb = lists all USB
+# sudo touch /forcefsck = check for Harddrive make sure its ok at boot up
+

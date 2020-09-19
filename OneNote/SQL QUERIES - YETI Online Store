@@ -1,0 +1,13 @@
+SQL QUERIES - YETI/Online Store
+
+#Yeti - Ship to home- JSON invoicing
+-- YETI
+Select * from order_json where external_id = <onlineOrderNumber>
+
+# Online Invoicing stored in JECOMMO
+-- as400
+SELECT *
+FROM JBRDATA.JECOMMO
+WHERE EOSPCINST = :orderNumber
+
+

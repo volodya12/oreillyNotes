@@ -1,0 +1,112 @@
+-- SQL Queries - ITEM_MASTER queries --
+
+PTEST-193568 - Item_master - Find Item info **
+PTEST-192725 - Select Stocking/Non-Stocking Item
+PTEST-193448 - Select Item - <PricingData> - With and Without Core
+PTEST-182159 - OreillyInvoiceData - Catalog Info
+PTEST-205735  - Battery - Stocking/Non-Stocking
+Other RetailData Queries https://confluence.oreillyauto.com/display/RetailQATeam/I-MIGRATION005+-+Issues+and+Test+Case+Templates
+
+PTEST-204694 - Find Item with Multiple Barcodes - Stocking NonAutoload
+PTEST-204777 -  Find Item with Multiple Barcodes - NON-Stocking NonAutoload
+PTEST-204696 - Find ALL Barcodes for an Item 
+PTEST-204719 - Verify if Item is Autoload
+PTEST-178285 - Get Pricing for an Item - For Retail Customer (PricingData)
+
+# Restricted Items JIRA Query
+project in ("iSeries Tests", "Linux Tests", "POS Tests") AND "QA Test Case Type" = Query and text ~ "restricted item"
+
+# Update QOH
+--retaildata
+Update item_master
+Set quantity = Jsonb_Set(quantity, '{quantityOnHand}', To_Jsonb(${QOH||0||Literal}$))
+Where stocking = True
+And (line, item) = (Upper(${Line||||String}$), Upper(${Item||||String}$));
+
+# Item Information about Item
+Select * from public.item_master
+where line = :line
+and item = :item
+
+# NonStocking Item
+SELECT *
+FROM retaildata.public.item_master im
+WHERE im.stocking = 'false' 
+
+PricingData - Shows ALL fields
+Select *
+From netpricecalculator.line_item i
+Inner Join netpricecalculator.store_specific_price p
+On i.id = p.line_item_id
+Inner Join netpricecalculator.enterprise_price e
+On i.id = e.line_item_id
+Where (i.line, i.item) = (Upper(:Line), Upper(:Item))
+
+PTEST-180660 - Professional Customer Pricing - (Key: CustomerType, Line, Item)
+
+# Find Item with Core - Battery Eliminated  PTEST-230435
+--retailDataQuery
+Select item_master.line, item_master.item, opporderdetail.selling_core_price as Core_Price
+from item_master 
+left outer join opporderdetail
+on item_master.line = opporderdetail.line and item_master.item = opporderdetail.item
+where stocking = true
+and selling_core_price > 0
+and item_master.line <> 'SSB'
+
+# Find Stocking Item
+--RetailData
+Select line, item, (quantity->>'quantityOnHand')::Integer As "QOH"
+From item_master
+Where stocking = True
+And (quantity->>'quantityOnHand')::Integer > 0
+Order By Random()
+Limit 1
+
+--RetailData- Stocking Item with Core
+Select *
+from public.opporderdetail i
+inner join item_master c
+on i.item = c.item
+where stocking = true
+and i.selling_core_price > 0
+And (quantity->>'quantityOnHand')::Integer > 0
+order by random()
+Limit 1
+--if change "on i.item" clause to "i.line", will give more results but must chose 2nd column line & item 
+
+# Select Random Item with Barcode to Scan
+--RetailData
+Select line, item, barcode_quantities
+From item_master
+Where stocking = True
+Order By Random()
+Limit 1
+
+# Shows count of Barcode an Item has
+--retaildata
+WITH barcodes AS(
+        SELECT line, item, json_data.key AS barcode, json_data.value AS quantity
+        FROM    item_master,
+                jsonb_each(barcode_quantities) AS json_data
+)
+SELECT line,item, COUNT(*) AS count
+FROM barcodes
+GROUP BY line,item
+HAVING COUNT(*) > 1
+ORDER BY RANDOM()
+FETCH FIRST 100 ROWS ONLY
+
+# Select Random Hazardous Item
+-- RetailData Query
+Select line As "Line", item As "Item",
+        (quantity->>'quantityOnHand')::Integer As "QOH",
+        (quantity->>'quantityOnOrder')::Integer As "On Order",
+        (quantity->>'quantityOnBackorder')::Integer As "On Backorder",
+        (quantity->>'minOrderQuantity')::Integer As "Min",
+        (quantity->>'maxOrderQuantity')::Integer As "Max",
+        (status->>'hazardousWasteType') As "Hazardous"
+From item_master
+Where status->>'hazardousWasteType' = 'Y'
+Order By Random()
+Limit 1

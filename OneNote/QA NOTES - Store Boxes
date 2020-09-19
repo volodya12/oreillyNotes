@@ -1,0 +1,53 @@
+-- QA Notes - Store Boxes --
+
+TEST BOXES (Test system) ("Log in to Any Test System")
+Production box can look into: 4031
+Test2 (oreillyauto.com) = Connected to 9998
+Test1 (oreillyauto.com) = Connected to 9990
+
+#Production Test Box - The one with versions behind of what is being tested currently
+#Find real store number associated with QA box = Open "TeamNet" browser - Directory - Key under "Location Search" - <Location Number>
+
++9999 = STORE NUMBER FOR TEST BOX 9999 = 4077
+	SHIP to HOME orders
+	FCO - User: Vlad
+	--- Online Store - 904 East State HWY 76, Branson, MO, 65616 ---
++9998 = FOR TEST BOX 9998 = 4034
+          OPP should ALWAYS be Enabled
+	Fleet Management (DFM) is Disabled
+	--- Online Store - 2123 South Campbell Ave, Springfield, MO, 65807 ---
++9996 = STORE NUMBER FOR TEST BOX 9996 = 259
+	OPP - Item Sourcing, Checking parts in diff stores, Make orders from other Stores/Vendors/DC
+	--- Online Store - 3038 West Republic Road, Springfield, MO, 65807 ---
++9994 = STORE NUMBER FOR TEST BOX 9994 - 4048 
+	(Production Store)
+	R-CAT - Redesigning Old Catalog - Shift and Click on Old Catalogr = New Catalog
+	SOLAR is Enabled
+	--- Online Store - 3930 South Campbell Ave, Springfield, MO, 65807 ---
++9993 = STORE NUMBER FOR TEST BOX 9993 = 135
+	--- Online Store - 1425 N Kansas Expressway, Springfield, MO, 65802 --- 
++9990 = STORE NUMBER FOR TEST BOX 9990 = 4047 - 1020 S Ash St. Buffalo, MO
+	Online PickUp In Store (BOPIS orders) Test 1
+	FCO (username: arussel Pass: QATestsInProd) (Test1)(Test2 - is connected to this TB only 
+	Fleet Management (DFM) is Enabled
+	Hub Manifest - Routes
+	----- Online Store - 1020 South Ash Street, Buffalo, MO, 65622 ----
+	
+-- OPP ENABLED everywhere now	
++9982 = STORE NUMBER FOR TEST BOX 9982 = 2891
+	-- Online Store - 4315 SOUTH WESTERN AVENUE, LOS ANGELES, CA, 90062 --
+++JBRDATA.JIMAST - Contains Stock Items that have MAX/MIN of > 0 (And Autoloaded)
+              -JIMAST may also contain Non-Stock but have only MAX/MIN = 0 
+              -MAX/MIN = is the maximum quantity the STORE should keep on Hand and Minimum Amount
+
++9878  = STORE NUMBER = 4043 
+	- NPC is ON
+	- VR2 is ON
+	
+4077=9999
+4034=9998
+259=9996
+4048=9994
+135=9993
+4047=9990
+2891=9982

@@ -1,0 +1,111 @@
+SQL QUERIES - Invoice VERIFIC. - RETAILDATA
+
+--Full Invoice Verification PTEST-178129 - *Query - fullInvoice_dataCustomerInfoForInvoice*
+select jsonb_pretty(invoice_data) from invoice inv 
+WHERE inv.invoice_data#>>'{legacyId, invoiceNumber}' = :invoice 
+---same as---
+Select *
+From retaildata.public.invoice 
+where invoice_data-> 'legacyId' ->> 'invoiceNumber' = :invoice#;
+
+# When AS400 is Down - Find Invoice by Time (invoices will not show in Invoice Reprint screen)
+--retaildata
+Select 
+invoice_id,
+invoice_data->'legacyId' ->> 'invoiceNumber' as "Invoice_Number",
+invoice_data->>'transactionTime' as "Transaction_time",
+invoice_data->'legacyId' ->> 'invoiceDate' as "Invoice_Date",
+invoice_data#>'{basket,items}'->0#>'{item}' as "Item",
+invoice_data#>'{basket,items}'->0#>'{line}' as "Line"
+from invoice inv
+where invoice_data->>'transactionTime' LIKE '%HHMM%'    -- or BETWEEN clause
+order by invoice_data-> 'legacyId' ->> 'invoiceDate' desc
+
+# Routine to Find Invoice and Verify invoice data - AS400Down = Down
+PTEST-239982
+
+# Data Verification - Catalog PTEST-182159
+
+#JSON Data Verification Queries
+#JSON - Display Payment Method for Invoice  PTEST-176818
+#JSON - Display Customer Information for Invoice PTEST-176821 
+#JSON - Displays Item Information in Basket  PTEST-176314 
+#AS400 - Information about Stock Item  PTEST-176499
+#PricingData - Verify Part Exist in Pricing Database PTEST-168946
+#PricingData - Get NPC enabled Pricing PTEST-178285
+
+-- retaildata - Item Verification PTEST-176314
+SELECT jsonb_array_elements(I.invoice_data#>'{basket, items}')#>>'{sequenceNumber}' AS SequenceNumber, 
+jsonb_pretty(jsonb_array_elements(I.invoice_data#>'{basket,items}')) AS Item 
+FROM public.invoice I
+WHERE I.invoice_data#>>'{legacyId, invoiceNumber}' = :invoicing
+
+--AS400 - Item Verification - NPC disabled - pricing
+SELECT 
+I.IMITEM AS item,I.IMLINE AS line,
+I.IMCORC AS coreCost,I.IMCORP AS corePrice,
+I.IMSCST AS itemCost,I.IMUSER AS netPrice,
+I.IMSCD AS saleCode,I.IMLIST AS listPrice,
+I.IMSCST AS storeCost,I.IMPOSD AS description,
+DECIMAL(I.IMSCST*:Quantity, 10, 2) AS extendedCost,
+'true' AS inItemMaster,'true' AS stockingItem,
+I.IMWARR AS warrantyCode,
+DECIMAL(I.IMUSER*:Quantity, 10, 2) AS extendedPrice,
+T.lastTransactionDate AS lastTransDate,
+I.IMJUM AS unitOfMeasure,I.IMRDAT AS recordLoadDate,
+DECIMAL(I.IMCORC*:Quantity, 10, 2) AS extendedCoreCost,
+DECIMAL(I.IMCORP*:Quantity, 10, 2) AS extendedCorePrice,
+I.IMQBO AS quantityBackOrdered
+FROM JBRDATA.JIMAST I
+JOIN (
+        SELECT 
+        IM.IVLINE AS line, 
+        IM.IVITEM AS item,
+        MAX(IM.IVDATE) AS lastTransactionDate
+        FROM JBRDATA.JINVMOV IM
+        GROUP BY IVLINE, IVITEM
+        ) AS T
+ON (I.IMLINE, I.IMITEM) = (T.LINE, T.ITEM)
+WHERE IMITEM = :Item
+AND IMLINE = :Line
+
+--retaildata - Payment Invoice Verification PTEST-176818
+SELECT 'Payment' AS paymentGroup,ROW_NUMBER() OVER(ORDER BY invoice_data->'payments') AS SequenceNumber, 
+jsonb_pretty(jsonb_array_elements(I.invoice_data#>'{payments,payments}')) AS tender
+FROM public.invoice I
+WHERE I.invoice_data#>>'{legacyId, invoiceNumber}' = CAST(:Invoice AS VARCHAR(8))
+GROUP BY paymentgroup,tender,invoice_data
+UNION
+SELECT 'Refund' AS paymentGroup,ROW_NUMBER() OVER(ORDER BY invoice_data->'payments') AS SequenceNumber, 
+jsonb_pretty(jsonb_array_elements(I.invoice_data#>'{payments,refund}')) AS tender
+FROM public.invoice I
+WHERE I.invoice_data#>>'{legacyId, invoiceNumber}' = CAST(:Invoice AS VARCHAR(8))
+GROUP BY paymentgroup,tender,invoice_data
+UNION
+SELECT 'Exchange' AS paymentGroup,ROW_NUMBER() OVER(ORDER BY invoice_data->'payments') AS SequenceNumber, 
+jsonb_pretty(jsonb_array_elements(I.invoice_data#>'{payments,exchanges}')) AS tender
+FROM public.invoice I
+WHERE I.invoice_data#>>'{legacyId, invoiceNumber}' = CAST(:Invoice AS VARCHAR(8))
+GROUP BY paymentgroup,tender,invoice_data
+ORDER BY paymentgroup,sequencenumber
+
+--retaildata - Verify Customer info PTEST-176821
+SELECT DISTINCT OreillyInvoice.element, jsonb_pretty(OreillyInvoice.value::jsonb), jsonb_typeof(OreillyInvoice.value)
+FROM invoice inv, 
+LATERAL (
+        SELECT * FROM jsonb_each(inv.invoice_data) i(element, value)
+        ) AS OreillyInvoice
+WHERE inv.invoice_data#>>'{legacyId, invoiceNumber}' = :invoice
+AND OreillyInvoice.element = 'customerInfo'
+
+-- JSON BOPIS Online Order PTEST-182609
+SELECT invoice_data -> 'legacyId' -> 'invoiceNumber' as invoiceNumber,
+invoice_data -> 'deliveryInfo' -> 'specialInstructions' as specialInstructions,
+invoice_data -> 'terminalID' as terminalId,
+invoice_data -> 'customerInfo' -> 'retailCustomerNumber' as retailCustomerNumber,
+invoice_data -> 'invoiceTotal' as invoiceTotal,
+invoice_data -> 'basket' -> 'items' -> 0 -> 'totalTax' as totalTax,
+invoice_data -> 'counterNumber' as counterNumber,
+invoice_data -> 'basket' -> 'items' -> 0 -> 'status' as status
+FROM retaildata.public.invoice
+WHERE invoice_data-> 'legacyId' ->> 'invoiceNumber' = :invoice#;

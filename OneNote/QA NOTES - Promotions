@@ -1,0 +1,47 @@
+-- QA Notes - Promotions --
+
+## Find Promotion Item in BackOffice 
+Item with Core. Finds out Core Price and If item is Stock or NonStock
+PTEST-172870
+
+
+# Use backoffice to look up promotions and compare prices/warranty prompts
+# Promotions can be edited but PREFERRED NOT because it can messup regression
+# During Regression test, only certain promotions suppose to be active, but if you modify some of them, it may fail regression. 
+# Promotions will only work if it meets ALL of the requirements 
+# You may look the item in the Backoffice and Pull it from JNSPR/JIMAST and edit 
+# The item must be active/exist in the store for it to work as promotion
+# Promotion will only apply the best price for the item. If Promotion says Buy 3 for 10$ but item cost 5$, promotion won't work cuz it bits the promotion. 
+# JIMAST.IMUSER is the actuall price of an item
+# Code D - If promotion bundle is buy 3 and you get discount. "D" will cancel that promotion and return discounted price to Regular price
+
+- BackOffice
+Select *
+FROM promotions
+where promotions.promotion_id = '0099992058000001ID'
+  
+Backoffice - when searching for an item, the engine search looks in Backoffice (AKA enactor) to see if there is any prompts/warranty/restrictions/promotions associated with that ITEM and shows them in POS as prompt
+	- Query for All GROUP ID that user can search by
+(Select distinct Group_Id
+from ENACTOR.PRODUCTPRODUCTGROUPS)
+	- Search by Group ID
+Select Product_Id, Group_Id
+from ENACTOR.PRODUCTPRODUCTGROUPS
+where Group_id = '<Enter Group_ID name here>'
+order by Product_Id
+
+
+# can only be used one at a time
+# Promotion ID - last two letters is a code
+EX: 192374938479JDLFKOC - Oil Change
+# Time Table tab - shows valid/expired promotions - dates
+# Customers tab (included Groups tab)- includes special customers
+# Region and Location tab - includes special stores that have promotions in specific areas
+# Item sets tab - purchasing sets of specific items where promotion is included. 
+Purchasing special set for promotion to apply
+
+# <RewardValue> option - means that every item purchased will be that price (Discounted)
+# <thresholdValue> - Max amount of quantity can be purchased
+# <includedProduct> - Product that included in specific promotion
+# <multibuyReward> - include all specifications of the promotion
+# <multibuyRewardid> - Specific ID for reward

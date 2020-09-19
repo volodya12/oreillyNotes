@@ -1,0 +1,69 @@
+Date SQL Format
+
+#DATE
+Select Month(current date), Day(current date), Year(current date), ohdate
+FROM JBRDATA.JQOH
+(show results)
+
+#DATE
+Select (Month(current date) * 10000) + (Day(current date) * 100) + (Year(current date) - 2000), ohdate
+From jbrdata.jqoh
+(MDDYY)
+
+Select ADD_MONTHS('11/12/19', 3) - adds 3 months/(-3) subtracts 3 months
+Select MONTHS_BETWEEN('12/12/19', '02/23/12') - gives results of how many months in between
+
+#TIME FORMAT
+Insert(Insert(Char(OHTIME), (Length(Trim(Char(OHTIME))) - 1), 0, ':'), 
+(Length(Trim(Char(OHTIME))) - 3), 0, ':') As "ChangeTime", 
+
+### DEFINITIONS:
+
+TRIM() function removes the space character OR other specified characters from the start or end of a string.
+
+By default, the TRIM() function removes Left and Right spaces from a string.
+EX: Select Trim(' Sample ')
+(show result) = ('Sample')
+
+Note: LTRIM removes all white spaces from the beginning of the string.
+      RTRIM removes all white spaces at the end of the string.
+	
+#CHAR() (Character) - Converts Integer, Decimal, Number, BigDecimal INTO a Character (String)
+IF you comparing two tables (DATE) and in one Table - (DATE) an Integer, The other Table (DATE) an String, IT simply won't read the table, will not show results
+Its good habbit to convert data in both tables into a STRING
+
+Length() (LEN) = Returns how many letters in a String (If there is "spaces", it will include them. "Los Angeles" returns 11)
+EX: Select Length(String)
+	From Sample
+(show results) = 6
+(LENGTH) also allows to move symbols within the STRING
+
+EX: Insert(Insert(Char(OHTIME), (Length(Trim(Char(OHTIME))) - 1), 0, ':'), (Length(Trim(Char(OHTIME))) - 3), 0, ':') As "ChangeTime"
+Length of (OHTIME)(MTTSS)(24419) = 5
+++5 minus(-1) = 4 (Moves 4 spaces from the START)
+++5 minus(-3) = 2 (Moves 2 spaces from the START)
+Semicolon(:) moves (left)(-1) one space AND (left)(-3) three spaces 
+(show resulting) 2:44:19
+
+	
+INSERT is diff. from Insert Into - Inserts character into results
+INSERT(string, position, number, string2)
+
+string:	Required. The string that will be modified(replaced)
+position:	Required. The position where to insert the string2 (Start front of word)
+number:	Required. The number of characters to replace
+string2:	Required. The string to insert into string
+
+EX: SELECT INSERT("W3Schools.com", 1, 9, "Example")
+(show results) - Example.com
+
+Hard Example: Insert(Insert(Char(OHTIME), (Length(Trim(Char(OHTIME))) - 1), 0, ':'), (Length(Trim(Char(OHTIME))) - 3), 0, ':') As "ChangeTime"
+(show results)(default: Time(hmmss) - 94152) - 9:41:52   
+
+Tricky AND/OR clauses (Order of Operation)
+Select * from Emp
+Where (COM is NULL OR COM = 0)
+And Sal > 1100 AND Sal < 5000 AND Sal <> 1500
+++This will run true because OR in in Parenthesis
+
+

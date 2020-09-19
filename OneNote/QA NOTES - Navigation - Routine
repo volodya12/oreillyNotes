@@ -1,0 +1,164 @@
+-- QA Notes - Navigation - Routine -- 
+
+----------------------
+OPP - Item Sourcing - Test Cases
+https://jira.oreillyauto.com/browse/PTEST-208539
+https://jira.oreillyauto.com/browse/PTEST-208555
+https://jira.oreillyauto.com/browse/PTEST-208558
+https://jira.oreillyauto.com/browse/PTEST-208561
+
+# Create Entire Transaction via Groups: PTEST-121623
+
+# PTEST-207877 - Test Contains many good Routines, creating sale (PTEST-121623 - actual routine) Including Run DayEnd
+# PTEST-214057 - Test contains steps for what happens after Click "Finish Invoice" whether its COD or NOT
+Navigation - Create Transaction and Navigation info - Sale with COD Customer
+# Create Transaction - OPS - Routines 
+PTEST-121623  - Create Invoice with Pro cust
+Navigation - Add Professional Customer to the Invoice
+Navigation - Enter Sale Item
+Navigation - Finish Invoice Button
+Navigation - Change Additional Information Screen - No Change
+Navigation - Select Full Amount for Cash
+
+# Add Orewards Customer to Invoice PTEST-230596
+
+# Record Invoice Number PTEST-212805
+Navigation - Record Invoice Number
+
+Navigation - Sign into OPS
+#Execute the following groups in PTEST-21065
+Navigation Info - Access POS
+Standard Login Routine
+
+#Exit and Sign off
+Execute the following groups in PTEST-67726:
+Navigation - Exit and Sign-Off
+----------------------
+#Find Stocking/Non-Stocking Item
+Execute the following group in PTEST-192725:
+
+#Data Prep - Find Store Number
+Execute the following group in ITEST-875:
+Preparation - Get Store Number
+------------------------
+# Execute the following groups from the PTEST-36633 routine using the <CMCUS#> previously recorded:
+Data Preparation - Add Card On File
+Data Preparation - Remove Card On File
+--------------------------
+#Execute the following groups from the PTEST-32047 routine: - Create Transaction/Without Customer
+Navigation - Create Transaction
+Select Full Amount for Cash/Credit
+Partial Amount for Cash/Credit
+
+# Execute the following groups from the PTEST-77691 (PTEST-124702) - Add Retail Customer
+Navigation - Create Transaction
+
+#Update O'Rewards Customer PTEST-48921
+Navigation - Create Transaction - Update Customer Information 
+
+# Execute the following groups from test routine PTEST-36580: - Pro Customer
+Navigation - Add Customer
+Navigation - Create Transaction
+
+# Enter Part Number
+Qty: Key “1”
+Item: Key <IMITEM>
+Line: Key <IMLINE>
+Click “Add”
+---------------------------
+#Execute the following groups from the PTEST-21730 routine: - Credit Tender 
+Tender as Credit Routine - Tender Exact Amount with Button - Dip
+
+#Execute the following groups from the PTEST-17105 routine: - Cash Tender 
+Tender as Cash Routine - Tender Partial Amount - Not Final Tender
+
+#Execute the following groups from the PTEST-21731 routine: - Debit Tender
+Tender as Debit Routine - Keying Balance Due - Final Tender - Dip
+
+# Execute the following groups from the  PTEST-38659 routine: - Manual Card Entry/
+Tender as Card Routine - Fleet Card - Remaining Balance Due Payment Denied
+Tender as Card Routine - Fleet Card - Partial Payment Denied
+
+# Execute the following groups from the PTEST-36645 routine: - Card on File
+Tender as Card on File - Tender Exact Amount with Button
+
+# Execute the following groups from the PTEST-21732 routine: - Fleet Cards
+Tender as Fleet Routine - Mastercard Fleet
+
+# Execute the following groups from the PTEST-21733 routine: - Check
+Tender as Check Routine - Tender Partial Amount - Not Final Tender
+
+# Execute the following groups from the PTEST-21734 routine: - Gift Card
+Tender as Gift Card Routine - Tender Exact Amount with Button - Swipe Card Entry
+
+----------------------------
+#Navigation - Finish Invoice - No Customer
+Steps:
+Finish Invoice
+Click "Finish Invoice F1" button
+"Item Not In Stock" popup is displayed
+
+Continue
+Click "Confirm" button
+"Retail Customer Search" screen displays
+
+Continue
+Click "Continue" button
+"No Customer Selected" popup displays.
+
+Continue to Tender Selection
+Click "Continue Without Customer" button
+"Tender Selection" screen displays.
+--------------------------------------
+# "Smart Return" 
+steps - New Return/Core Return/Warranty Return/Warranty Replacement/
+PTEST-204619 - Group: Navigation - Warranty Return - Professional Customer - Not for Delivery - Without Receipt
+
+# Execute the following groups from the PTEST-36175 routine:
+Navigation - New ReturnNavigation - Return to Same Card
+
+# New Return - common test routine
+PTEST-172959 - New return/Transaction Recall Steps
+-------------------------------------
+# Navigation - Tender Selection
+Steps:
+Tender as Cash
+Click "Cash F4" button
+Displays "Tender Selection" with different amount
+
+Select Full Amount
+Click "$<##.##> F2" button
+Transaction Complete
+--------------------------------------
+# Execute the following groups from the LTEST-2051 routine: - Linux (Option 1)
+Navigation - Connect to a Test System
+Navigation - Command Line
+----------------------------------------------------------------
+Copy the Results into Notepad ++ and 
+Enable JSTool from
+[Plugins ->JSTool -> JSFormat]
+
+Results are shown in JSON format
+----------------------------------------------------------------
+# Check if Stocking Item exist in Pricing Database
+Execute the following group in PTEST-168946:
+Query - Data Preparation - Part's Existence in Pricing DB
+--------------------------------------
+# Sysdev/AS400 Invoice Table Verification
+JORHSH/JORHSD/JCCINF/JORPMT/JPMTXMIT/JCCXMIT/JHXMIT
+Execute the following group from the PTEST-36573
+
+#Swagger – Net Price Calculator PTEST-176500
+JSON Full Invoice Information PTEST-178129
+Professional Customer Routine PTEST-172924 – COD and NonCOD
+Determine NPC Status Enabled/Disabled PTEST-103093
+Select Stocking Item PTEST-147577
+Display LSTDIV value – List Price % ITEST-770
+Check Pricing Data on AS400 PTEST-178325
+Check Pricing Data on NPC PTEST-178285
+
+
+# Appearance - Text- Headers - Buttons and more
+PTEST-79301
+PTEST-190382 - Button on the Panel
+	reporter = BLIETZ and "QA Test Case Type" = Appearance 

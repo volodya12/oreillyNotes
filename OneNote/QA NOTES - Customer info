@@ -1,0 +1,48 @@
+-- QA NOtes - Customer info --
+
+-------------------Different Customers types/ Daily/Weekly -----------------------------------------------------
+
+#Customers: U, M, A, D, nonCOD - Gets Retail price, NOT professional pricing
+Customer Types
+https://confluence.oreillyauto.com/display/ISPricing/Customer+Type+to+Customer+Group+Conversion
+
+# Daily Customers - Pay for Invoices at the END of the Day
+# Weekly Customers - Pay for Invoices at the END of the Week
+	- There is Daiily/Weekly Transaction menu to find Invoices for Dayily/Weekly customers
+	- Customer Inquiry and Maintenance -> Daily/Wekly
+	- Couple tables needs to be checked to find out if it writes to them
+	- Check for Daily/Weekly reports if it writes correctly
+# Neither Daily or Weekly - Pay for Invoices at the END of the Month
+# NON- COD Customers  - Pay for Invoices at the END of the Month (On Account)
+# JSPRC - Table that contains Special Price Customers. A flag 'Y' should be set for CMSPRC in JBRDATA.JCUST for Special Pricing Cust. 
+-----This step is only performed for customer accounts who have special/flex pricing. These accounts are identified with a 'Y' value in the CMSPRC field in the JCUST file. If a customer has this flag, then you need to look in the JSPRC file for that customer account number. The records for that account number show you the line code (SPLINE), product line (SPPLCD), and product subcode (SPSUBC) for items that this customer has flex pricing on. The JSPRC file also shows the discount type (SPDTYP) and the pricing percentage (SPUPP) that is used in the flex pricing formula.
+--Price WILL NOT Adjust (even for Special Price Customers) if (SPDTYPE) is (JP)  -- Find this information in (Price Comparisons) Confluence page. 
+
+#Bid pricing - Customer negotiates the price with OReilly and agrees on terms if OReilly bids their own pricing based on other Auto Part company's prices. Pricing team will do their research to find out pricing in other stores and propose deal to a customer
+	- Link for bid Pricing "https://confluence.oreillyauto.com/display/~SCURRY4/Professional+Sales+Setting+Bid+Pricing+Use+Case"
+	- effective up to ONE year
+	- Bids often used customers for Government, schools, etc
+	- O'Reilly decides whether the customer receives a "locked in" bid price or if the customer is allowed to receive special offers which offer a price lower than the bid price.
+#Pub pricing - Publication/Flier pricing. When customers recieve flyers/ads from stores by mail with limited time offers on specific days and times. Those would be the Pub pricing
+#Publication/Flyers - the way it works - >
+		1) Select Discount/Overrides-> Click Publication/Flyers-> Select <21339> POS-KJH-PUB Sale ITEMS". 
+		2) Now, enter the Item, the price should change from original to Publication price (price offered in Publication or Flyer)
+			3) "Special Offer" will show with Pub discount - as result of Publication/Flyier Activated'
+			Also, "Total Promotional Savings" will show at the bottom with amount of savings. 
+	##Make sure the item EXIST in the JIMAST for Publication/Flyer Discount would work. 
+	##If Publication/Flyer discount didn't work, check that Item you've selected matches the 'PUB Number' in VR and 'Promotional_Batch' or could be different name. So that right Pub Discount is selected
+#May be found in:
+JBIDH
+JBIDD
+
+percentage - will show by percentage, normally offered by percentage
+
+flex bid - offered bid pricing or pub pricing
+low pricing - bid pricing, pub pricing or flex bid pricing
+bid pricing only - only bid pricing customers, NOT low or flex
+
+#Type of Customers - Icons (representing
+Professional Customer - Suitcase
+Retail Customer - 		head and body
+Retail O'Rewards Customer - Big O with O'Reailly flower inside
+Employee Account - 	Big O'Reilly Flower

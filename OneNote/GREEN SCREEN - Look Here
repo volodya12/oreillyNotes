@@ -1,0 +1,53 @@
+-- Green Screen - Look Here --
+
+--------------------------- JOB LOGS ------------------------------
+# DSPJOBLOG - displays job logs in current state
+	(if user called a program and nothing happened, check dspjoblog to see what happened)
+#WRKJOB - display logs (mainly for jobs that are RUNNING)
+  #4 - working with spooled files (Jobs that are NOT running anymore/Not Active/Stopped running)
+  #10 - jobs that are running or ran
+
+#WRKOUTQ QEZJOBLOG - Jobs that are already Performed/Done
+ 
+#WRKJOB (F4) - SEARCH FOR SPECIFIC JOB(info needed: job name/User/Job number)
+	                                                                    Example: Job 055763/QSECOFR/QPADEV000H
+
+#RQ JJOBLOG - log that has very important messages
+
+#WRKOBJLCK JDE300A *DTAARA - View Locks Dayend
+#WRKOUTQ qez* - View All JOb Logs (Very helpful LOG)(#5-Display)(F6-Bottom page)
+#WRKSPLF - Work with all Spooled files - see report for running programs (locate program just executed)
+------------------------------------------------------------------------
+------- Dead Jobs ----
+***WRKOUTQ QEZJOBLOG*** - dead jobs, that's where interactive jobs go when they're no longer active
+Shft+F6 - bottom of page
+Look for QPADEV…  - Job number - Notice when u sign  in - Top Right
+if YOU have an error and then you sign the job off, when you go back in, you can use the display name to 
+find the job in QEZJOBLOG
+
+------------------------------------------------------------------------
+# Print Queues
+#WRKOUTQ -     Displays all Queue files/Print files
+#Work with ALL spooled files
+#From dspmnu mst001m, press SHFT + F2 for spooled files for specific printer, Key 5 - display spooled files
+# WRKSPLF - work with spooled files - jobs that running - See REPORT
+
+#Working with Spool Files - will show all printed files/actions/
+Ability to manage files/delete/view and more
+ wrksplf *all 
+ wrkoutq
+wrkoutq qprint - View Pending Print reports in Legacy
+
+#Printed jobs (send in Queue)  - job log, stored here
+- This is where jobs logs are stored when they stop running
+call for: wrkoutq qezjoblog
+Press F11 - Columns: Job/Date/Time - most important to notice (always go bottom of the page)
+
+#WRKOBJQ QBATCH - Jobs in Queue - Stuck
+
+#When a pages goes to print, before that, the actual job goes thru Job Queues and generates a PDF to print (on Linux), Once its done generating, it goes into Print Queues. Then user may release the job into the printer
+
+	1. Wrkjobq - view jobs  - Look in QBATCH
+	2. Wrkoutq - view jobs (PDF) available to Print
+	3. Release print - job goes to printer
+------------------------------------------------------------------------------------------

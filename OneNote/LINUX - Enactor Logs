@@ -1,0 +1,31 @@
+LINUX - Enactor Logs
+
+# View logs in Enactor (testBox) - Log that Devs need 
+
+---------------------------------------------------------
+# Full Command - preferred - ws logs **
+less /usr/local/oreilly/logs/enactor/9982.ws130.20190916.1.010908.log
+
+# Cd usr/local/oreilly/logs/enactor       then Key: ls 9990.*.20200708.*.log | sort
+
+.254 Session
+Less /usr/local/oreilly/logs/enactor/9990.ws1.20200707.1.075839.log
+
+# Views ALL Session Logs for Current Day 
+ls /usr/local/oreilly/logs/enactor/9982.ws130.20190916.*.log
+-----------------------------------------------------------
+
+
+# less /usr/local/oreilly/logs/enactor/9982.ws130.20190916*         -- > connecting someone's WorkStation (thin Client)
+EX: less /usr/local/oreilly/logs/enactor/<boxNumber>.ws<stationNumber>.<YYYYMMDD>.1.<HHmmss>.log
+														          ^ this 1 number sometimes can be a '2'
+# View somebody's enactor (testbox) logs  -- > connecting to Private Session .254
+less /usr/local/oreilly/logs/enactor/9996.vkalmykov.20190916.1.010908.log
+							   ^ could be either username or workstation number
+# Who used specific enactor (to see other users listing)
+cd /usr/local/oreilly/logs/enactor/
+Key: ls  (will displays all users who used that TB)
+
+# Run CCT Log command. 
+	- View where logs being stored, under what WS#
+	Type: less /usr/local/oreilly/tomcat/logs/cct.log | grep 'ws###'

@@ -1,0 +1,56 @@
+SQL QUERIES - Query - Select Various Part types
+
+	• Select *
+From JBRDATA.JIMAST -- Item Master file.
+Where ((Left(Upper(:Batteries), 1) = 'N' And (IMLINE, IMSUBC, IMPLCD) Not In (
+                -- Exclude batteries.
+                Select JBLINE, JBSUBC, JBPLCD
+                From JBRDATA.JBATRY -- This defines a "battery" to our POS.
+                ))
+        Or (Left(Upper(:Batteries), 1) = 'B') -- Include batteries.
+        Or (Left(Upper(:Batteries), 1) = 'Y' And (IMLINE, IMSUBC, IMPLCD) In (
+                -- Only batteries.
+                Select JBLINE, JBSUBC, JBPLCD
+                From JBRDATA.JBATRY
+                )))
+And ((Left(Upper(:Stocking), 1) = 'Y' And IMMAX > 0) -- Stocking items only.
+        Or (Left(Upper(:Stocking), 1) = 'N' And IMMAX = 0) -- Non-Stock items only.
+        Or (Left(Upper(:Stocking), 1) = 'B')) -- Both stocking and non-stock items.
+And ((Left(Upper(:Cores), 1) = 'Y' And IMCORP > 0) -- Items with cores only.
+        Or (Left(Upper(:Cores), 1) = 'N' And IMCORP = 0 And IMCORC = 0) -- Exclude items with a core.
+        Or (Left(Upper(:Cores), 1) = 'B')) -- Both items with and without a core.
+Order By RAND() -- Randomize the results.
+Fetch First 1 Row Only
+
+	- Output for Query: (NOTE: If N or Y does not show any results, do Find/Replace. Find :Batteries :Stocking :Cores, Replace with 'Y' or 'N'
+"Columns:" IMLINE, IMITEM, IMQOH"
+"Batteries:" N
+"Stocking:" Y
+"Cores:" N
+
+Select COD vs NonCOD Customer
+
+	• Select CMCUS#, CMCODC, CMNAME
+From JBRDATA.JCUST
+Where CMEMP = '' -- Is not an employee.
+And CMAC != 'D' -- Account is active.
+And CMBRCH != 'Y' -- Is not a branch store account.
+And CMTYPE != 'J' -- Select an account not marked as "jobber".
+And (CMCUS# Not Between 990000 And 1000000) -- Not a special account.
+And CMCODC Like Case -- Select COD values based on user input.
+        When Left(Upper(:COD), 1) = 'Y' Then 'Y'
+        When Left(Upper(:COD), 1) = 'N' Then ' '
+        Else '%'
+        End
+Order By RAND() -- Randomize the results.
+Fetch First 1 Row Only -- Select only one record.
+
+	- Output for Query
+	"COD": N or Y
+	
+
+
+
+
+
+

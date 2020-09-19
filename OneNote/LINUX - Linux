@@ -1,0 +1,272 @@
+-- LINUX COMMANDS - Linux --
+
+
+-----------------------------------------------------
+#getVersions.sh - Get Current Version
+	getVersions.sh | grep <versionNumber>
+#View what PATCHES have BEEN INSTALLED on the Box and what day they were installed
+		○ Type: cd /usr/local/oreilly/etc
+		○ Type: less install.log
+		○ Use Page Up and Down to navigate OR key: <date> in this format /2020/04/21 <enter>
+		○ Type: q to quit
+
+# sudo vim /opt/tomcat8/lib/properties/config.properties
+
+# Reboot ThinClient Remotely
+sudo ssh ws### reboot
+# Run icarus - (this will replicate the fixes from other box (dev), onto your (QA) box)
+sudo icarus.sh
+----------------------------------------------------------------------------------------
+Who - will list al ws for specific box
+
+------------------------------------------------------ VIEW LOG ERRORS - Everyday USE ----
+# Less /usr/local/oreilly/tomcat/logs/posrest.log --> Log Devs Need
+Hit Tab Twice, Select Current Date
+
+# View Enactor Logs in Enactor Logs tab
+
+# Check for any STATUS FLAGS (Linux)
+Cd /usr/local/oreilly/status  (enter)
+Key: ls -l
+---------------------------------------------------------------------------
+# Bounce Tomcat
+sudo /usr/local/oreilly/bin/stopOreillyTomcat.sh (wait 3-5 min to restart)
+ - Check to see if Tomcat Enactor is running https://confluence.oreillyauto.com/display/~BLIETZ/Check+for+tomcatEnactor
+ps aux | grep -v grep | grep tomcatEnactor | awk '{print $1" "$2}'
+
+# Run imports on every box
+# sudo su tomcat -c"/usr/local/oreilly/bin/enactor/pos/bin/importsLegacyUpdates.sh"
+	To verify it ran successfully, look into two logs: 
+	
+	less /home/tomcat/logs/imports/import.log
+	less /home/tomcat/logs/imports/import.out
+	
+# Refund limit
+curl --location --request GET 'http://localhost:18080/posrest/store/largeRefund'; echo
+LTEST-2310
+
+# Will show Customer Data info in Linux
+Cd /usr/local/oreilly/logs/enactor
+Run: curl http://posrest:18080/Customers/customer/arCustomer/<customerNumber>
+
+# Product Reload Command
+sudo nohup su tomcat -c "/usr/local/oreilly/bin/enactor/pos/bin/importLegacyUpdates.sh products" &
+
+# Find AurusPayTicketNumber = <salePayTicket> in JSON
+grep 'AurusPayTicketNumber' /usr/local/oreilly/tomcat/logs/cct.log | grep 'ws###' | egrep -io '<AurusPayTicketNumber>'[0-9]\{18\}''
+
+#Transaction Info - enter AurusPayTicketNumber
+grep 'OriginalAurusPayTicketNumber' /usr/local/oreilly/tomcat/logs/cct.log
+	
+	- Info presents:  CardToken/TransactionID/ResponseText: APPROVAL
+	                                             Date and time (mmddyyyyhhmmss), WS#, <Closed Transaction>
+
+# Online order information - Linux
+less /usr/local/oreilly/tomcat/logs/catalina.out.2020-04-07 | grep <online order - K…>
+
+#Displays Actual Invoice for Online Order with Order Number (K7250358R85749)
+awk '/"maskedOrderId":/ && /"<orderNumber>"/ && /"operation"/ && /"CREATE"/ && /Entering PickupInStoreService/' /usr/local/oreilly/tomcat/logs/posrest.log
+
+# This Will remove the Active Pro Customer being marked as "D" in Customer Maintenance window, without running
+DayEnd
+sudo /usr/local/oreilly/bin/enactor/bin/updates.daily/100_003_pro_customer_processing
+
+--------------------------------- Instructional --------------------------------------------------
+# add * (asterisk) at the end of command, if not sure the full location name (source name)
+
+# Time change on Test System - If 254 session or on Linux (Putty session: #1=Store#=key: date) - Change time
+https://jira.oreillyauto.com/browse/LTEST-2072 - best version of changing time
+Group: Enable Update Time Script
+OR
+https://confluence.oreillyauto.com/display/RetailQATeam/Tax+RSU+Testing%3A+Step-by-Step
+	II. Preparing the Linux Server -> Change Linux Server Date and Time
+Or 
+https://confluence.oreillyauto.com/display/ISHelpSupport/iSeries++-++Change+Time - on AS400
+
+----------------------------------------------------------------------------------
+#LESS Commands - Allows to View and Search logs - VIM prg. allows ONLY to view logs
+
+down arrow, enter, e, j (move down)
+up arrow, y, k (move up)
+space bar (move down one page)
+b 			(move up one page)
+right, left (scroll horizontally)
+g			(go to first line)
+G 			(go to Last line)
+/			(Search forward from current position)
+?			(search backwards from current position)
+:q                                        (quit)
+
+# Text Editor:
+Less - Page up and Page Down
+More 
+Nano/Vim/Sedu/Cat
+**Cat - is good for opening small files. Big files will take a while to open
+----------------------------------------------------------------------------
+#Commands for VIM
+I - to Insert 
+Esc - Stop editing
+:wq - write and quit
+	- Once settings been changed - Restart Tomcat or Bounce O'Reilly Tomcat
+#
+:wq (Write file to disk and QUITS the editor)
+:q! or :q (QUITS (no warning)
+:w (Write workspace to original file)
+w (Forward one word)
+b (Backward one word)
+:/ pattern Search forward for the pattern
+:? pattern Search backward for the pattern
+n (next)
+I (Insert text at the beginning of the cursor line (Big "I")
+$ (Move cursor to the end of current line)
+0 (zero) Move cursor to the beginning of current line)
+w (Forward one word)
+b (Backward one word)
+p (paste below cursor)
+P (paste above cursor)
+Weblink to VIM commands: https://www.radford.edu/~mhtay/CPSC120/VIM_Editor_Commands.htm
+
+--------------------------------------------------------------------------------
+# Config file Settings (status) - enabled/disabled 
+(Sudo)Vim commands
+**If (sudo) is not present as part of Vim then the file is only to be READ ONLY
+**If sudo is present, then file can be edited (example below)
+
+#sudo vim /opt/tomcat8/lib/properties/config.properties
+
+# Check VR2 Status (enable/disable)
+Less /usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+	- Look for "jfox"
+	- after config changed, May only need to restart the OPS session to take effect 
+	- grep jfox.enable /usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+	
+-----------------------------------------------------------------------------------------------------------
+#View Logs (PRESSING TAB TWICE - AUTO COMPLETES)
+Ex: 
+Less /usr/local/oreilly/tomcat/logs/posrest.log
+Press TAB twice -> Displays Logs with different DATES (DOES NOT DISPLAY ACTUAL LOGS)
+OR
+ls -l /usr/local/oreilly/tomcat/logs/ | grep posrest
+OR
+ls -l /usr/local/oreilly/tomcat/logs/posrest.log
+
+# Example (full command given)
+-- Bash Command (this is all one command)
+awk '/"maskedOrderId":/ && /"<orderNumber>"/ && /"operation"/ && /
+"CREATE"/ && /Entering PickupInStoreService/'
+ /usr/local/oreilly/tomcat/logs/posrest.log  <----- Use this Directory to view logs from other days
+
+Less  /usr/local/oreilly/tomcat/logs/posrest.log --> Press Tab Twice |logs with dates displayes. 
+			- ADD "posrest.log" with <posrest.log.<date> (YYYY-MM-DD)
+
+----------------------------------------------------------------------------------------------------------
+#Find out if NPC is enabled or Disabled
+grep 'webservice.npc.enabled' /opt/tomcat8/lib/properties/config.properties
+
+	• Explanation of Linux command
+(grep - displays specific line)
+(to display: webservice.npc.enabled)
+(/opt/tomcat8/lib/properties/config.properties  - Location))
+------------------
+#NPC - logs (net price calculator)
+/usr/local/oreilly/tomcatPricing/logs/netPriceCalculator.log
+----------------------------------------------------------------------------
+#Setting Up so that in-store  er would beep and Print
+	- The printer would only Beep if
+		○ Online order is made
+		○ FCO order is made
+		○ Stock Item transfer made
+		○ BOPIS order made
+	- Pretty much, anything Invoice (order) that has not been initiated within the store (OPS)
+	- A way of letting employee know that online order/FCO/BOPIS has been places 
+
+	1. Turn on beep sound on: 
+	sudo vim /opt/tomcat8/lib/properties/config.properties
+	Key "i" for insert mode then change "beep.engaged=false" to "beep.engaged=true"
+	
+	2. Restart Tomcat
+	3. Place Online/FCO order- either one
+
+---------------- Barcode ------------------------------------------
+#Check status of 2d Barcode value - if its Enabled or Disabled (True or False)
+	grep -i require.2d /opt/tomcat8/lib/properties/config.properties
+#Changes Status of 2d barcode value (tomcat restart needed after)
+	- This will set "FDM is set to "False" and 2d Barcode is set to "true""
+	sudo sed -i -e 's/fleet.delivery.management=true/fleet.delivery.management=false/g' -e 's/require.2d.barcode.invoice=false/require.2d.barcode.invoice=true/g' /opt/tomcat8/lib/properties/config.properties
+#Change everything back to its ORIGINAL status (after ^ command has been ran) (killing tomcat required to take effect)
+	sudo sed -i -e 's/fleet.delivery.management="<current value>"/fleet.delivery.management="<original value>"/g' -e 's/require.2d.barcode.invoice="<current value>"/require.2d.barcode.invoice="<original value>"/g' /opt/8/lib/properties/config.properties
+---------------------------------------------------------------------------------------------
+# Fleet.Delivery.Management (DFM)or (FDM) = a special barcode that includes on Printing Receipt page for tracking the order. 
+
+ #Linux Explanation - andrew's file
+Link for better explanation: https://confluence.oreillyauto.com/confluenceweb/x/nQHlNQ
+
+#Reports
+cd /usr/local/oreilly/reports/pdf/
+Key: ls
+
+# If testBox is working and responds
+ ping -t 10.xx.xx 254
+
+##Run Automated DayEnd - will start DayEnd and Kill automation
+curl -s --header "Content-Type: application/json"   --request POST   --data 'false' http://10.99.XX.254:18080/posrest/AutomatedDayEnd/begin
+      
+*** Fixing Day End issue (Enactor issue) *****
+#Make sure you are at your user location
+1. /home/vkalmykov$ ls
+2. 51.enactor  52.enactor  Desktop  enactor  enactor2  logging  vlad
+3. /home/vkalmykov$ sudo rm -r *.enactor
+4. /home/vkalmykov$ ls
+5. Desktop  enactor  enactor2  logging  vlad
+------------------------------------------------------------ <CloseReason=Order Closed - Confirmation-------------------------
+##<CloseReason>Complete<CloseReason> - Making sure that transaction Sale/Return has been completed (Linux command)
+echo -n "Invoice:  "; read invoice ; grep -B 7 $invoice /usr/local/oreilly/tomcat/logs/cct.log | grep "<CloseReason>COMPLETE</CloseReason>"
+
+#<CloseReason> and MORE info about Invoice
+tac /usr/local/oreilly/tomcat/logs/cct.log | grep "<InvoiceNumber>112832</InvoiceNumber>" -m 1 -A 6
+Results: 
+<InvoiceNumber>145177</InvoiceNumber>
+    <ClerkID>87885</ClerkID>
+    <CloseReason>COMPLETE</CloseReason>
+    <AurusPayTicketNumber>220105565403680507</AurusPayTicketNumber>
+    <CCTID>1</CCTID>
+    <APPID>enactor</APPID>
+    <POSID>ws179</POSID>
+
+---------------------  Patches -----------------------------------------
+#Removing Heartbeats flag -- If patch installation appears Stuck on message regarding Heart.beating flag
+sudo rm /usr/local/oreilly/status/heart.beating
+
+#View what patches have been installed on the Box and what day they were installed ---
+		- Type: cd /usr/local/oreilly/etc
+		- Type: less install.log
+		- Use Page Up and Down to navigate
+		- Type: q to quit
+
+--- Failed to install/apply patch - page about why patch failed ---
+	Scroll to very bottom of page to "Failed Install Return Codes"
+https://confluence.oreillyauto.com/display/RetailQATeam/Linux+Server+Patch+Maintenance#LinuxServerPatchMaintenance-CheckingWhichPatchesAreReadyToBeApplied
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+SSH into POS WorkStation
+
+Ssh root@ws###
+Pass:vi1883
+			
+Killall java - kills OPS
+Killall firefox - kills firefox
+Killall tn5250 - kills legacy
+Reboot - will restart thinClient
+Top - will show all programs running
+-----------------------------------------------------------------------------------------------------------------------
+#Find out Team Members Name by their Counter Number
+	- Enter this command in linux, press enter and enter counter number
+	
+echo -n "Counter Number:  "; read cn; op=`curl -s http://localhost:18080/opsauthstore/ldap/lookup/$cn | awk -F',' '{print $1 ":" $2 ":" $3}' | sed 's/\"//g'`; tm=`echo $op | awk -F':' '{print $2}'`; if [[ $tm = [0-9]* ]]; then echo $op | awk -F':' '{print "Team Member:  " $2 "\tName:  NAME NOT LOADED"}'; else echo $op | awk -F':' '{print "Team Member:  " $2 "\tName:  " $4 " " $6}'; fi;
+
+Connecting to tunnel.sh - sql Database - To run query commands
+
+	1. Cd desktop
+	2. ./tunnel.sh <testbox#>
+	3. Then Connect to "LocalHost" in DBVIz
+	4. When switching testboxes or disconnecting, - Disconnect from "Localhost" first, then tunnel.sh

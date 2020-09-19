@@ -1,0 +1,91 @@
+-- QA Notes - Professional Customer Inquiry Screen --
+
+Customer Detail Screen aka Professional Inquiry & Maintenance - Screen after Retail or Pro Customer has been selected
+Omit/Save (F3) - When Only Item or Item&Customer is entered into VR
+Cancel/Clear (F3) - When Only Customer is entered into VR
+Customer Inquiry & Maintenance - Displays "Professional Customer Inquiry"
+
+Button
+Customer inquiry & Maintenance - (Displays: Professional Customer Inquiry - and list of Local Pro Cust.)
+		- Search Field Displays
+		- List of Local Pro Cust. 
+After Pro Customer is Selected - OK - Displays "Professional Inquiry & Maintenance" with Customer information Top of Screen
+	- Buttons Available: 
+		- Process Past Due Deferred Cores (F11)
+		- Display Deferred Cores (Shift+F1)
+		- Customer Inventory (Shift+F2) - "Customer Inventory Maintenance and Report"
+		- Balance Inquiry (Shift+F3) - "Account Balance Details"
+		- Daily/Weekly (Shift+F4) - "Daily/Weekly Account Transactions"
+		- Customer Purchase Reports (Shift+F5) - 3 Big Different Buttons PRINT ……
+		- Insufficient Check Payment (Shift+F7) - "Insufficient Funded Check Payment"
+		- Cancel (F3) - Back to "Sales or Return Invoice" with Customer Information on Top
+		- Change Customer (F2) - "Professional Customer Inquiry" with Pro Cust list showing
+		- Remove Customer (F4) - Removes Customer
+		- Purchase Inquiry By Customer (F5) - "Purchase Inquiry by Customer"
+		- Payment on Account (F6)
+		- Catalog (F7)
+		- Change Additional Information (F8) - Fields Displays "Delivery", Ship Via, Special Instr, PO #
+		- Customer Maintenance (F9) - "Change Additional Information" 
+			§ Fields: Local Cust Number, Address, COD Y/N, Active Record Code, Account Notes, Purchase names
+			§ Buttons: Cancel, Back, Card On File Maintenance, Add Purchaser Name, Save.
+		- Invoice (F1) - Back to "Sales or Return Invoice" with Customer Information on Top
+		- Finish Invoice - Displays "Change Additional Information" 
+			§ "Delivery" Check Box 
+			§ <Ship Via> field
+			§ <Special Instructions> field
+			§ <Purchase Order #> field
+			§ "OK" and "Back" Button - OK- Displays "Tender Selection"
+Customer Inquiry & Maintenance 
+Search Corporate (F9) - (Displays: Corporate Search)
+		○ Continue (F1) - (If Pro Cust Number entered NOT existed on Locally) - List shows of Pro Cust. Same window (Professional Customer Inquiry)
+			§ Load (F1) - Display: Customer Load Confirmation screen
+			§ Cancel (F3) - Goes back to Local Pro Customer List with BUTTONS available on Screen
+				□ Past Due Inquiry (F4)
+				□ Search Corporate (F9)
+				□ Retail Search (F10)
+				□ Process Past due Deferred Cores (F11)
+				□ Display Deferred Cores (Shift+F1)
+				□ Cancel (F3)
+				□ OK (F1)
+				□ Search Field
+			§ Load (F1) - FROM "Customer Load Confirmation" screen
+				□ Displays "Professional Inquiry & Maintenance" 
+					® With lots of different Customer options buttons includes:                       "Cancel" and "Invoice"
+Buttons:
+Past Due Inquiry  (F4) - Displays "Customer Past Due Inquiry"
+	- Cancel - Back to "Professional Customer Inquiry"
+	- View Details (F1) - Displays "Account Balance Details"
+		○ Cancel - Goes back to "Customer Past Due Inquiry" List
+		○ Payment on Account (F6) - Displays "Payment on Account"
+			§ Enter numbers in the field
+			§ Continue
+			§ Cancel  -  Directs to "Sales or Return Invoice"
+			§ Back -  Back to "Account Balance Details"
+		○ Open Invoices (F8) - Displays "Open Invoices"
+			§ Cancel - Back to "Account Balance Details"
+			§ View Details
+		○ Unapplied POA (F9) - Displays "Open/Unapplied Payment" (POS - Payments on Accounts)
+			§ Cancel - Back to "Account Balance Details"
+			§ View Details 
+Button:
+Process Past Due Deferred Cores (F11) - Displays "same thing"
+Display Deferred Cores (Shift+F1) - Displays "same thing"
+	- Cancel (F3) - Back to "Professional Customer Inquiry"
+	- Back (F12)
+	- Search (F2) - Displays "Display Deferred Cores" and Cust. Num/ Invoice Num/ Invoice Date/ so on
+		○ Back (F12) - "Displays Deferred Cores"
+		○ Search (F1) - Back to "Display Deferred Cores" with Core List, same BUTTONS as before
+	- Reset (F4)
+	- View (F1)
+Retail Search (F10) - Displays "Retail Customer Search" with FIELDS: 
+	- Phone #
+	- First Last Name
+	- Email
+	- O'Rewards 
+		○ Buttons: Cancel - Back to Main VR
+		○ Buttons: Continue - Continue with Customer
+		○ Buttons: Back - Back to "Professional Customer Inquiry"
+	- Enter Phone Number -> Continue -> Displays "Retail Customer Search" with Names Listed associated with that phone number (User is taken to Search Results)
+	- Select Name from the List and Click "Continue" -> Displays "Customer Inquiry & Maintenance" with customer details -> Click "Invoice"
+
+	

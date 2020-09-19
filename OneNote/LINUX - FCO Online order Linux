@@ -1,0 +1,18 @@
+LINUX - FCO/Online Order - Linux 
+
+Open logs highlighting the <keyword> looking
+grep <onlineOrder> /usr/local/oreilly/tomcat/logs/posrest.log --color=auto
+
+
+FCO - Query for FCO order after it has been submitted
+-- POSData Query
+select oreilly_order_number, customer_number, customer_po_number, date_of_order, status_flag from posdata.sales_order
+where oreilly_order_number = '<Confirmation Number>'
+
+# Creating an FCO order - Test Case 
+PTEST-23311
+
+
+
+
+

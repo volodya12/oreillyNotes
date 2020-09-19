@@ -1,0 +1,162 @@
+-- SQL Queries - Pro Cust & PricingData --
+
+if Customer types U, M, A, D they will have normal retail pricing
+If Customer types I, R, N, C, P, F, S, G , they will have Professional Pricing
+
+# Select * from public.Customers
+
+# Displays Professional Customer Info - Sysdev - PTEST-191367
+# Displays Professional Customer Info - Non JSON - RetailData - PTEST-191309
+# Professional Customer - COD/NonCOD 
+PTEST-217674
+
+# Find Employee account (TM) - COD
+SELECT 
+        data->> 'customerNumber' as CustomerNum,
+        data->> 'customerName' as Name,
+        data->> 'codCode' as COD
+FROM Customers 
+where data->> 'codCode' = 'Y' 
+and data->> 'customerType' ='J' 
+and data->> 'branchAccount' != 'Y'
+and data->> 'employeeAccount' = 'Y'
+
+# Select Professional Customer Number
+--Retaildata
+SELECT data->> 'customerNumber' as customerNumber 
+FROM Customers where data->> 'codCode' != 'Y' 
+and data->> 'customerType' !='J' 
+and data->> 'branchAccount' != 'Y'
+------------------------------------------------------
+# Finds Pro Customer Info
+SELECT *
+FROM Customers where data->> 'codCode' = 'Y' 
+and data->> 'customerType' !='J' 
+and data->> 'branchAccount' != 'Y'
+and data->> 'customerNumber' = :CustomerNumber
+OR
+# Search Pro Customer by Customer Number
+--RetailData
+SELECT * FROM public.Customers 
+where data->> 'customerNumber' = :CustomerNumber
+
+# Pro Customer with Phone Number (way to format parent & children via json)
+--retaildata
+SELECT description As "Customer",   (data#>'{corporatePhoneNumber}'->>'areaCode')::VarChar||(data#>'{corporatePhoneNumber}'->>'phoneNumber')::VarChar as "PhoneNumber",
+        data->> 'codCode' As "COD",
+        data->> 'customerType' As "Customer Type",
+        data->> 'branchAccount' As "Branch Account"
+FROM Customers
+WHERE data#>'{corporatePhoneNumber}'->>'phoneNumber' Is Not Null
+        AND data->> 'codCode' = 'Y' 
+        AND data->> 'customerType' !='J' 
+        AND data->> 'branchAccount' != 'Y'
+
+# Lists of Customer Names under One Account - Customer on Account
+--AS400
+Select (select cnacct from jbrdata.jconfg) str, pucus#, puname 
+from jbrdata.jpurnm where pucus# = :CustomerName
+
+# Customer on account
+SELECT data->>'customerType' as "CustomerType",
+data->>'customerNumber' as "CustomerNumber",
+data->>'customerName' as "CustomerName"
+from customers
+where data->>'branchAccount' != 'Y' 
+and data->>'activityCode' = ''
+and data->>'customerType' != 'J' 
+and data->>'codCode' != 'Y'
+and data->>'customerNumber' = :customerNumber
+
+# Core Price for Retail and Employee (TM/Jobber) Customer
+--PricingData
+SELECT li.line, li.item, ep.retail_core_enterprise_price, ep.jobber_core_enterprise_price, ssp.retail_core_price 
+FROM netpricecalculator.enterprise_price ep 
+JOIN netpricecalculator.store_specific_price ssp 
+ON ep.line_item_id = ssp.line_item_id 
+JOIN netpricecalculator.line_item li 
+ON ep.line_item_id = li.id 
+WHERE ep.jobber_core_enterprise_price <> ssp.retail_core_price 
+AND ssp.retail_core_price = 0
+
+# DailyWeekly customers
+--retaildata
+Select 
+data->>'customerName' as "CustomerName",
+data->>'customerNumber' as "CustomerNumber",
+data->>'dailyWeeklyCode' as "DailyWeekly"
+from customers
+where data->>'dailyWeeklyCode' in ('D', 'W')
+
+# Customers With Different TaxCode
+--retaildata
+SELECT 
+c.data#>'{customerNumber}' AS customerNumber
+FROM public.customers c
+WHERE c.data#>>'{taxCode}' = :taxCode
+
+--------------------------------------------------------
+PricingData
+
+# Get Pricing Depend on Customer Type 
+
+('C', 'F', 'G', 'I', 'N', 'P', 'R', 'S') Then professional_price)
+('A', 'D', 'M', 'U') Then retail_price)
+--PricingData
+Select i.line, i.item,
+        (p.retail_price / (
+        Select pricing_value
+        from netpricecalculator.pricing_value
+        where pricing_value_type = 'list_price_divide_factor'
+        ))::Decimal(9,2) As "ListPrice",
+        Case
+                When Left(Upper(:CustomerType), 1) In ('C', 'F', 'G', 'I', 'N', 'P', 'R', 'S') Then professional_price
+                When Left(Upper(:CustomerType), 1) In ('A', 'D', 'M', 'U') Then retail_price
+        End AS "Pricing - Look in Query",
+        p.retail_core_price, jobber_core_enterprise_price
+From netpricecalculator.line_item i
+Inner Join netpricecalculator.store_specific_price p
+On i.id = p.line_item_id
+Inner Join netpricecalculator.enterprise_price e
+On i.id = e.line_item_id
+Where (i.line, i.item) = (Upper(:Line), Upper(:Item))
+
+# Find CustomerType - to determine pricing in query above
+--retaildata 
+select data->>'customerType', data->'customerNumber' 
+from customers where data-> 'customerNumber' = '<customerNumber>
+
+# List Normal Retail Customers with Customer Type - To find Pricing by <CustomerType>
+
+This Customers will have Normal Retail Pricing
+--RetailData
+select 
+data->>'customerType' as "CustomerType", 
+data->'customerNumber' as "CustomerNumber" 
+from customers 
+where data->> 'customerType' in ('U', 'M', 'A', 'D') 
+and type='p' 
+and data->>'customerNumber' not like '999%' 
+and data->>'codCode' = 'Y'
+
+
+# Retail Customer Pricing  PTEST-178285
+-- PricingData Query - Includes Employee pricing
+Select i.line, i.item, 
+        (p.retail_price / (
+        Select pricing_value
+        from netpricecalculator.pricing_value
+        where pricing_value_type = 'list_price_divide_factor'
+        ))::Decimal(9,2) As "ListPrice",
+          professional_price,
+        p.retail_price, p.retail_core_price, jobber_core_enterprise_price,
+        store_jobber_enterprise_price as Employee
+From netpricecalculator.line_item i
+Inner Join netpricecalculator.store_specific_price p
+On i.id = p.line_item_id
+Inner Join netpricecalculator.enterprise_price e
+On i.id = e.line_item_id
+Where (i.line, i.item) = (Upper(:Line), Upper(:Item))
+
+# Find Customer - Professional - COD  - Customers By Types  PTEST-144921
+# Find Customer - Professional - NON COD - Customers By Types  PTEST-144922

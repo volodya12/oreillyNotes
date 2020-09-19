@@ -1,0 +1,74 @@
+DEFINITION - Definition
+
+-- Definitions or Key words --
+
+# nobody session refers to = 10.99.XX.254
+iSerius = AS400
+
++Jobber - is a Professional Customer
++COD = Cash on Delivery - Pays with Cash (No Account)
++Non-COD = Customer "On Account" - Can pay later from account
+
+# EPC - Electronic Parts Catalog
+
+# Procurement Card
+Basically, its just a type of card to make things easier for a customer. Benefits to the customer would be better digital tracking of purchases. For example, purchasing without having to use a Purchase Order number, in some cases special pricing when using the card, reduced paperwork for the customer. That kind of stuff
+	- Any professional customer would have Procurement card
+	- Mostly Deferred Core customers would have this Card
+
+# Shrink (Mark Deferred Cores as "Shrink" for Customer)
+An Example would be: Customer Satisfaction. If Customer Lost or didn't bring the core back, or refuse to pay for the core, employee or Manager can mark that Item as "Shrink" as if customer brought the core back, or paid for the core, and the Item would go away from the list as if process completed as normal. 
+
+# Hub Store - (Code Z) Hub is like a mini warehouse located inside a big store. It is made for STORES that are FAR away from DC, so HUB supplies all near by stores for any items. 
+	It has its own trucks, routes to delivery supplies to near by stores. 
+
+# EPC (Electronic Parts Catalog) are patches that update data in the Catalog. We do not typically install these manually. They are usually automatically staged, and attempt to install automatically overnight.
+
+# Broken Packages - Means that if a Customer orders 1 spark plug from store (normally spark plugs comes in package of 4) The store must brake up that package to Send only 1 spark plug to a Customer
+	At the same time keeping accurate Inventory. 
+
+# Overstock - Items that are located in the Backroom or Stocked on the shelves for storage 
+
+JBRDATA.JIMAST - Contains Stock Items that have MAX/MIN of > 0 (And Autoloaded)
+              -JIMAST may also contain Non-Stock but have only MAX/MIN = 0 
+              -MAX/MIN = is the maximum quantity the STORE should keep on Hand and Minimun amount 
+
+JBRDATA.JNSPR - Contains Non- Stock Items that are Loaded for stores
+JBRDATA.JCUST - Contains Professional customers	
+
+IN  JIMAST
+IMALCT - 0 means= no grace period (other numbers= # of grace period)
+IMALCD - 'Y' means its 'Autoloaded' part
+
+# Auto Load - JNSPR(items) goes into JIMAST(master) and Loads(puts more info) in Back Office
+Item first must be scanned into VR (That way; Item transfers FROM JNSPR into JIMAST)
+And then, set the "IMQOH = 1" or more. +(BUT it removes ITEM from JNSPR and Adds to JIMAST)+
+
+# No Autoload - When Item is in JIMAST but NOT in JNSPR. When Item is scanned, It puts it into BackOffice (if it doesn't exist yet)
+  It also DOES NOT add item into BOKEYITEM
+--This TC verifies that Item is moved from JNSPR to JIMAST (PTEST-79001 = Verification - Item Loaded)--
+--Move ITEM from JIMAST back to JNSPR (PTEST-79001 = Data Preparation - Reverse Autoload)--
+
+#LazyLoad - Item that stores in Back Office after being scanned in. 
+It would first look into 1)dead resource 2)BackOffice for primary BC 3)JIMAST/JALTBC 4)ItemLookUp table
+After scanning item, be sure item adds to Back Office and after item being deleted- after scan-adds to BO
+
+IMASTER - adds items into imaster for Pending Orders (holds all the Items)
+
+#Transmitting - Corporate sends data to Store System (price change, data change, new data, new information)
+Transmitting CANNOT send data to Test System, which what we use now. 
+Sherlee or Dev's might know how to RUN transmit and generate transmit report on TEST SYSTEM
+--Transmitting works in a way when::
+1)Information is putted in the boxes
+2)Compresses 
+3)Sends to the Linux servers in the Store
+4)Linux uncompresses that DATA
+5)AS400 Grabs that DATA and puts it in the Store system
+6)Transmit report is ran every morning and Generates Reports
+
+#Auto Load/Add On Daily Returns - Process which items ordered from DC, hub, or local stores that shows QOH for Customer. 
+But Customer never picked it up - giving grace period of 3 days-Returning Order back to DC. 
+"Auto Load/Daily Returns" Generates a worksheet for all the Returns
+
+Communications(Comms) - Internet connection, something user can On/Off so that outside network cannot interact with Specific Test Box. CANNOT VNC. 
+Contact WAN Team to Turn OFF/ON Comms

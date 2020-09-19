@@ -1,0 +1,26 @@
+-- QA Notes - OPS Menu Description --
+
+*note* Some description/definitions of title is in "Definition" tab
+
+Purchase Inquiry - List of items purchased by Customer
+	User customer number to look up items they've purchased in the past
+
+Process Past Due Deferred Core - To have an item showing in that window, 
+	- Sell Item with Core to Deferred Core Customer
+	- 30 days must pass for Past Due deferred core
+	- Use Query to update that customer with core (SQL Queries)
+
+Outside Purchase Ledger - When a shop or Company wants to purchase a part thru us, and that part or product does not exist in our store, other stores, or anywhere else, nor warehouse (we don't supply that product), we would go to our trusted Vendors, Suppliers, and Order that product from them and then Ship it to Customer - For this process, we use "Outside Purchase Ledger" or OP Ledger. 
+We have a list of Vendors, outside source, that we trust, and can order parts from them, and then use same screen "Outside purchase ledger" to Sell that Product (Item) to Customer (company, or Shop)
+
+Backup & Recovery button at Tender Selection screen - When power is out, computers are down, Employees still can make sale but manually, recording each transaction, invoice on a sheet of paper. 
+Once the system, power, computers are up and running, then employees manually key transaction information (sale information) into Backup & Recovery by simulating a purchase
+
+Recall Transaction - "Saved Transactions" move there
+
+Lost Sales - 
+"Lost Sale" is if customer walks in to store and wants to buy a part but that part is out of stock or not stocked in that store for
+various reasons. Item Sourcing could be done in that situation BUT customer don't want to wait and says, "ill buy from different store"
+Store/Company just lost a sale for that item. Then they would log that item into Lost Sales under Stock Transfer button.   
+Lost Sales is a place where store/manager/crew would log information on item that could have been sold but due to being not in stock or out of stock, store lost that sale. 
+

@@ -1,0 +1,73 @@
+OPP - ITEM SOURCE
+
+-- OPP - iTEM SOURCING -- Priority Parts
+#Ordering Parts from different stores. If parts Exist in different stores but not your store, We can still get it. 
+We order it and Driver will deliver it, or Customer can go to that store and buy it. 
+
+#OPP is Item Sourcing- ability to order parts from different stores or DC
+
+Checking if OPP enabled/disabled
+grep -i opp.enable /usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+OR 
+less /usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+
+Enabling OPP Only
+sudo sed -i 's/opp.enable=false/opp.enable=true/g' /usr/local/oreilly/bin/gijoe/resources/properties/config.properties && grep -i opp.enable /usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+
+
+Enable/Disable OPP (Just need to change from "true" to "false")
+sudo sh -c ". /usr/local/oreilly/bin/patch-functions.sh ; updateProperty opp.enable true"  
+
+Change OPP and OTHER properties
+sudo vim /usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+
+CCT
+Disable/Enable CCT Customer Info Prompt- The information that shows on CCT about Customer Info
+sudo sed -i 's/orewards.cct.prompt.enable=true/orewards.cct.prompt.enable=false/g' /usr/local/oreilly/etc/local_ops.properties
+
+/usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+
+
+++Priority Parts - Item Sourcing - pulling info from Sysdev2++
+
++Use this Website to Check Orders for 'Item Sourcing' and 'Order Maintenance'
+User: lfuzzell
+Pass: Standard QA
+-- https://tntestcluster.oreillyauto.com/Home/main -- 
+
++This will help log in into lfuzzell if you get locked down
+-- https://tntestcluster.oreillyauto.com/WebTesting/index --
+
+Order Maintenance:
+- DC - Item Sourcing - Ordering multiple orders from SAME DC - In Order Maintenance WILL show as Multiple order under ONE line 3/3 or 2/2 - Cannot be Marked as Returned
+- DC - DC orders CANNOT be "Mark as Returned"
+- Example: NGK 4742 and WIx 51348
+
+- FACTORY - Item Sourcing - Ordering multiple orders from SAME Factory - Order Maintenance will show as SEPARATE lines (even from same factory) 1/1 and 1/1 
+- FACTORY - CAN be Marked as Returned
+- Example: AAE 1005 and AAE 1000
+
++Item Sourcing - Customer Service order
+  Ordering Item thru customer service, then Customer Service people look at it Online and replying back with
+  information of where that order will be coming from and when. Store gets the reply and sends Confirmation order back. 
+
++Item Sourcing - Customer Service order - Check box: "Order this without Sourcing"
+  Ordering item thru Customer Service, then Customer Service receives the order and Makes an order for Store
+  without responce. 
+
++Obtain Tracker ID 
+
+Select *
+From dwdatatst.OPPITEM
+Where LINE - :line
+AND Item = :Item
+AND Tracker_ID LIKE 'YYYYMMDDHHMM%'
+Order by Tracker_ID DESC
+Limit 1
+
++Viewing the Event Log from OPP order
+
+Select *
+From dwdatatst.OPPEVENT
+WHERE Tracker_ID = <enter actuall tracker id>
+AND EVENT_CODE = 'ORD_ASST'

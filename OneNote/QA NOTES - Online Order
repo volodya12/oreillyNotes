@@ -1,0 +1,151 @@
+-- QA Notes - Online Order --
+
+https://www-test-1.oreillyauto.com/   -- Online Store BOPIS 
+https://yeti-test-2.oreillyauto.com/yeti/login - Yeti Test 2
+https://yeti-test-2.oreillyauto.com/yeti/details/K7257232R79188 - Yeti with an Order Number
+https://www-test-1.firstcallonline.com/FirstCallOnline/  --   FCO - First Call Online (PTEST-185135)
+
+https://confluence.oreillyauto.com/pages/viewpage.action?pageId=711754036 - BOPIS Doc. Use (Cntl+F)
+
+# To place Online Order
+	1. To find out Which Store Number is Pointed to what Box (Check Pype - StoreTranslator as well)
+Go to TeamNet -> Directory tab -> In "Location Search" box, next to "Location Number" key: <4047>
+Street Address - is what needs to go into Online Store Location Set
+	2. Look into Pype web service - Store# Translator - and key Store Number (ex: 4047)
+	
+# Online Order details
+Cat /usr/local/oreilly/tomcat/logs/catalina.out.2020-04-07 | grep <online order - K…>
+
+# FCO store can be pointed to different Test Box base on User Account (Help from Trevor Ward)
+	- My FCO account # 342500
+	- Query for Pointing Account to specific bot is in "SQL Queries" under FCO or QA Notes
+# FCO Order Verification
+-- POSData Query
+select oreilly_order_number, customer_number, customer_po_number, date_of_order, status_flag from posdata.sales_order
+where oreilly_order_number = '<Confirmation Number>'
+
+# Bopis - Online Orders - Specific TB pointed to Test1 and Test2, Must contact Brandon Peak & Network team
+	So that they can set up Online store for Specific Test box. 
+	
+#YETI Account
+bpeak
+<standardQAPassword
+
+# JSON & NonJSON Invoicing Verification - Ship to Home YETI
+-- Yeti (test1, test2)
+Select * from order_json where external_id = 'K10049109R58592'
+select * from "order" where external_id='K10049109R58592'
+
+# Check this Query for Online BOPIS order - Invoice Verification
+--retaildata
+SELECT invoice_data -> 'legacyId' -> 'invoiceNumber' as invoiceNumber,
+invoice_data -> 'deliveryInfo' -> 'specialInstructions' as specialInstructions,
+invoice_data -> 'terminalID' as terminalId,
+invoice_data -> 'customerInfo' -> 'retailCustomerNumber' as retailCustomerNumber,
+invoice_data -> 'invoiceTotal' as invoiceTotal,
+invoice_data -> 'basket' -> 'items' -> 0 -> 'totalTax' as totalTax,
+invoice_data -> 'counterNumber' as counterNumber,
+invoice_data -> 'basket' -> 'items' -> 0 -> 'status' as status
+FROM retaildata.public.invoice
+WHERE invoice_data-> 'legacyId' ->> 'invoiceNumber' = :invoice#;
+
+
+#Ozark.IO - Just need to sign in, There is no interface, It’s a way to have access to "Online Store Test 1" database
+And then you can connect to "Online Store Test 1" in DBViz.
+Credentials: Must be active user for a month or account will be revoked
+Username: vk<employeeNumberOnCard>
+ 
+# Online Store (Oreillyauto.com)
+	- Submitting BOPIS order (online order - Steps and Queries) PTEST-31863
+	
+	Find out Which Store assigned to TestBox: 
+	-- AS400
+	SELECT CNACCT, CNZIP, CNADR2
+	FROM JBRDATA.JCONFG
+	
+	 Online Order Information
+	AS400
+	SELECT *
+	FROM JBRDATA.JECOMMO
+	WHERE EOSPCINST = :orderNumber
+	
+	Update Gift Card
+	-- SYSDEV2 Query
+	UPDATE DWPOSDATA.GCMSTR
+	SET GCAVLBAL = :Amount
+	WHERE GCACCT = :GiftCard#
+	AND GCSTAT = 'A'
+	
+	# Online Invoice Data - Bopis Info - Verify in Retaildata  PTEST-182609 vs PTEST-168928
+	
+	9042-6340-9717-9656           PIN 1234
+	9166333187747064	Pin 1234
+	
+	# Check JINVMOV if BOPIS order made it there, It should - After Customer Pick up
+	--AS400
+	Select * from jbrdata.jinvmov
+	Where inrefnbr1 = :invoiceNumber
+	
+# Corp to Store - pype
+Select type, destination, origin, created_ts, batch, modified_ts
+from pype.pype_messages 
+where created_ts > '2020-08-07'  
+and destination = :StoreNumber
+order by created_ts desc
+
+9990 = 4047 (storeNumber)
+------------------------------------- Online (BOPIS) order Data Verification -----------------------
+
+#1 Access Putty Session - Number 1 - Enter Store number (Confluence page) https://confluence.oreillyauto.com/display/ISQualityAssurance/Accessing+Linux+Platforms
+
+#2 Run Linux commands to Pull JSON Invoice information from Online Store
+Order CREATED/Scanned/Verified
+awk '/"maskedOrderId":/ && /"<orderNumber>"/ && /"operation"/ && /"CREATE"/ && /Entering PickupInStoreService/' /usr/local/oreilly/tomcat/logs/posrest.log
+-- Replace <orderNumber> with the order number displayed by the Online Store
+
+ORDER CANCELED
+awk '/"maskedOrderId":/ && /"<orderNumber>"/ && /"operation"/ && /"CANCEL"/' /usr/local/oreilly/tomcat/logs/posrest.log
+
+Full Order Info 
+awk '/"maskedOrderId"/ && /"<orderNumber>"/ && /"operation"/ && /INFO/' /usr/local/oreilly/tomcat/logs/posrest.log | grep -v true
+
+#3 Copy and Paste JSON from Linux into https://jsonlint.com/ for Human Readable format or NOTEPAD++
+#4. Verify JSON against JECOMMO
+#5 PTEST-182609 - Verify OreillyInvoiceData - BOPIS info - JSON
+
+	1. From Online Orders, "Scan/Verify" order
+	2. Verify it/Finish the Order
+	3. The Thermal Receipt should print (2) - "Merchant Copy" receipt, and original Invoice receipt
+		a. "Pick Ticket" will also print from Laser Printer
+	4. Check Invoice number on Receipt or "Reprint Invoice"
+Returns - If item purchased online is returned - it will print two receipts "NR" and original invoice 
+
+# Check JINVMOV if BOPIS order made it there, It should - After Customer Pick up
+--AS400
+Select * from jbrdata.jinvmov
+Where inrefnbr1 = :invoiceNumber
+
+# Ready API - select an Online Item on the fly
+in the ostInventory_Project
+APITEST_2459 and APITEST_2460
+run it, and last open last step
+it will show you the line code and item number
+
+
+Notes: OrderNumber = EOSPCINST
+	- After cancelling Online Order, the Status "Ready for Pick up" Should change almost immediately to "Cancel Order" 
+	- When order has been "scanned/Verified" and finished - Status will show "Verified/Not billed" but then
+		will change status to "Ready for Pick up" once page is refreshed.
+	- After Status shows "Ready for Pick-up" - an invoice has been created in "Reprint/Invoice" - customer already paid online. 
+	- EOSTATUS - Status "V" - as in "Verified" - Status "X" as in "Canceled" and Status "C" as in "Complete"
+	- EOINVNUM = Numbers between K and R (K10012275R31971)
+	- EOQTYO = Qty ordered
+	- EOQTYSCAN = Qty Scanned/Verified in OPS
+	- EOSHIPTYPE - 6 - Pick up
+	- EOPCKUPNM = Order Pick Up Name (someone else could also pick up order - as Customer)
+	- EOCOMMENT should say "Billed" or Null in JSON cuz the order was billed first. Automatic message
+	- EORCN (Retail Customer Number)  = 40391000019 (standardqatesting+orewards@gmail.com)
+	- IF Order Canceled = EOCOMMENT = CHARP - <actualCommentKeyed>
+	- EOORDTYPE = S (sale)
+	
+	

@@ -1,0 +1,182 @@
+-- QA Notes - Customer type --
+
+Dadams38 - non - Auth User
+
+-- Professional Customers
+#10240 - COD CUST (Type A)
+#10190/75373 - On Account (Non COD) (Type A)
+# 620185 - Deferred Core Customer - COD only - Credit only
+#100100 - Fleet
+#2481119 - COD - PO Required
+#15950 - Fleet - PO Required
+#20022 - Employee
+#21371 - Employee
+#101623 - Agriculture
+#59148 - Professional 
+#Just Professional Customer    11121/13751
+6243 - Deferred Core Customer NON COD - on Account (Type R)
+20163 - Deferred Core Customer NON COD - on Account/Cash/Debit/Gift/Check/ (Type I)
+#75373 - On Account
+1767670 - Deferred Core Customer
+#999050 - Petty Cash account
+#23927/27484 - Daily Customer (9996)
+#20406/75373 - Weekly customer (9996)
+#27484 = Customer NOT 'Taxed'
+
+#Retail Customer Account Number
+999990/999991
+Table - JBRDATA/JRCUST
+
+#Retail Phone number
+202-674-9845
+417-777-7777
+2176713557       JOSH ALTMAN
+1536 S Glenstone Ave
+
+
+# Deferred Core Customer - SQL Query Config
+CMDCFG = 'Y'
+CMCODC = ' ' (On Account - Non COD)
+
+#O'Rewards Customer - 417-267-4001
+				951-478-2281 LoyalID = 27200054697  Orewards CardNumber = 358854966
+LOY_ACCT_NMBR - O'Reward Number/ RET_ACCT_NMBR - Loyal ID
+
+# Stock ITEMS (stocking item)
++ GP 28124 - Paper Towels
++ MOT 10-30
+
+WIX 51348/34111
+LUC 10001 = 12.99
+LUC 10298 = 11.99
+AC R44T or AC R44TS - $2.49
+AC 34111 
+AC 34114
+AC 34131
++Item with Core: A1 42-144
++Item with Core: A1 42-150
++Item with Core: A1 40-1012      
++Item with Core: A1 48-105
++Item with Core: USL 32281
++Item with Core: BHH 10-1923
++Item with (+) VAL  ATF+4 and WIP  GAL+32 
++ Freon - Fridge - To get Freon Prompt - FRE R12-12
++ Freon - Fridge - To get Freon Prompt - FRE R12-30
++ Freon - Fridge - R22-30 FRE
++ Freon - Fridge - R22-15 FRE
++ Account with PO Masking - 1687922
++ YM.COM account - 2562789
++ Restricted Item with prompt = AR322 KLN / 24075B KAT
+
+Battery Item:
+RBT	R121   
+SSB	ETX9         
+SSB        35EXT
+OBT       RED25
+
+# OPP Item - Item Sourcing
+CTI   85212
+BB   C508
+IDI   27-0204
+
+#Non COD are ON ACCOUNT customers - 2% Cash Discount is NOT allowed for this type Pro. Customer 
+
+#COD customers (could be any prof. customers)(Top right screen - will NOT have "C.O.D. Customer") 
+- Defaulted to pay 'On Account' - If tendered with "Cash" - COD Override window will show, Need reason to override. 
+	- If  (Has CMCODC = "Y")(Top right screen - will say "C.O.D. Customer) - Tendered with CASH  or Card. NO COD override window will show. 
+
+#Labor Pricing - Set price that we charge for Service
+	- Customer walks in, wants their Rotors to be turned, (not buy new), we charge them for the service, how long it will take to completely turn the Rotors. 
+	- JIMAST. IMLINE = 'LAB'
+	- JIMAST. IMITEM = different type of services
+
+Type A - Agriculture Customer (10240, 10190)
+Type C - Contract BId
+Type D - Dealer/Military customer
+Type F - Fleet (100100)
+Type M - Marine - treated as Dealer customer
+Type N - Negotiated price Customer (Deferred Core Customer - Payment "On Account" required)
+Type I -   Installer (Deferred Core Customer  - Payment "On Account" required)
+Type G - Government
+Type J - Jobber (Petty Cash - 999050)
+Type Y - Retail Customer 
+Type U - User customer
+Type R - Rebate Customer (Deferred Core Customer - Payment "On Account" required)(620185)
+Type S - Special Rebate customer (Deferred Core Customer - Payment "On Account" required)
+Type O - Price Independent Jobber
+Type Q - Resale - Special Tax Exempt
+
+# Deferred Core Customer 
+CMDCFG = Y
+CMDCPD > 0
+CMCODC = ' ' (On Account, Non COD)
+
+#Customers: U, M, A, D, nonCOD - Gets Retail price, NOT professional pricing
+Customer Types
+https://confluence.oreillyauto.com/display/ISPricing/Customer+Type+to+Customer+Group+Conversion
+
+#Daily/Weekly Professional Customers (daily weekly)
+--AS400
+Select * from jbrdata.jcust
+where cmdwc = 'D' or cmdwc = 'W'
+
+------ Professional Customer Queries ---------
+
+# Deferred core customer (620185)
+-- AS400 Query
+SELECT * FROM JBRDATA.JCUST
+WHERE CMDCFG = 'Y'
+AND CMCODC = 'Y'
+AND CMPRCD = 'Y'
+
+#Professional Customer ON ACCOUNT NON COD (10190) PTEST-172924 (N)
+-- AS400 Query
+SELECT * FROM JBRDATA.JCUST
+WHERE CMBRCH != 'Y'
+AND CMTYPE != 'J' 
+AND CMCODC != 'Y'
+
+#Professional COD Customer (10240) PTEST-172924 (Y)
+-- AS400 Query
+Select *
+From jbrdata.jcust
+Where CMBRCH != 'Y'
+And CMTYPE != 'J'
+And CMCODC = 'Y'
+And CMPORQ != 'Y'
+
+^^Inputs: (Same for Query above-ON ACCOUNT NON COD)^^
+{code:sql|title=Query Inputs}
+"COLUMNS"= CMCUS#, CMCODC, CMNAME
+"COD"= Y
+{code}
+
+#Finds Non-ORewards Retail Customer (MDM Database)
+PTEST-146387
+Fields to enter: "PHN_NUM, FRST_NM, LST_NM, ELEC_ADDR"
+
+#Finds O'Rewards Retail Customer with LOYAL ID
+PTEST-146349 - Finds O'Rewards Customer (ACCT_NMBR) - LoyalID
+
+#Employee Customer Account (field explanation)
+Must be:
+JBRDATA.JCUST
+CMTYPE = 'J' - Jobber
+CMBRCH != 'Y' - Not Branch
+CMEMP = 'Y' - Employee
+CMDWC = '' - pays weekly or daily
+CMCODC = 'Y' - Cash on delivery
+
+Query for Battery:
+--AS/400 Query
+SELECT imline, imitem
+FROM jbrdata.jimast
+JOIN jbrdata.jbatry
+ON imline = jbline 
+AND implcd = jbplcd 
+AND imsubc = jbsubc
+WHERE imqoh > 0 - this line is optional
+
+
+
+

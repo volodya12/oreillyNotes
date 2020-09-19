@@ -1,0 +1,41 @@
+VACATION - Vacation 
+
+Vacation hours Used
+11/29/2019 (thanksgiving conference)
+12/16-20/2019 - Norweigen cruise (1 week)
+1/2/2020 - Floating Holiday (Driving back from Denver after New Years)
+1 hour was lost somewhere
+Sick Day - 1/3/2020
+August 13, 14, 17/2020 - Total Vacation hrs (24 hrs) - Miami/Orlando
+June 26, 2020 - Vacation Day - Went to Denver 
+July 6, 2020 - Sick Day 
+August 21. 2020 - Vacation day
+
+Vacation hours Left: 
+Sick - 8 = 1 days
+
+
+#Send Vacation email to IT Dept Admin Request, QA Team and Michael Mulvany - Project manager
+
+#For Password reset on Database, if you get locked out - Network Team Requests
+	Send Database URL along with request of resetting password
+# Connections with openVPN, call PC support or email to vpnsupport@oreillyauto.com
+             Call 1-877-388-1431 press Option 1 for VPN support or Visit Channel: VPN: Support
+# JIRA/Confluence problem - Contact Dawn Alberino or Sarah Elliott If you having JIRA issues or password problems - Mattermost
+	- Password with log in JIRA, Check TeamNet log in, May be the possibility for a Password change. 
+	- Password must only be changed thru Teamnet. 
+# For MDM password Reset - Contact Mathew Parsons  or Alex Burkert
+# Backoffice in Dbviz - user: enactor, Pass: enactor
+# Stephanie is only the admin for the Planview stuff.
+# Question or Help about Linux: refer to "Linux Users" chat
+mysql -uXXX -pXXX -e"whatever;"
+-u = username, -p = password -e = query
+if its in postgres, psql then the same
+
+# If your MDM Account gets blocked 
+https://inf-p-odb-em-1.oreillyauto.com/oracle_password_tool.html
+Enter username, the way you sign in into computer -"oreilly2\vkalmykov" - no "oreilly2\"
+Password: computer password
+Database: Test MDM Database - when Click Reset - should have 5 green check marks
+Put that same password into MDM database - dbviz - no need "change password"
+

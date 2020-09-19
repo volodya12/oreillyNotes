@@ -1,0 +1,87 @@
+GREEN SCREEN - AS400
+
+## RGS - Returned Goods Slip
+Dspmnu mst001m
+Option 17 - DC returns
+Option 31 - Creates RGS
+Option 26 - Searches/History of RGS and Credit memos 
+
+## Battery Rotation Menu - When a battery sits too long on a shelf, its gets bad, and it needs to be sent back to DC for replacement. And DC recycles them (returns to vendor)
+Dspmnu mst001m
+Option 17 - DC returns
+Option 15 - Battery Rotation Menu
+Option 3 - process battery rotation
+Option 26 - Searches/History of RGS and Credit memos
+
+## Manual Credit Memo - Stock items that Needs to be returned back to DC. Items Customers returned back to store. 
+Dspmnu mst001m
+Option 17 - DC returns
+Option 28 - create manual credit memo
+Option 26 - Searches/History of RGS and Credit memos 
+
+JRT193 - Hazardous Item Identifier
+JYI110 - call for HART pgm to update what is in JINVHRTRC  in ITEM_MASTER (run wth parm: call JYI110 'I')
+
+DPSMNU
+	JYI002M - Annual Inventory Menu
+	JIM001M - Inventory Maintenance
+	JCO001M - Stocklift/Overstock Menu
+	JRT001M - DC Returns Menu
+	JPO001M - Purchase Order and Receival Menu
+	JME001M - Month End Menu - Initiate Month End Programs
+	
+SOS is Stock Order Check in screen - dspmnu jpo001m - option 15
+
+# JIM521 - PGM - Print Items Sold to Stocking Customers (a way to get to that screen from OPS ISM-6192)
+call JIM521 parm('100100' 'S' 'B' '')
+1. Report Type
+'S' - Items Sold to Customer within Last 90 Days
+(Sales History)
+'R' - Items Sold to Customer since last report run (Consignment Inventory Replenishment) 
+2. Loaded in Customer Inventory
+'Y' - Loaded
+'N' - NOT Loaded
+'B' - All Items Purchased 
+3. Line (optional) passing in a blank for the line makes it run for all lines
+------------------------For Devs when reporting issue via Greenscreen --------------------------------------------------
+- DSPJOB JOB(795417/LINUX/DAY_END) - good for devs
+	○ #10 - displays logs - it will displays active/currently active logs/logs for programs currently running
+	○ #4 - Spooled files - Programs that are Dumped/Stopped running/Not Active anymore
+		§ Find prgm that on "HLD" and Key #5
+		§ Should show on top: ILE RPG Formatted DUMP
+		§ File: QPJOBLOG - Displays DayEnd  DUMP Error program in More Details
+			□ In FIND: Reply - to see whether the programs has been ran
+	○ #11 - Displays Call Stacks - Displays Programs that calls other programs to ran, that calls other programs (good for devs) 
+	○ #12 - Shows LOCKED files/Programs/ Programs that are HELD up
+	○ 795417 - Job number
+	○ Linux - User name
+	○ DAY_END - Job Name
+
+####### Display joblog to find out whats been running
+- As well, when last dayend was ran
+- #WRKOUTQ qez* - View All JOb Logs (Very helpful LOG)(#5-Display)(F6-Bottom page)
+- Or wrkoutq qezjoblog
+-------------------------------------------------------------------------------------------------
+
+# QCLSRC - File name containing simple programs
+	Q - same as IBM
+	CL - Control Line
+	SRC - Source
+	
+File: QCLSRC
+Contains: EDE300C - program that starts up DayEnd (JDE300)
+	- EDE300C contains good information about Step by step running DayEnd and few commands that it executes automatically.   
+
+	• QRPGLESRC - File name containing high level programs
+	Q - same as IBM
+	RPG - Report Program Generator (complex/high-level compiled program)(compiled program that calls other programs to Run)(may google it)
+	LE - Type of RPG
+	SRC - source
+	
+File: QRPGLESRC
+Contains: JDE300 - programs that runs Actual DayEnd
+
+
+
+
+

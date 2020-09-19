@@ -1,0 +1,53 @@
+-- QA Notes - Pype --
+
+# Pype - change timing for Invoice transmit from store to Corporate (Ask Nolan or Greg for permission)
+	- you change this property in (sudo vim)
+/usr/local/oreilly/bin/gijoe/resources/properties/config.properties: legacy.pipe.files.create.frequency.minutes
+i think the minimum you can set it to is 1
+
+# priority is currently set to FIVE_MINUTE 
+That property is in 
+/opt/tomcat8/lib/properties/config.properties legacy.pipe.pype.message.priority=FIVE_MINUTE
+
+# Select Invoices that went to Corporate - Equivalent to JORHSH & JORHSD
+-- Sysdev
+SELECT *
+FROM DWPOSDATA.JHXMIT
+WHERE STORE_NUMBER = :StoreNumber
+AND INVOICE_NUMBER = :Invoice
+AND INVOICE_DATE = :Date_YYYYMMDD
+
+Corp to Store                                        
+bopisRequest
+customerUpdate
+cyclecount
+hubRoutingMessage
+importCustomerUpdate
+itemUpdate
+oppOrderEvent
+promotion
+salesOrder
+Store to Corp
+bopisResponse
+CatalogFeedback
+OReillyEvent
+awardPoints
+catalogSignal
+invoice
+legacyPipe
+transactionActivity
+salesOrderAction
+
+
+# If NO INVOICES ending up in SYSDEV2 - Pype could be broken or Store changed  and invoices sent to different box and Sequence is out of order
+	- Sysdev - Check Sequence number (must match with AS400 Box)
+	
+Select * from pypetest.strseq
+where ssstr# = 4043
+
+On TestBox AS400 - Telnet into System (10.xx.xx.1)
+		- Dspdtaara jposndseq
+			§ Value: <example: 6226809 - this should match sysdev (query)
+# Fix Sequence Pype Error between Sysdev and AS400 Box - when invoices not in Sysdev (from Nolan)
+https://confluence.oreillyauto.com/display/RetailPOSTeam/Test+Pipe+On+Pype+Review
+

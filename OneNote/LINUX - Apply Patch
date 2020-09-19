@@ -1,0 +1,34 @@
+LINUX - Apply Patch 
+
+INSTALLING A PATCH
+
+# Review the StagedPatch - avoid patches with installed with .epc (those will take hours to install)
+
+	1. Display current Staged Patches
+ls -ltr /usr/local/oreilly/patchStage/
+
+	2. Install All Staged Patches 
+sudo sh -c '/usr/local/oreilly/bin/processStagedPatches.sh -d -f 2>&1 | tee -a /usr/local/oreilly/logs/cron/root/processstagedPatches.log'
+
+	3. getVersions.sh - Get Current Version
+-----------------------------------------------------------------
+#Removing Staged Patches
+--Verify if there is a directory, as well as a file with an ".md5" file extension, of the patch needing removed
+	sudo rm -r /usr/local/oreilly/patchStage/<patchName>*
+
+--Include the "To" and "From" versions in the patch name, and leave the asterisk symbol on the end, as this will catch the directory as well as the ".md5" file
+--If the patch was removed, then it will no longer display in this output
+--Example: secUpdates-14.4.2017.9.17.0--secUpdates-14.4.2017.9.24.0*
+--Example: sudo rm -r /usr/local/oreilly/patchStage/\!disableIPSInvoicing--disableIPSInvoicing-1.0.0*
+----------------------------------------------------------------------
+#View what PATCHES have BEEN INSTALLED on the Box and what day they were installed
+		○ Type: cd /usr/local/oreilly/etc
+		○ Type: less install.log
+		○ Use Page Up and Down to navigate OR key: <date> in this format /2020/04/21 <enter>
+		○ Type: q to quit
+
+--- Check which Patches Ready to be applied ----(those are two directories separated by / /)
+ls ~autopatch/partialPatches/ /usr/local/oreilly/patchStage
+	- Any patches listed under /home/autopatch/partialPatches/  are Currently being transmitted to BOX and NOT ready to be Installed
+	- Any patches listed under /usr/local/oreilly/patchStage  are Completely transmitted and READY for install
+

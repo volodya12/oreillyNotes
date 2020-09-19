@@ -1,0 +1,143 @@
+JIRA SEARCH - JIRA SQL
+
+-- JIRA SQL --
+
+ ##### In this query the "is empty" statement tells JIRA to return only issues where the value of the assignee field is blank. 
+  This query also shows how JIRA supports relative dates. The value -1d evaluates to 1 day behind the current 
+  date when the query is run. As a result, the below query will return all issues that do not have an 
+  assignee and haven't been updated in the past day.
+	-----What issues are unassigned and have not been updated in the last day?
+    Assignee is EMPTY and updatedDate < -1d
+
+#Here's a query that returns all issues in the PWC project which are assigned to test engineers:?????????????
+    project = pwc AND assignee in membersof('test-engineering')
+
+Find your Tasks for particular project - When a task has been created by Lead but does not show in your Sprint
+	• "Epic Name" ~ "-Invoicing" AND Reporter = <name of Project Lead>       ----- This will find the Epic which contains all Tasks
+                                                          - sometimes may need to add (-)dash before title (invoicing) for search to work correctly
+Quick Commands for Toolbar Search
+
+	• Finding Test Case Templates in whatever Status you want
+Description ~ RQAT8407 and Type = "Test Case Template" and Component not in ("CCT (Credit Card Testing)") and Status != "Ready For Execution" 
+
+	• Finding Your Own Test Cases you have Executed
+                      Type = "test case" and Assignee = currentuser()
+
+	• What issues are a Blocker or Critical in Projects A, B, and C?
+      Priority in (Blocker, Critical) AND project in (ProjA, ProjB, ProjC)
+
+	• Now let's see which issues got fixed/resolved in the previous or whatever release.
+                 project in (OPS Retail, POS TEST) AND status in (resolved, closed) and fixversion = R2.10.5
+
+	• Finding How many Test Cases that USER have in their TC GROUP for Execution
+		parent = "PTEST-158404" and "TC Group Name" ~  Vladimir and status = "Test Case Defective"
+
+	• Find Test Cases that has NOT been assigned to anybody
+	       Description ~ RQAT8407 and Type = "Test Case Template" and Assignee is EMPTY and Status != "Ready For Execution" 
+	
+	• Find issues that are Closed and has some sort of QA Identifier which requests if more info needed for Issue
+	        Project in (OPOS, OPSR) AND status = Closed AND fixVersion in (R2.0.0, R2.1.0) AND “QA Identifiers” = Documentation
+	
+	• Find TCs needed Reviewed, Status = Ready for Review
+		description ~ RQAT8407 and type = "Test Case Template" and component not in ("CCT (Credit Card Testing)") and status = "ready for review"
+	
+	• Searching by Comment or Text 
+		- Searching by Text includes Title, Description, Environment, Comments
+	• Additional fields
+		- statusCategory - To Do, In Progress, Done, 
+	• Created date on or Updated date on
+		- CreatedDate > yyyy-mm-dd or "yyyy/mm/dd"
+	
+	• Search for All Bugs created for Specific Project
+		- project in ("Store iSeries Migration") and type = Bug ORDER BY createdDate DESC
+	• Search ALL tests that needed to Reran (in progress, on hold, retest, fail)
+		parent in (PTEST-185600, PTEST-178291, PTEST-176857, PTEST-176764) AND status in ("on hold", "In Progress", "Retest", "Fail")
+	• WFH Tests - Working from Home Test Cases
+	project = "POS Tests" AND description ~ RQAT10895 AND type = "Test Case" AND component not in ("CCT (Credit Card Testing)", CCT, "Printed Receipts", "printing - receipts - reprint", "printing - recon", "laser Receipt") AND status = Open AND parent = PTEST-241635 
+		parent - is Test Plan Number 
+
+#Function Fields
+  
+Description ~ RQAT8465 - Displays all Test Cases with All Statuses, that has "RQAT" phrase under 'Description'
+1. "QA Test Case Type": Routine, Query, Appearance, End to End, Load, Screen Verification, Smoke
+2. Key in (<test case numbers with comma in between>) To display several Test Cases in a row
+2. Project (in) or (=) – PTEST, ITEST, RQAT, OPSR, OPSVR, ISM  (POS TEST, iSeries Test, OPS Retail, OPS Virtual Receipt, Store iSeries Migration)
+   QA Project (For project)– Epic: RQAT-67335
+   Build Number = RQAT-6733 (When looking for a TC not a bug)
+
+Keyword search: 
+Text ~ <project release: "RQAT6733">, also comments, description, title
+Description ~ anything in description box, "project release"
+Summary - Title of a Test Case or Bug
+Component - Disruptive Testing (DT), DT - Dayend, printing, reports, <projectName>
+CreatedDate > YYYY-MM-DD
+Order By – updated Date DESC or (order by updated DESC)
+
+3. Type – Bug, Test Case Template, Task, Improvement, Epic, Story, Maintenance, New Feature, Project, Test Case Template 
+4. Status – Modifications Needed, Ready for review, Ready for final review, (Ready for QA)
+5. Resolution – Fixed, Won't fix, Cannot Reproduce
+7. SUMMARY – SUMMARY/TITLE OF THE BUG
+8. Bug Class – QA, Production, QA Automation, Development, UAT
+   Component/s – promotions, CCT, catalog, change tender, dayend, returns, discount, deferred, core, printer, OPS and MORE
+	#Description – Description of a Bug – Observed- Expected – Type of Environment
+9. Assignee – Who ever Fixing bug (Programmer)
+10.Reporter – who ever created bug/issue/test 
+	#QA Assignee - Your name
+	#BA Assignee
+11.Priority – Blocker, Critical, Major, Minor, Trivia, Prioritized
+12.Fix Version – Ex: R2.8.1, Professional Customer, Invoicing …
+13.Build Number – Ex: RQ5868 – 4
+  #Due Date
+  #Environment
+  #Attachment
+14. Original Estimate – How much work is involved in resolving this issue
+15. Remaining Estimate – How much work remains until this issue will be resolved
+  #Revision Number
+16. Developer Identifiers –Enhancement Release, Maintenance Release, Technical Request
+17. Labels – Also keywords
+  #Business Value
+18. Epic/Theme – helps to regroup issues under epic or theme
+19. Flagged – usually a Check mark with title “Impediment”
+20. Story Points – Measurement of complexity and/or size of a requirement
+  #Owner (lead)
+  #Owner (Operations)
+  #Owner (Support)
+  #Percent Complete
+21. Percent Complete – goes by percentage 0, 25, 50, 75, 100
+22. Next Follow up – goes by Date
+23. Target Date – goes by Date
+  #GUI Bug ID
+24. Epic Link – Epic from Project Board (usually in Confluence)
+  #Sprint
+25.Linked Issues – defect, verifies, blocks, is blocked by, duplicates, is duplicated by, is consequence of, Cloned to, Cloned from, is a parent of, is a child of
+26. Issue – Actual issue number
+27. Acceptance Criteria – a list of acceptance criteria for the issue
+28. 
+29. Estimated Start Date – Date format
+30.QA Identifiers- Identifies the bug type/Issues with the bug/Whether more information on bug is needed. 
+Data, Documentation, Environment, Found Not Related, Future, Automation Review, Blocker, Found via Automation, Information Needed, Performance, Project Review, TC Defect, Capsule App, Team OReilly app, Build Issue
+31. QA Preparation Estimate
+32. QA Execution Estimate
+33.Deploy Components – A check mark -> Data insert/update, Data Source, Flyway, iSeries, Properties, No infrastructure changes required
+
+
+--JIRA JQL commands--
+AND
+OR
+NOT
+EMPTY/NULL
+ORDER BY
+EQUALS:/NOT EQUALS: !=
+GREATER THAN: >
+GREATER THAN EQUALS: >=
+LESS THAN: <
+LESS THAN EQUALS: =<
+IN/NOT IN
+CONTAINS: ~
+DOES NOT CONTAIN: !~
+IS/IS NOT
+WAS/WAS IN/WAS NOT IN/WAS NOT
+CHANGED
+
+#For complete list of JQL Commands visit
+https://confluence.atlassian.com/jira064/advanced-searching-720416661.html

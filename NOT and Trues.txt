@@ -1,17 +1,27 @@
 NOT and Trues
 
+What is NOT true about API
+	It has very limited capabilities
+WHich protocol NOT supported by HTTP monitor
+	Binary
 What is NOT a reason to setup multiple requests?
 	To make hidden request tabs visible
-	
+What is NOT true about artifacts
+	You must set up artifacts before using soapui
 NOT true about TestCase
 	TestCases are only available in Soap services
-	
+Which is NOT http method
+	UPdate
 What does Debugger NOT provide
 	Ability to change properties while test is running
-	
-NOT true about TestStep protocol
+What is NOT reason to run TestCases in Parallel
+	Cross TestCase dependencies
+What does soapui debugger NOT provide
+	Ability to change properties while test is running 
+NOT true about protocol TestSteps
 	They only work when underlying protocol TestStep
-	
+What is TRUE about testcase
+	YOu may run multiple testcases in parallel
 True about JDBC Request
 	They provide query builder you can use to generate SQL
 	
@@ -24,7 +34,7 @@ NOT benefit of Assertions TestStep
 NOT a DataSink output option
 	Binary
 	
-NOT true about using DataSource and DataSink within project	
+NOT true about using DataSource and DataSink statements within project	
 	DataSource and DataSink must use same repository
 	
 NOT reason why assertions are important
@@ -59,4 +69,19 @@ NOT reason to use scripting in virtual API
 	
 NOT advantage of using Global Sensitive Information tokens
 	Better integration with the soapui debugger
-	
+You expect REST api to NOT return one of a group HTTP status codes. Which assertion to use
+	Invalid HTTP status code 
+What is NOT benefit of the soapui
+	Thousands of script ...
+What will refactoring your definition NOT affect
+	The contents of your  DataSource
+NOT true about Refactoring
+	There is no need to talk to your developers before refactoring
+NOT primary soapui report option
+	Crystal Reports
+NOT supported as a reporting option
+	TestStep
+True about Jasper
+	It can be extensively customized
+NOT a pre-configured Jasper report
+	Interface

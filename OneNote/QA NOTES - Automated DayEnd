@@ -1,0 +1,52 @@
+-- QA Notes - Automated DayEnd --
+
+When running Automated DayEnd
+	- If Running DayEnd normally does not work
+	
+	1.  Check Store Close times
+
+--AS/400 Query
+SELECT effdate,closemon,closetue,closewed,closethr,closefri 
+FROM jbrdata.strrules
+WHERE effdate < CURRENT_DATE
+ORDER BY effdate DESC
+FETCH FIRST ROW ONLY
+
+	2.  Change Store Time to Close
+
+--AS/400 Query
+UPDATE jbrdata.strrules
+SET 
+    closemon = (CASE WHEN DAYOFWEEK(NOW()) = 2 THEN '05:35:00' ELSE closemon END),
+    closetue = (CASE WHEN DAYOFWEEK(NOW()) = 3 THEN '05:35:00' ELSE closetue END), 
+    closewed = (CASE WHEN DAYOFWEEK(NOW()) = 4 THEN '05:35:00' ELSE closewed END),
+    closethr = (CASE WHEN DAYOFWEEK(NOW()) = 5 THEN '05:35:00' ELSE closethr END),
+    closefri = (CASE WHEN DAYOFWEEK(NOW()) = 6 THEN '05:35:00' ELSE closefri END)
+WHERE effdate IN (
+		SELECT MAX(effDate)
+		FROM jbrdata.strrules
+		WHERE effdate <= DATE(NOW())
+)
+
+	3. From Putty session (Gateway), choose option 36. 
+	OR Run this command to run DayEnd (automated dayend)
+	
+	curl -s --header "Content-Type: application/json"   --request POST   --data 'false' 
+	http://10.99.XX.254:18080/posrest/AutomatedDayEnd/begin
+	- Include red and blue link - as one command
+	
+	4. Change Store times back to Normal
+
+--AS/400 Query
+UPDATE jbrdata.strrules
+SET 
+    closemon = (CASE WHEN DAYOFWEEK(NOW()) = 2 THEN :CloseTime ELSE closemon END),
+    closetue = (CASE WHEN DAYOFWEEK(NOW()) = 3 THEN :CloseTime ELSE closetue END), 
+    closewed = (CASE WHEN DAYOFWEEK(NOW()) = 4 THEN :CloseTime ELSE closewed END),
+    closethr = (CASE WHEN DAYOFWEEK(NOW()) = 5 THEN :CloseTime ELSE closethr END),
+    closefri = (CASE WHEN DAYOFWEEK(NOW()) = 6 THEN :CloseTime ELSE closefri END)
+WHERE effdate IN (
+		SELECT MAX(effDate)
+		FROM jbrdata.strrules
+		WHERE effdate <= DATE(NOW())
+)

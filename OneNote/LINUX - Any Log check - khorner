@@ -1,0 +1,9 @@
+LINUX - Any Log check - khorner
+
+In vim /usr/local/oreilly/status
+ 
+there were still some psp.* flags. Usually if they are still there in the AM then processStagedPatches didnt run that morning. heartbeats will block psp if active, 
+So ls -l on heart.beating in the same dir showed it was future dated (and certainly stale since someone had already moved the box time back)
+
+
+Heartbeats handles starts/restarts on most tomcats, enactor included, so just checked to see where heartbeat log ended, cleaned it up and removed the flag to let it start again. The first run caught a few instances down and started them back up.

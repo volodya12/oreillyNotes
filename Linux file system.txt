@@ -1,0 +1,21 @@
+-- Linux File system --
+
+bin - binaries (programs or applications)
+sbin - system binaries (system administrators would normally use. Standard user has no permission)
+	-if programs installed, it NOT placed in this folder 'sbin' or 'bin'
+boot - contains everything for system to run
+dev - devices (where devices live such as webcam, keyboard, etc.)
+etc - etcetera, edit to configure, others (configurations stored like system wide)
+lib - libraries (files that applications can use to perform varies functions)
+media - permanently mounted devices
+mnt - manually mounted devices (where other mounted drives can be found; floppy, external hd, usb,etc)
+opt - optional folder (manually installed software from other vendors)
+proc - sudo files (contain info about system processes and resources)
+root - root users home folder
+run - tempfs (stores runtimes and more)
+srv - service directory (service data is stored)
+sys - system folder (way to interact with folder)
+tmp - temporarly files (usually empty on reboot)
+usr - user applications (applications installed used by user)
+var - variable directory (contains files and directory that grow in size)
+home - contains user folders (stored for personal files)

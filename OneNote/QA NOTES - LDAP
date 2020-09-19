@@ -1,0 +1,45 @@
+--QA Notes - LDAP -- 
+
+LDAP gives access to people to variety of places
+Sets team member with authorization access
+Contact Ashley Hrizo for LDAP
+
+Find Username Admin with Access to "Coupon Administration (Developer Page)"
+
+# Open "lbe"
+Connect to tntest-ldap
+Click on "dc=oreillyauto, dc=com" - this will search within that folder
+Click Globe with glasses
+Paste command into Filter
+	(oreillygroup=cn=CouponAdministration,ou=Groups,dc=oreillyauto,dc=com) - Will give Users who have admin access to Coupons
+Select "Sub-tree level"
+Click Search
+	- All users will show 
+	
+#Changing password in OPS session
+
+	1. Go into webtesting -> type CHARP for user
+	2. Open up LDAP browser
+	3. Click "ldap-dev"
+	4. Click Connect
+	5. Expand "User"
+	6. Click on any user - just to be selected
+	7. Click "Search" - third icon from the left
+	8. Search screen will pop up
+	9. In Search DN field; next to 'uid', type: charp
+	10. Check "sub-tree level"
+	11. Click search. "charp" details should display
+	12. Select, then Right click on entry
+	13. Navigate Edit -> Edit Entry
+	14. userPassword: change password for that field 
+	15. Click Set
+	16. Click Apply
+	17. Restart OPS to take effect
+
+(Before changing Password in OPS, in case user Can't Sign in as CHARP, check backcave, <TestBox> is Powered ON)
+
+# Give/Add/Edit User LDAP Roles - give any user system admin
+https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/OPS_ADMIN+Testing
+
+# LDAP queries for LDAP browser to find things
+https://confluence.oreillyauto.com/display/ISQualityAssurance/LDAP+Group+Listings

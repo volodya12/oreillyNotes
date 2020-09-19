@@ -1,0 +1,162 @@
+-- QA Notes - Item Laser Printer Invoice --
+
+# Professional Customer - Invoice
+	- Verifying Laser Printed Invoice (Specifically ITEMS) VS AS400 Table - could also be on VR Reprint Invoice screen
+	- Make sure information on Laser Invoice paper AND Invoice Reprint VR is matching in AS400 DB 
+
+-- AS400
+Select JDQTYS As JDQTYS, JDLINE As JDLINE, JDITEM As JDITEM, JDDESC As JDDESC, JDWAR As JDWAR, JDUM As JDUM,
+        Case
+                When JDTTAX <> 0 Then 'Y'
+                Else 'N'
+                End As "Tax",
+        JDLIST As JDLIST,
+        Case
+                When JDRETC != '' Then -JDNETP
+                Else JDNETP
+                End As JDNETP,
+        Case
+                When JDRETC != '' Then -JDNETA
+                Else JDNETA
+                End As JDNETA,
+        ((JDSEQ# - 1) * 6) + 1 As "Sort"
+From JBRDATA.JORHSD -- Invoice detail file.
+Where JDINV# = :Invoice
+And JDRETC != 'C'
+Union All
+-- Return information line.
+Select '', '',
+        Case
+                When JDRETC = 'N' Then 'New Return. Original Invoice: '||(Select CNACCT From JBRDATA.JCONFG)||'-'||Trim(JHORI#)||','||Replace(Replace(Concat(' ', Char(Date(Insert(Insert((Select b.JHSDAT From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#), 7, 0, '-'), 5, 0, '-')), USA)), ' 0', ' '), '/0', '/')||', PO: '||(Select b.JHCUSTPO From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#)
+                When JDRETC = 'W' Then 'Warranty Return. Original Invoice: '||(Select CNACCT From JBRDATA.JCONFG)||'-'||Trim(JHORI#)||','||Replace(Replace(Concat(' ', Char(Date(Insert(Insert((Select b.JHSDAT From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#), 7, 0, '-'), 5, 0, '-')), USA)), ' 0', ' '), '/0', '/')||', PO: '||(Select b.JHCUSTPO From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#)
+                End,
+        '', '', '', '', '', '', '', 
+        ((JDSEQ# - 1) * 6) + 2 As "Sort"
+From JBRDATA.JORHSD -- Invoice detail file.
+Join JBRDATA.JORHSH a
+On JDINV# = JHINV#
+Where JDINV# = :Invoice
+And JDRETC In ('N', 'W')
+Union All
+-- Core charge line.
+Select '', '', JDITEM, 'Core Charge', '', JDUM,
+        Case
+                When JDTTAX <> 0 Then 'Y'
+                Else 'N'
+                End,
+        '',
+        Case
+                When CMEMP = 'Y' Then IMCORC
+                Else IMCORP
+                End,
+        Case
+                When CMEMP = 'Y' Then JDQTYS * IMCORC
+                Else JDQTYS * IMCORP
+                End,
+        ((JDSEQ# - 1) * 6) + 3 As "Sort"
+From JBRDATA.JORHSD -- Invoice detail file.
+Join JBRDATA.JIMAST -- Item master file.
+On (JDLINE, JDITEM) = (IMLINE, IMITEM)
+Join JBRDATA.JCUST
+On JDCUS# = CMCUS#
+Where JDINV# = :Invoice
+And IMCORC <> 0
+And JDRETC = ''
+And JDTC != 'W'
+Union All
+-- Core return line.
+Select Case
+        When JDRETC = 'C' Or JDTC = 'W' Then JDQTYS
+        Else ''
+        End,
+        Case
+        When JDRETC = 'C' Or JDTC = 'W' Then JDLINE
+        Else ''
+        End,
+        JDITEM, 'Core Return', '', JDUM,
+        Case
+                When JDTTAX <> 0 Then 'Y'
+                Else 'N'
+                End,
+        '',
+        Case
+                When JDRETC In ('', 'C', 'W') And JDCORR <> 0 Then -JDCORR
+                When (JDRETC, JDCORR, CMEMP) = ('', 0, 'Y') Then -IMCORC
+                When (JDRETC, JDCORR, CMEMP) = ('', 0, '') Then -IMCORP
+                When (JDRETC, JDCORR, CMEMP) = ('W', 0, 'Y') Then -IMCORC
+                When (JDRETC, JDCORR, CMEMP) = ('W', 0, '') Then -IMCORP
+                When JDRETC = 'N' Then -(Select b.JDCORR From JBRDATA.JORHSD b Where (Char(b.JDINV#), b.JDLINE, b.JDITEM) = (JHORI#, a.JDLINE, a.JDITEM))
+                End,
+        Case
+                When JDRETC In ('', 'C', 'W') And JDNETC <> 0 Then -JDNETC
+                When (JDRETC, JDCORR, CMEMP) = ('', 0, 'Y') Then -JDQTYS * IMCORC
+                When (JDRETC, JDCORR, CMEMP) = ('', 0, '') Then -JDQTYS * IMCORP
+                When (JDRETC, JDCORR, CMEMP) = ('W', 0, 'Y') Then -JDQTYS * IMCORC
+                When (JDRETC, JDCORR, CMEMP) = ('W', 0, '') Then -JDQTYS * IMCORP
+                When JDRETC = 'N' Then -JDQTYS * (Select b.JDCORR From JBRDATA.JORHSD b Where (Char(b.JDINV#), b.JDLINE, b.JDITEM) = (JHORI#, a.JDLINE, a.JDITEM))
+                End,
+        ((JDSEQ# - 1) * 6) + 4 As "Sort"
+From JBRDATA.JORHSD a -- Invoice detail file.
+Join JBRDATA.JORHSH -- Invoice header file.
+On JDINV# = JHINV#
+Join JBRDATA.JIMAST -- Item master file.
+On (JDLINE, JDITEM) = (IMLINE, IMITEM)
+Join JBRDATA.JCUST
+On JDCUS# = CMCUS#
+Where JDINV# = :Invoice
+And IMCORC <> 0
+And JDRETC != ''
+Union All
+-- Return information line.
+Select '', '',
+        Case
+                When JDRETC = 'N' Then 'New Return. Original Invoice: '||(Select CNACCT From JBRDATA.JCONFG)||'-'||Trim(JHORI#)||','||Replace(Replace(Concat(' ', Char(Date(Insert(Insert((Select b.JHSDAT From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#), 7, 0, '-'), 5, 0, '-')), USA)), ' 0', ' '), '/0', '/')||', PO: '||(Select b.JHCUSTPO From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#)
+                When JDRETC = 'C' And JDTC = '' Then 'Original Invoice: '||(Select CNACCT From JBRDATA.JCONFG)||'-'||Trim(JHORI#)||','||Replace(Replace(Concat(' ', Char(Date(Insert(Insert((Select b.JHSDAT From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#), 7, 0, '-'), 5, 0, '-')), USA)), ' 0', ' '), '/0', '/')||', PO: '||(Select b.JHCUSTPO From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#)
+                When JDRETC = 'W' And JDTC In ('', 'E') Then 'Warranty Return. Original Invoice: '||(Select CNACCT From JBRDATA.JCONFG)||'-'||Trim(JHORI#)||','||Replace(Replace(Concat(' ', Char(Date(Insert(Insert((Select b.JHSDAT From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#), 7, 0, '-'), 5, 0, '-')), USA)), ' 0', ' '), '/0', '/')||', PO: '||(Select b.JHCUSTPO From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#)
+                When JDRETC = '' And JDTC = 'W' Then 'Warranty Replacement. Original Invoice: '||(Select CNACCT From JBRDATA.JCONFG)||'-'||Trim(JHORI#)||','||Replace(Replace(Concat(' ', Char(Date(Insert(Insert((Select b.JHSDAT From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#), 7, 0, '-'), 5, 0, '-')), USA)), ' 0', ' '), '/0', '/')||', PO: '||(Select b.JHCUSTPO From JBRDATA.JORHSH b Where Char(b.JHINV#) = a.JHORI#)
+                End,
+        '', '', '', '', '', '', '', 
+        ((JDSEQ# - 1) * 6) + 5 As "Sort"
+From JBRDATA.JORHSD -- Invoice detail file.
+Join JBRDATA.JORHSH a -- Invoice header file.
+On JDINV# = JHINV#
+Join JBRDATA.JIMAST -- Item master file.
+On (JDLINE, JDITEM) = (IMLINE, IMITEM)
+Where JDINV# = :Invoice
+And (JDRETC != '' Or JDTC = 'W')
+And IMCORC <> 0
+Union All
+-- Core exchange line.
+Select '', '', JDITEM, 'Core Exchange', '', JDUM,
+        Case
+                When JDTTAX <> 0 Then 'Y'
+                Else 'N'
+                End,
+        '',
+        Case
+                When JDRETC = '' And JDCORR <> 0 Then -JDCORR
+                When (JDRETC, JDCORR, CMEMP) = ('', 0, 'Y') Then -IMCORC
+                When (JDRETC, JDCORR, CMEMP) = ('', 0, '') Then -IMCORP
+                When (JDRETC, JDCORR, CMEMP) = ('W', 0, 'Y') Then IMCORC
+                When (JDRETC, JDCORR, CMEMP) = ('W', 0, '') Then IMCORP
+                When JDRETC = 'N' Then (Select b.JDCORR From JBRDATA.JORHSD b Where (Char(b.JDINV#), b.JDLINE, b.JDITEM) = (JHORI#, a.JDLINE, a.JDITEM))
+                End,
+        Case
+                When JDRETC = '' And JDNETC <> 0 Then -JDNETC
+                When (JDRETC, JDCORR, CMEMP) = ('', 0, 'Y') Then -JDQTYS * IMCORC
+                When (JDRETC, JDCORR, CMEMP) = ('', 0, '') Then -JDQTYS * IMCORP
+                When (JDRETC, JDCORR, CMEMP) = ('W', 0, 'Y') Then JDQTYS * IMCORC
+                When (JDRETC, JDCORR, CMEMP) = ('W', 0, '') Then JDQTYS * IMCORP
+                When JDRETC = 'N' Then JDQTYS * (Select b.JDCORR From JBRDATA.JORHSD b Where (Char(b.JDINV#), b.JDLINE, b.JDITEM) = (JHORI#, a.JDLINE, a.JDITEM))
+                End,
+        ((JDSEQ# - 1) * 6) + 6 As "Sort"
+From JBRDATA.JORHSD a-- Invoice detail file.
+Join JBRDATA.JORHSH
+On JDINV# = JHINV#
+Join JBRDATA.JCUST
+On JDCUS# = CMCUS#
+Join JBRDATA.JIMAST -- Item master file.
+On (JDLINE, JDITEM) = (IMLINE, IMITEM)
+Where JDINV# = :Invoice
+And JDTC = 'E'
+Order By "Sort" Asc

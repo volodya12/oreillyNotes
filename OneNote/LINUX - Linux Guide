@@ -1,0 +1,346 @@
+LINUX - Linux Guide
+
+Linux Guide:
+this means (-r) Recursively (frequently)
+this means (rm) Remove
+-s = silent
+--color=auto    = will show searched keyword in color
+-h = human readable
+Df = disk free = shows disk size
+-l = shows detailed list with Permissions
+-x = exclude
+-iname - case insensitive
+-type = type of file (f = file)
+.(dot) current directory
+*(star) = wild card
+(when rename it a file with 'spaces' use (_)
+(when looking for file with 'spaces' use (\)
+(/) means "END"
+(\) means 'SPACE'
+Ctrl+L = Clear
+Ctrl+Shft+(+) = Zoom Fontsize
+Ctrl+ (-) = Zoom out Fontsize
+
+# LS (-R) = lists Subdirectories (lists directory tree recursively)
+LS (-r) = lists files/directories in reverse order.
+https://www.rapidtables.com/code/linux/ls/ls-r.html  - for (ls -r) (ls -R)
+
+Linux breakdown command line
+
+sed - program
+'s - starting point of
+text1 - file to search for
+text2 - file to change to
+g' - end point of
+
+EXAMPLE:
+sudo sed -i 's/orewards.cct.prompt.enable=true/orewards.cct.prompt.enable=false/g' /usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+---This is what will show as of RESULTS---
+---grep -i "orewards.cct.prompt.enable"---
+
+EXAMPLE: 
+sudo sed -i 's/orewards.cct.prompt.enable=true/orewards.cct.prompt.enable=false/g' /usr/local/oreilly/bin/gijoe/resources/properties/config.properties && grep -i "orewards.cct.prompt.enable" /usr/local/oreilly/bin/gijoe/resources/properties/config.properties
+
+------------------------------------ Commands --------------------------------------------
+Manual page http://man7.org/linux/man-pages/man1/grep.1.html - For Grep program
+https://www.howtogeek.com/412055/37-important-linux-commands-you-should-know/  - Linux Commands
+
+*** Piping - Taking the "Output" from the program and Sending it to "Input" of another program
+# History | less = viewing Histories output in "Less" program
+
+# ls -al / > list.txt = means its going to List All files with lots of details (w/permissions) in that directory (folder your in) and SHOW
+in "list.txt" file. Show not Move
+
+	• Joe@dell:~$=means, username, PCname, (~)=home, $=standard user, not root user(more privileges)
+	• auto-complete (tab), if its auto-completes then you know for sure the file DOES EXISTCat - can create text file
+		○ (Double tab)=(ex: cd Do)=will show all folders starts with "Do", such as "Documents", "Downloads"
+	• Nano - text editor, reads and writes
+	• Less - text editor - reads text file- Scrolls by LINE at a time with Up/Down keys. Ability to SEARCH
+		○ Piping less: (ls -r / |less)=view output in "less"
+	• More - text editor - reads text file - Scroll by PAGE (q - will quit program)
+	Leafpad/gedit - provides more visual text editor
+	• / - means "and"
+		○ ex: cd Bash\ Scripts\ and\ Guides/ -> Bash Scripts and Guides
+	$ - indicates that you are "Standard User" and have regular privileges
+	# - indicates that you have no restrictions and are a "Root" user, which can do anything
+	~ means home directory
+	• Cntl + D = Cancels terminal/Exit
+	• Grep - can also search contents of files. 
+	EX: grep train *.txt --> will search word "train" in all .txt files within directory
+# Head - gives you a listing of the first 10 lines of a file
+		(-n) - number - if you want to see fewer or more lines 
+		Ex: head -n 5 core.exe
+# Tail - gives you listing of LAST 10 lines of a file (same options as 'head')
+
+# Alias - allows user to give own name to a command
+	- Alias cls=clear (will clear off the screen)
+	- alias pf="ps -e | grep $1" (assigning entire command to 'pf' - use quotation marks if command includes spaces)
+	- Save aliases into ".bash_aliases" file in your home directory or they will die after closing Terminal
+
+# ps = Lists running process in current shell
+(Ps -e) = Lists (-e = Every Process) running process = run in "less" 
+	Ex: assign 'ps -e' to "pf" = 'process find'
+		"Alias pf="ps -e" 
+	- To see all the processes related to a particular user, use the -u (user) option. This is likely to be a long list, so for convenience pipe it through less: (ps -u dave |less)
+	
+# Cat - short for "concatenate" - Creates text files quickly, without editing capabilities
+	- Cat <fileName> | less (allows human to read file in manageable manner, using up/down keys)
+	- cat file1 file2 = concatinates two text files together (combines two text files)
+Cat > file2 = Creates file2 from scatch
+Cat >> filie2 = Adds/Appends whatever is typed/written to this file2. 
+	- Curser will start blinking meaning add content to the file
+	- Cntl + D = will save the content and exit
+	- Cat file1 file 2  - can open two files at a time
+
+Cd - changes directories 
+	- Cd ~ (home directory) cd .. (previous directory) 
+	- /usr/local/bin/$ cd ../stuff/
+	- /usr/local/stuff$        (^ this will go back one folder and into diff. folder
+	- Cd Name\ that\ kid/ (\ = space, / = end)
+Pushd= for quick cd into far folders (quickly jump between two directories)
+Popd = to go back to where you were before executing "pushd"
+
+File <fileName> = to determine 'type' of file it is 
+Locate <fileName> = finds any file looking for. Will give you list of directories with <fileName>
+	-this command uses its own Database, it usually updates everyday. But to update manually...
+	"sudo updatedb"
+Which <commandName> = find other commands (all commands are stored somewhere), "which" determines if  
+       - command is installed. 
+	- Ex: which Cal = Calendar
+
+# pwd - print working directory=tells exactly where you are. Give "Absolute" path
+	"Relative" path=how you get to something from where you are right now
+#Ls - List of folders inside directories
+	- (-a = All) =Includes 'Hidden' files 
+	- (-l) = Long format - w/Permissions
+	- (-r) & (-R)
+	- (ls -lah) = list all hidden files with permissions in human readable format
+	- ls /home/usr/vlad/document = will list files in "documents" folder
+	
+Whatis <commandName> = tells user what the (specific) command does 
+
+Apropos - its like 'man' command, help
+	Apropos 'time' - lists ALL commands that has to do with TIME
+Man - manual for linux commands
+	Ex: man time
+--help = provides info = (--help | grep size = will display all commands for 'Size')
+
+Mkdir - make directory (make folder)
+	-(mkdir invoices/2019) = creates "2019" folder inside "invoices" folder (it only works if 'parent' folder exist)
+	-(mkdir -p invoices/yearly/2019 = Even tho 'yearly' folder does not exit, (-p) creates it)
+	(-p)=creates directory folder if it doesn’t exist
+	
+Touch - creates file
+Cp - copy file
+	- Cp ~/text text = this will grab text file name from HOME and copy to Same Directory where you at NOW
+
+Mv - moves/rename (when renaming with 'spaces' use (_))
+	- To move a file you must tell "mv" where the file is and where you want it to be moved to
+	- Ex: mv ~/documents/invoices/2019.exe . = tells 'mv' to move '2019.exe' file to current directory which is (.)dot
+	- Ex: mv picture other = moves "picture" folder into "other" folder) 
+	- Move and Rename at same time: (mv ~/documents/invoices/2019.exe ./Year_of_2019.exe
+	- Mv bash.bak bashrc 
+	-           ^ this renames bash.bak file to bashrc & all of contents are in bashrc
+
+Rm -  remove files with NO restoration ("rm" cannot remove Directories)
+	- Rm * = removes ALL files in that directory
+	- Rm file* = removes everything that starts with word "file" and any/all characters after that, will also be removed
+	- Rm -r = removes every Directory and Files (powerful tool)
+	- (-rm -rf) = applies f=force
+Rmdir = removes EMPTY directories (folder). Directories WITH files in them, will NOT be removed
+	-(rmdir *) = removes ALL EMPTY directories
+
+Groups - tells which groups a user is member of
+	Ex: groups dave
+		Output: dave : dave adm chrom sudo dip plugdev lpadmin sambashare geek
+
+Username@machineName$ - ex: vkalmykov@dell$
+$ - indicates that you are "Standard User" and have regular privileges
+# - indicates that you have no restrictions and are a "Root" user, which can do anything
+
+# Piping - means Redirecting
+
+# History - lists all commands typed previously. Lists up to 1000 commands typed
+	- History | less = viewing "history" command via "less" program
+	- Ls -al/>soul.txt = list all long format files and create or put them into "soul.txt" file
+	- (!###) - Key any number from history list to repeat the command
+	- (!!) - this repeats previous command
+
+Sudo -s   (the admin will change from standard to 'root' with limited time 
+	- ($) will alter to (#) - indicating 'root' user
+	- 'Root' user has more privileges but account will be insecure. Big risk involved. 
+	- No restrictions under "root" admin. 
+	- Key "exit" to exit from root
+Sudo = requires when performing action via "root" user or changing passwd for another user
+	Ex: sudo passwd mary
+
+Su = will log you in as a 'root' with NO time limit. Risky
+Su - <username> = becomes full <user> and have full access to their files
+	- (-) dash really matters
+	- (Su - ) will grant access to 'root' on system 
+
+Diff= compares two text files and shows differences between them
+	-y=side by side
+	-w 100 (max characters to fit on a line)=width= avoid wraparound lines
+	--suppress-common-lines = prevents listing the matching lines, letting you focus on the lines which have differences.
+Ex: diff -y -W 70 alpha1.txt alpha2.txt --suppress-common-lines
+
+# df - (disk free) shows size, used space, available space 
+	(-h)=human readable form
+	(-x)=Exclude - tells 'df' to exclude filesystem im not interested in to view
+
+# Watch free -h = monitor disk usage every 2 seconds
+# free -h = shows memory in system
+
+Echo - prints a string of text to terminal window
+	Echo Hello world
+	EX: Echo $USER / Echo $HOME / Echo $PATH
+	
+Find - tracks down files that you know exist but can't remember their location
+	- .(dot) tells 'find' to look in current folder
+	- (-name) tells 'find' to look for files with name that matches it 
+	- *(star) represents sequence of characters and '?'(Question mark) represents any single character
+	- (-type)searches by type of file), (f) stands for 'file', (-iname) means search case insensitive
+	- EX: -name *ones* or ex: find . -name *ones*  --> will find like 'bones' 'stones'
+	- EX: find . -type f -name *ones* or find . -iname *wild*
+
+Finger - gives short info about a user like time, date of user log in, directory, full name
+	EX: finger <username>
+
+#Gzip - compresses files. By default, it removes the original file and leaves you with the compressed version. To retain both the original and the compressed version, use the -k (keep) option.
+	Ex: gzip -k core.exe
+	To see results: ls -l core* -> will have two files "core.exe.gz" and "core.exe"
+#Head - gives you a listing of the first 10 lines of a file
+	(-n) - number - if you want to see fewer or more lines 
+	Ex: head -n 5 core.exe
+# Passwd = lets you change password for user
+	-sudo passwd cindy = lets you change password of 'different' user
+# Ping = lets you verify that you have network connectivity with another network device. It is commonly used to help troubleshoot networking issues. 
+	Ex: ping 192.168.4.18
+	(-c)=ask ping to run specific number of ping attempts. EX: ping -c 5 10.99.90.254 = ping 5 times
+	(-a) = audio = to hear a ping
+# Shutdown = will shutdown PC in 1 minute
+	(-now)=will shutdown immediately
+	- Key: shutdown 23:00 Shutdown tonight at 23:00, save your work and log out before then!
+	- Key: shutdown +15 Shutting down in 15 minutes!
+	- Key: (shutdown -c) = Cancel Shutdown if you change your mind
+		○ Setting specific time for 'shutdown' and informing user about it.
+		○ Specify <command>, <time>, <any message>
+# sudo reboot = reboots system
+# sudo shutdown -h 15 = Shutdown in 15 minutes
+# SSH - make connection to remote into another computer server. 
+	-must provide <username>@<IP address> = ssh mary@192.168.0.23
+	-Key "w" to list current users within that server
+	-Key "exit" to exit
+# Tar (tarball)(tar -cvf <filename>) = Creates an archive file that contains many other files. ALSO used to EXTRACT files from an        archive file. 
+	- Commonly asked 'tar' to compress the archive, By default, it creates 'uncompressed' 
+	- "tar -cvzf song.tar.gz mySongs/ 
+	- (-c)=Create, (-v)=gives visual feedback by listing files added to archive, (-f)=filename=archive file to be named, (-z)=Compress archive file using (gzip), (mySongs)=directory, (/)=always END Directory
+	- (.gz)for (-z)=this suffix allows anyone who extracts files from Archive, would know which command to pass for correctly retrieve files
+	- (-z)(-j)=without 'z' 'j', archive will NOT compress. Will take bit longer additional time to compress file
+	- (-j) for (.bz2)=Backup option for Compression. (add ".bz2" suffix for determination)
+	- (-z)=provides Decent compression and good speed//(-j)=gives better compression and slower speed
+#Extract Archive file (Uncompressed) = (tar -xvf songs.tar) = Extracts files from Archive. 
+	- Use 'ls' first to confirm type, name of archive file to extract from
+#Extract Archive file (Compressed)(.gz) = (tar -xvzf song.tar.gz) = Extracts files from Archive compressed
+#Extract Archive file (Compressed)(.bz2) = (tar -xvjf song.tar.bz2) = Extracts files from Archive compressed
+# unzip <filename> - unzips files
+
+# users - Will tell who's logged in
+# id = shows bunch of information about the user (sometimes good for troubleshooting)
+# uname = You can obtain some system information regarding the Linux computer you’re working on
+	- Use the -a (all) option to see everything.
+	- Use the -s (kernel name) type of system - LInux
+	- Use the -r (kernel release) kernel release 
+	- Use the -v (kernel version) kernel version.
+# (w)= lists currently logged in users
+#whoami = find out who you are logged in as and other info
+
+----------------------------------------------- (top) to display real-time data ------------------------------------
+# Top = shows real-time display of data relating to linux machine
+	- Top of screen is status SUMMARY
+	- The first line shows you the time and how long your computer has been running for, how many users are logged into it, and what the load average has been over the past one, five, and fifteen minutes.
+	- The second line shows the number of tasks and their states: running, stopped, sleeping and zombie.
+	- The third line shows CPU information. Here’s what the fields mean:
+		○ us: value is the CPU time the CPU spends executing processes for users, in “user space”
+		○ sy: value is the CPU time spent on running system “kernel space” processes
+		○ ni: value is the CPU time spent on executing processes with a manually set nice value
+		○ id: is the amount of CPU idle time
+		○ wa: value is the time the CPU spends waiting for I/O to complete
+		○ hi: The CPU time spent servicing hardware interrupts
+		○ si: The CPU time spent servicing software interrupts
+		○ st: The CPU time lost due to running virtual machines (“steal time”)
+	- The fourth line shows the total amount of physical memory, and how much is free, used and buffered or cached.
+	- The fifth line shows the total amount of swap memory, and how much is free, used and available  (taking into account memory that is expected to be recoverable from caches).
+	- PRESS 'E' key to display more HUMAN readable
+		○ The columns in the main display are made up of:
+			• PID: Process ID
+			• USER: Name of the owner of the process
+			• PR: Process priority
+			• NI: The nice value of the process
+			• VIRT: Virtual memory used by the process
+			• RES: Resident memory used by the process
+			• SHR: Shared memory used by the process
+			• S: Status of the process. See the list below of the values this field can take
+			• %CPU: the share of CPU time used by the process since last update
+			• %MEM: share of physical memory used
+			• TIME+: total CPU time used by the task in hundredths of a second
+			• COMMAND: command name or command line (name + options)
+		○ The status of the process can be one of:
+			• D: Uninterruptible sleep
+			• R: Running
+			• S: Sleeping
+			• T: Traced (stopped)
+			• Z: Zombie
+			• Press Q to exit
+------------ Linux Permission --------------------
+Chmod - sets permission flags on file and folder. Flags define who can Read, Write to or Execute the File
+	- When keyed -L (stands for Long format which shows read,write,execute, permissions)
+	- rwxrwxrwx
+	- 0: No permission
+	- 1: Execute permission
+	- 2: Write permission
+	- 3: Write and execute permissions
+	- 4: Read permission
+	- 5: Read and execute permissions
+	- 6: Read and write permissions
+	- 7: Read, write and execute permissions
+User                                Group                       Public
+-rwx                                -rwx                            -rwx
+
+R - Read (4 bits)
+W - Write/Edit/Deletes (2 bits)
+X = Execute, system can run/execute this file- File may Contain Code (1 bit)
+	
+	- There are 7 bits total
+		○ Chmod +x file2 = Add Execute Permit to File2
+		○ chmod 765 example.txt
+		○ Chmod 744 file2 = 744 (7 -user, 4-group, 4-public)
+	
+	- Common bits are 755 - everyone has write privileges but only I can change File
+	- Common bits are 744 - everyone can read But only I can execute
+	- Common bits are 644 - Everyone can read, Only user can Write
+	
+	- Permission for Directory 
+		○ 755- gives privileges to OPEN directory and view files
+		○ 644 is permission to open files
+		
+Chown - Change the Owner and Group name
+
+--------------------------------- Kills software ------------
+# Kill - terminates process from command line, with given PID - process ID
+	-use 'kill' command if only really need to (lock up, or something worse)(make sure you know what you terminating)
+	-First. Find out PID of software - (ps -e | grep <programName>)
+	-will display: 1692 tty2     00:00:10 <programName> 
+	                1962 is PID
+	-Key: kill 1962
+	kill <PID>
+	
+# Killall <programName> - kills specific program and everything associates with it
+
+
+
+
+
+
+

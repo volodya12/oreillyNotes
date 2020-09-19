@@ -1,0 +1,43 @@
+-- QA Notes - Fixing OPS/DayEnd --
+
+------------------------------- Fixing Running dayend -----------------------------------------
+with message: "Could not load the Device for ID:POS9998VKALMYKOV. Please Contact your administrator"
+
+1. Navigate to linux command (test box)
+2. Type "ls"
+3.  "51.enactor 52.enactor Desktop enactor enactor2 logging vlad" (error message - 2 enactors showing)
+4. sudo rm -r *.enactor
+
+#Bash command: (disk free)
+df -h
+Look for /dev/dm-0		'Use%' - IF 100%, thats the problem. Contact Linux ppl (System Administrator) to free up disk space
+
+#DayEnd report facts
+	- Day Ends usually runs under QBATCH tab
+	- IF QCTL is still present, Day End still running
+	- If RUN_PO is in MSGW, need restart
+	- SELW status. that means it's selecting records - may take Looong
+
+#DayEnd - AS400 - Testboxes - If OPS not launching, Walk into "Batcave" and see if Particular Servers are powered on. (IF its blinking, then POWER OFF, the display should say "C B N" if its powered on)
+
+#If user CANNOT VNC into OPS, Check for Disk free space on that Testbox
+
+#DayEnd  - When trying to run DayEnd, it would go thru the steps but at the end, would Give an Error message. 
+- This means, someone was Running PO Receivals (possibly in RPS - Retail Production System)(Someone was testing on that TestBox)
+- This means, Some stores may receive Delivery earlier than store opens, and employee will sign and process that early delivered order into Computer. Which causes erruption of DayEnd
+- Process: IN Legacy-> Master Menu -> #4 (Purchase order and Receival)-> #6 (Early Purchase order receival)
+
+# If this messages shows "Could not load Location for ID: 9990, Please contact Administrator" 
+	- This means that Problem occurred in Back Office. Need devs to look into that
+
+##Open DayEnd issues are part of RETAIL MAINTENANCE
+
+#JOB LOGS to look at, if DayEnd fails - Send to Devs for easy understanding for them
+- Job logs sent to Programmers
+#5 - 10 - Always scroll to very Button (most recent job logs) - Copy the first line: JOb/User/Number/System
+#5 - 11 - Copy/Send whole thing to Programmers
+#5 - 14 - F11 - Copy(Important columns: I/O Count and Relative Records Rows) Send whole thing
+
+JSCHDA - Store Schedule Control Data - same as call JSC101
+
+

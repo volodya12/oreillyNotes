@@ -1,0 +1,7 @@
+DEFINITION - Acronyms
+
+WTW - Warehouse to Warehouse
+SupplyChain - same as Warehouse
+OReillyInvoice Table - New Invoice table where invoices will be stored
+Synchronous - user can only execute one thing at a time
+Asynchronous - user can execute multiple things at a time

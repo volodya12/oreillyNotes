@@ -1,0 +1,63 @@
+QA PROCESS - QA TestFlow
+
+--- QA Process ---
+
+Status  -> Test Case Template -> Ready for Review -> Ready for Execution -> Manual Test (Automation pick it up if its perfect test) -> Automated Test (Automation Automates that Test for their purpose)
+
+1. Review/Analyze Project
+	a. Identify Testing Requirements
+	b. Estimate Entire Solution Design
+2. Attend Grooming/Sprint Planning
+3. Review Sprint
+	a. Identify Risk
+	b. Identify Testing Requirements
+	c. Estimate Entire Sprint
+4. Plan Testing for Sprint
+	a. Prepare Sprint Test Suite
+		i. Sprint Test Suite will be run toward the end of the sprint
+	b. Prepare Issue Test Cases
+	c. Prepare Initial Regression
+5. Testing current sprint
+	a. Initial Regression
+		i. Contact Automation
+		ii. Regression Analysis if Fail
+		iii. Create bugs as needed
+				1. Post New Bugs in Mattermost
+		iv. Post Pass/Fail Status to Mattermost
+	b. Issue Testing
+		i. Select Issues from Test Lane
+		ii. Create Test Case for Sprint Issue
+				1. NOTE: These will probably only be run once or twice, so do not take too much time creating these
+		iii. Send to Dena for review
+		iv. Execute Test Case
+				1. Creator of test will execute the test
+		v. Note Comments on Issue
+				1. Device ID
+				2. Build
+				3. Issues Found
+				4. Pass/Fail Status
+		vi. Post Pass/Fail Status of Issue to Mattermost
+		vii. Create bugs as needed
+				1. Post New Bugs in Mattermost
+	c. Sprint Test Suite
+		i. Execute Sprint Test Suite toward the end of the sprint
+		ii. Post Pass/Fail Status of Testing Suite to Mattermost
+		iii. Create bugs as needed
+				1. Post New Bugs in Mattermost
+	d. Remediate Bugs/Issues
+	e. Final Regression
+		i. Contact Automation
+		ii. Regression Analysis if Fail
+		iii. Create bugs as needed
+				1. Post New Bugs in Mattermost
+		iv. Post Pass/Fail Status to Mattermost
+	f. Send Status for each week
+		i. Issues - Pass/Fail
+		ii. Test Suite - Pass/Fail
+		iii. Bugs Found
+6. Closing current sprint
+	a. Update/Modify Tests in Test Suite as needed for future use
+	b. Mark Tests for automation
+	c. Sprint Sign Off
+7. Closing Project
+	a. Project Sign Off

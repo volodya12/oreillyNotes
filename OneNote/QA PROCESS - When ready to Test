@@ -1,0 +1,19 @@
+-- QA Process - When ready to Test --
+
+$ Create "Meeting Notes" and record all notes and discussions have had with Devs/Managers - keep for record and everyone in team aware of whats going on
+$ Create Another "Disruptive Time" Notes to where team members can put their scenarios of where they have to wait for long time to proceed with testing
+ 
+$ Paste ALL Documentation Links to the Project Page
+$ Create "Issue Worksheet" for all Test cases Templates 
+$ Create "Retrospective" Page for people to give feedback
+
+Make sure ALL tests are in "Ready for Execution" status
+Create Test Plan and add Epic Link of EXECUTION
+Move Test Case Template to Test Plan
+	Segregate "DT - Disruptive Tests" into group - optional
+Click "Start" on Test Plan to start Executing
+
+$ Add Any Blockers/Notes into "Testing Interruptions" on Project Page - whats preventing you from testing
+$ Create a Task "Down time Task" that interrupts (makes you wait) to continue further testing
+
+# Record time loss in "Disruptive Testing" in Project Page, that could be fault of DayEnd, Dev's coding, Icarus run too long, Some Blocker.  

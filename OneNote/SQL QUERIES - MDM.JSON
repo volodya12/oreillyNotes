@@ -1,0 +1,13 @@
+SQL QUERIES - MDM/JSON 
+
+3.6 - Store Side Cache
+To aid in speed and accuracy of Customer Searches, when a store retrieves a customer record from MDM, a copy of that customer file will be stored in a Storeside cache. This cache is always checked first when performing a customer search. If no matches are found, the customer search continues on to call MDM at corporate. The cache has an automated purge that clears all records that have not been accessed within 90 days to comply with CCPA standards. This purge is ran from an hourly spring job.
+Once a customer record is returned from MDM and saved to the cache, that file is given a retrieval time stamp. When another search is conducted for this RCN, if the record is younger than the set buffer (this is a configurable value but defaults to 10 minutes), the cached record will be pulled instead of searching MDM.
+When corp search fails and no local cashcustomer results can be found, the local jrcust/jrwdshopper table will be searched for the requested customer info. 
+# Technical Specifications on Retail MDM Integration - Documentation
+https://confluence.oreillyauto.com/display/ITRetailSolutionDesign/iSM+-+Technical+Specifications+-+Retail+MDM+Integration#iSM-TechnicalSpecifications-RetailMDMIntegration-3.6-StoreSideCache
+
+# JSON Data Verification info
+You can update them with an email address. But if you search for a retail customer, the response is not expected to return the email address, because we don't expect anyone other than orewards customers to have an email address.
+In other words, for retail customers that don't have an orewards account, the email address is stripped.
+
