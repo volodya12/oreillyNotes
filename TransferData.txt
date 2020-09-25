@@ -1,0 +1,88 @@
+SQL
+
+Inner Join = Tables share common fields (columns)
+same as = 
+Joining 2 tables
+	Select OrderID, OrderDate, CustZip
+	From Orders, Customers
+	Where Orders.CustID = Customers.CustID    ----> Inner Join sharing identical Column names
+Joining 3 Tables
+	Select OrderData, ItemID, Quantity, CustFirstName, CustLastName
+	From Orders, OrderDetail, Customers
+	Where Orders.OrderID = OrderDetails.OrderID
+	AND Orders.CustID = Customers.CustID 
+OR
+	Select OrderData, ItemID, Quantity, CustFirstName, CustLastName
+	From Orders d, OrderDetail h, Customers m
+	Where d.OrderID = h.OrderID
+	AND d.CustID = m.CustID 
+	
+::money = adds $ sign
+::date = makes it look like date 
+ex: select payment_date::date
+	sum(amount + num_payment)::money
+	
+#UNION, UNIONALL - used to combine the result-set of two or more SELECT queries
+UNIONALL - combines Columns and Data Together even if Data repeats
+	Combines ALL Columns and Data
+	Shows Duplicates
+UNION - Combines Distinct Columns with All Data. 
+	It does NOT override or show extra Columns. It combines data together BUT not Columns
+	Does NOT Show Duplicate Data
+UNIONALL Sample:
+	id	name	email
+	1	Ben		B@B.com
+	2	Raj		R@R.com
+	1	Sam		S@S.com
+	2	Sam		S@S.com
+UNION Sample:
+	id	name	email
+	1	Ben		B@B.com
+	2	Raj		R@R.com
+	3	Sam		S@S.com 
+FOR UNION and UNIONALL to WORK, = Number of Columns, Column Names, and order of columns in TWO SELECT statements MUST be SAME
+When adding Where, Order by or other clauses
+ex: Select * from Customers
+	UNION 
+	Select * from AmountOfCustomers
+	Order by Name   ---> this clause must be after Second/Last SELECT NOT first, otherwise it won't work
+Different between UNION and JOIN
+	UNION combines the result-set of two or more SELECT queries into single result-set which includes all rows from all queries in the union
+	JOIN retrieves data from two or more tables based on logical relationship between the tables	
+		in short, UNION combines ROWS from 2 or more tables, JOINS combine COLUMNS from 2 or more tables
+		
+# Adding(SUM) two Queries Together - SUM results of Two separate SELECT statements and Equal One
+Examples:
+https://stackoverflow.com/questions/15149775/how-to-add-results-of-two-select-commands-in-same-query  
+
+#WHERE Vs HAVING
+WHERE goes before GROUP By -> Performance: Faster
+HAVING goes after GROUP By -> Performance: Slower
+
+WHERE clause CANNOT be with SUM(Table) or COUNT(*)
+	WHERE SUM(Table) 
+	WHERE COUNT(*) > 10   ---> big no no 
+HAVING CAN be with SUM(Table) or COUNT(*)
+	HAVING SUM(Table) 
+	HAVING COUNT(*) > 10
+WHERE clause filters rows "Before" aggregate (SUM) calculations are performed
+	WHERE filters ROWS
+HAVING clause filters rows "After" aggregate (SUM) calculations are performed 
+	HAVING filters GROUPS 
+
+WHERE and HAVING used Together
+	EX:
+	Select Product, SUM(SaleAmount) as TotalSales
+	From Sales
+	Where Product in ('Iphone','PC')
+	Group by Product
+	Having SUM(SaleAmount) > 1000
+^ Explanation: 
+	WHERE is applied FIRST to filter rows, the rows then grouped and aggregate (SUM) Calculations are perfomed
+	Then HAVING clause filters the group 	
+
+- Avoid HAVING if needed but they both relatively same
+- Aggregates is SUM(Table) also COUNT(*)
+
+# Where country LIKE '%a%'  ---> filters 'country' that have letter 'a' in them.
+

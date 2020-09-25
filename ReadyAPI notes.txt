@@ -9,12 +9,29 @@ About XML
 	Designed to store and Transport Data
 	Has no Pre-Defined taga - tags are complete customizeable
 	XML separates information from Presentation
+	XML is Fundamental concept for Web Services 
 About JSON
 	Data Representation format - similar to XML
+Used in SOAP services:
+	XML	
+	XML Schema
+	XPath
+	WSDL
+Used in REST Services
+	XML
+	JSON 
+	JSONPath
+	HTTP Methods (GET, PUT, POST, DELETE)
+Bonus skills:
+	Regex
+	Message Header
+	URI
+	SQL
 
 #Architecture
 Jasper / Saxon / Logging / H2 Database / JDBC Drives / HermesJMS / Monitoring / Runner / Jetty 
 
+#Integration tab contains all the plug ins that readyapi offers. Some of them need side installation
 
 #Projects
 Project contains everything to test API 
@@ -28,19 +45,54 @@ Artifacts - They are primarily of interests of development
 		End users have no interest in artifacts
 Zephyr Intergration - design/manager/track tests 
 
+Logging - Powered by log4j
+	Records numerous logs:	
+		ReadyAPI/HTTP/JETTY/Error/WS-RM/Script/LoadUI
+	If experiencing some soft stack tracing - restart API software and it often clears off the problem
 # Properties (TestStep) need to be above API calls (REST request/SOAP Request)
-
+# Assertions - determine if readyapi is behaving according to your expectations and requirements 
 
 Jetty - Java HTTP server and Java Servlet container. It is often used for machine to machine communications.
 Jetty is Web Server which is know to be portable, lightweight, robust, flexible, extensible and easy to integrate. 
+Jetty Web Server is foundational technology that makes it possible to create very realistic simulations of your api whether they in development or externally hosted. 
+#H2 Database 
 
+#Event Handlers
+	SubmitListener - Take action before or after a requst is submitted
+	RequestFilter - INtercept a request, and modify it
+	ProjectRunListener - Determine when a project has been run
+	TestSuiteRunListener - Listen for invocations of a given TestSuite, and take action
+	TestRunListener - Listen for invocations of a given TestCase, take action
+	LoadTestRunListener - Customize behavior during a load test
+	MockRunListener - Intercepts calls to a mock service
+	MonitorListener - Customize behavior for SOAP traffic monitoring
+	SecurityTestRunListener - Customize behavior during a security scan
+# Properties - may accessed via scripts and wizards
+	property names are NOT case sensitive
+	Property names may contain spaces
+	Properties available in many levels:	
+		Global/TestSuite, Virtual API, Project, Request, Virtial API response 
+# Composite Project - with Setting "composite project" to True, the project is separated into multiple components 
+	It is an option that let user to share project amont team members/coleagues 
+	This lets team work on project at the same time
+	
+#Repository - GIT - Source Code Control Integration
+	ReadyAPI includes built-in support for Git-based repositories such GitHub/GitLab/BitBucket
+	Once project saved in Repository, user can fetch copy from repository if accidentally deleted
+# Projects are stored in potentially large XML files
+# Composite projects support multiple concurrent users
+# Projects can be launched from command line or within the product
+# Environment can change endpoints, database, connections, properties, etc.
+ 
 #Manual API Interaction
 
 Creating Project:
 	Definition - point soapui endpoint Resource definition. SoapUI examines the resource and automatically determines 
 		how to set up right project based on what you provided
+		In Definition tab, Under "URL or File Path" user can paste SOAP live Web Service endpoint 
 	Endpoint = create a project by providing one or more endpoints. This is for commonly if user wants to test Specific REST API
 		Select specific method GET/POST/PUT/DELETE etc. 
+		Test using LIVE endpoint 
 	Intergration = allows soapui to import from and test sources/endpoints from third party application 
 	Discover API = Select how you want to record HTTP/HTTPS traffic to web api 
 		Records interactions on websites, testing buttons, links, movements
@@ -93,9 +145,9 @@ Tabs:    Test Case- overview of all TestCases in this TestSuite
 		
 
 #TestCase
--Have two main settings	- preferred unchecked
-	Abort test if an error occur
-	Fail TestCase if it has failed TestSteps
+-Have two main settings	- preferred unchecked  --- run test case completely, and then see exactly what failed 
+	Abort test if an error occur - will halt the test if encounter a single problem 
+	Fail TestCase if it has failed TestSteps - mark test case as Failure, even if one test case fails. (Keeps test case running even if fails)
 Debugger lets you pause and analyze  your TestCase
 TestCase is simply a functional test consists of at least one TestStep
 	Each TestStep has specific purpose
@@ -107,7 +159,17 @@ TestCases can be run in Groups or Standalone, they can be enabled/disabled
 	SEt one or more breakpoints and run the test
 	YOu may process entire testcase step by step (one teststep at a time)
 	When finish debugging/analyzing, remove all breakpoints
-	
+#Test cases in TestSuite can be run Sequencially or in Parallel 
+# Step by Step Run feature, lets you pause a TestCase and easily examine critical information 
+
+# Debugger displays  (Step by step run tab)
+	Global Properties
+	Project Properties
+	TestSuite Properties
+	TestCase Properties
+	SoapUI run Context
+	Property expansions
+You can filter what is shown, and expand/collapse entries
 
 #TestStep - Introduction and Protocol
 
@@ -126,6 +188,12 @@ Develope a good functional TestCase and then choose the right component (TestSte
 Protocol = communicate with a service/API = TestSteps (SOAP/REST/JDBC/JMS etc)
 Flow Control = Determine how the TestCase will be processed - Flow/Structure of TestSteps/Properties
 Data = Support input, output, data generation - Data Storage/Data Source
+
+Protocol are TestSteps 
+TestSteps consists of several different protocols	
+	Communication - with service/API
+	Flow Control - Determine how testcase will be processed
+	Data - Input/Output, data generation/ Data driven tests 
 
 Protocol: Responsible for transmitting and receiving messages to/from APIs
 			Soapui automatically determines the right TestStep for API 
@@ -156,6 +224,22 @@ Assertions are assigned to protocol TestSteps
 Request and Response HTTP Headers are OFTEN different 
 Message Viewer lets you see requests and responses
 
+#HTTP Headers contain
+	consists of case-insensitive name followed by : then value
+	Holds response about locations, server provider
+	May contain comments
+	Connection/Authorization
+	Proxy-Authentication
+	WWW-Authentication 
+	Exporations
+	Cache control 
+	Warnings
+	Pragma
+# There are four kinds of headers context:
+	General Header: This type of headers applied on Request and Response headers both but with out affecting the database body.
+	Request Header: This type of headers contains information about the fetched request by the client.
+	Response Header: This type of headers contains the location of the source that has been requested by the client.
+	Entity Header: This type of headers contains the information about the body of the resources like MIME type, Content-length.
 
 #TestSteps - Flow Control 
 
@@ -217,8 +301,10 @@ Determines whether service has met certain criteria
 Not all assertions can be applied to type of protocol TestSteps
 Assertions are to be assigned to any protocol oriented teststep
 
+#Assertions 
 Contains - making sure that certain value is present *anywhere* in the Response 
 XPath Match - checks particular part of message in XML to see if value is present or not
+	JSONPath Match is Exactly the same as XPath Match Assertion, just one is for XML and other for JSON 
 JSONPath Count Match = Validates to Number of instances in response are present 
 JSONPath Existence Match = Node and JSON response is present 
 	(ex: timestamp = 12202020) - "timestamp" is Node/"12202020" is Value
@@ -246,23 +332,17 @@ used by string-searching algorithms for "find" or "find and replace" operations
 Valid HTTP status Code = validates proper code return (200, 404). Validates HEADER
 Invalid HTTP status code = validates unwanted/error status code are present (400, 401, 402, 403, 404, 500, 501)
 
-General purpose of compliance, status, and standards assertions is IT is useful for REST apis, web services and other protocol
+General purpose of compliance, status, and standards assertions 
+	is IT is useful for REST apis, web services and other protocol
 
-Schema Complience = tells if response from the Web Service matched its XML Schema
-	Validates response message to comply with associated WSDL or WADL schema definition (Used in REST too)
-	If assertion failed, look at "WSDL Content" file itself (XML file)
-	Validates SOAP Web Service response matching its Contract 
-	Two things that SChemal Compliance assertion compares is Response and WSDL 
-	
-SOAP Fault = Validates last received message is soap fault. Applicable only to Soap teststep
-	Checks for Standard Web Service errors
-	Not SOAP Fault = confirms that no errors occurred
-Schema Assertion = Schema Compliance - Validates Response Structure 
-	- Schema File contains (.xsd) extension
-	- Everything about in Response is mentioned in Schema File (.xsd)
-WS-Addressing - checks for routing headers
-
-Web Services assertions:
+#These assertions are good for any situations regardless of Protocol
+	Schema Compliance - tells if response from the web service matched its XML schema (web service)- Can also be used for REST
+			Schema assertion sees if Web Service response matches its Contract 
+			Schema assertion for Web service compares Response and WSDL 
+	HTTP Download all resources
+	Vaiid HTTP status codes
+	Invalid HTTP status Codes
+# Web Services assertions: only 
 	SOAP Request
 	SOAP Response
 	SOAP Fault - checks for standard WEb Service errors
@@ -270,7 +350,28 @@ Web Services assertions:
 	WS-Security Status
 	WS-Addressing Request 
 	WS-Addressing Response - checks for routing headers
+# Web Services are HEAVILY dependent on 
+	Proper Schema
+	Formatting
+	Standardized response structures
+# SOAPUI uses WSDL to determine how to configure request
 
+Schema Complience = tells if response from the Web Service matched its XML Schema
+	Validates response message to comply with associated WSDL or WADL schema definition (Used in REST too)
+	schema compliance = If assertion failed, look at "WSDL Content" file itself (XML file)
+	Validates SOAP Web Service response matching its Contract 
+	Two things that Schema Compliance assertion compares is Response and WSDL 
+	
+SOAP Fault = Validates last received message is soap fault. Applicable only to Soap teststep
+	Checks for Standard Web Service errors
+	Produces Standardized error 
+Not SOAP Fault = confirms that no errors occurred (WSDL or SOAP response returns NORMAL)
+		It DOES NOT produce Standardized error 
+Schema Assertion = Schema Compliance - Validates Response Structure 
+	- Schema File contains (.xsd) extension
+	- Everything about in Response is mentioned in Schema File (.xsd)
+WS-Addressing - checks for routing headers
+WS-Addressing checks to see if proper routing headers are in place 
 
 #Assertions - Other
 
@@ -296,7 +397,7 @@ Assertion TestStep = allows to apply assertions to individual teststeps (Combine
 	Allows to apply assertions to REQUEST 
 	AND/OR Boolean Conditions are allowed to be used in this assertion teststep
 	Assertions can be combined into Groups using "Assertion TestStep"
-JDBC and JMS Assertions both check that relevant headers and status codes are received
+# JDBC and JMS Assertions both check that relevant headers and status codes are received
 
 JSM Assertion:	determines if there is any Status or Timeout issues when interacting with message busses
 	JMS Status
@@ -565,7 +666,12 @@ API offers several different report types:
 	JUnit-Style Report  - Outputs to HTML
 	Data Export --- Can be imported into Other tools
 	Jaspersoft Report  - include in SoapUI pro, also in print version 
-	
+		Jasper creates rich high detailed report, use any layout you like 
+4 ways of reporting:
+	Printable reports
+	Data Export
+	JUnit-style HTML reports
+	Allure report
 Reports can be launched from different levels:
 	Project
 	TestSuite
@@ -766,6 +872,7 @@ Saxon - collection of tools for processing XML documents. Main Component is XSLT
 	Saxon offers XQuery extension, also, XML Schema, XPath
 	Use Saxon API calls to navigate directly to other nodes in the document, either directly, or using XPath expressions
 	Saxon can also be used as Java Library without making XSLT stylesheets.
+	
 Hermes - Hermes has implemented web services to communicate with external applications. 
 	Advantage of using WEB SERVICES are to reduce coupling between external applications and Hermes - 
 	And to allow external applications to integrate Hermes seamlessly using any programming languages that support sending SOAP Messages
