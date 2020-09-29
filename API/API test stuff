@@ -1,28 +1,11 @@
-The first step in testing an API is to determine what sort of REST 
-requests can be made by the API and what the limitations are for each request. 
-This can be done by looking at the documentation.
-
 --------------- API TestFlow ---------------------
 #Project Name --> API V3
-	#TestSuite --> Customers
-		#TestCase --> Lookup
-			#TestSteps -> add #Assertions
-
-2000 = is in milliseconds
-2000 = same as 2 seconds
-20000 = same as 20 seconds
-55000 = same as 55 seconds
-
-	• Assertions
-		○ Contains
-			§ With Regular Expression (option)
-				□ To separate lines within regular expression, use (?m)
-				□ Beginning line ^ and Ends $
-				□ Example in here https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
-		○ Xpath Match
-			§ Select content from requests or response node and compare it with expected value
-			§ Applies only to XML data
-
+	#TestSuite --> Customers/Shipment/Payment  ---> three examples 
+		#TestCase --> Lookup/OnBoard/Credit Check
+			#TestSteps -> DataSource, REST, SOAP, DataSource Loop
+		------------------------------------------------------
+					add #Assertions
+					add #Property - Project Level or TestSuite Level or TestStep or TestCase 
 ------------------------------------------Start Testing with REST API --------------------------------------------------
 ##1. Use Swagger to document clearly described an API’s behavior
 
@@ -72,6 +55,8 @@ This can be done by looking at the documentation.
 		'Endpoint' - from: http - .com
 		'Resource' - from: maps - ?
 		'Parameters' - from: address - mailbourne
+---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------
 THERMINALOGY
 
@@ -130,6 +115,8 @@ THERMINALOGY
 		- virtrunner
 		- securitytestrunner
 -Definitions are stored in XML file
+
+============================================================================
 # Menu Tab - Header
 Integrations Tab - contains Integrations/Definitions that are installed within ReadyAPI
 Dashboard - Highly configurable overview of entire environment. 
@@ -147,69 +134,57 @@ Database - Configure project - wide database connection
 JMS - Configure JMS message bus connections
 Default environment - Edit, select environments for the project
 Proxy - Configure, enable/disable proxy for project
+==================================================================================
 
-Settings
+Settings/Preferences
 HTTP - control whether message can be compressed, decide authontication detail
+	- controlling how SOAPUI works with endpoints
 	- Set timeout and maximum connection details
+	- Whether you wnat to Incorporate overal amount of time in request and responses when calculating performance
 Proxy - firewall, configure proxy, monitor message service, to and from
+	Settings to monitor messages to and from  - configure Proxy 
 SSL - configure local keystore, Enable virtual service SSL, Certificate Store
-WSDL - control how soap ui behaves by received messages to and from web services. Cache WSDL for offline access or reduce overhead, Sample Values check box - generates basic data sent for all elements sent to web service
+	Incorporate SSL to Virtual API that hosted on local machine. 
+	It let you connect to locally running virtual apis with full SSL capabilities  which makes simulations more realistic
+		
+WSDL - control how soap ui behaves by received messages to and from web services. 
+	Cache WSDL for offline access or reduce overhead, Sample Values check box - generates basic data sent for all elements sent to web service
 REST - fine tune REST specific behaviors, and related how readyapi deals with schemas
 UI - customize soap ui interactions
+	How you want your project to displayed and saved, and how logging will behave 
+	Also deals with Memory usage
 Editor - how u want to represent your information, what include on XML, font, validate responses messages, validate request messages before they are sent
-Tools - configure the path to some tools loaded on soap ui
+Tools - configure the path to some tools, utilities loaded on soap ui
 WS-I - (Web Services Interoperability) tool that validates WSDL, configure how it will behave.  
-WS-A (Web Service Addressing) - controls soap ui default behavior for WS-A elements 
-Global Sensitive Information Tokens - see the preconfigured list of tokens that soap ui can check for to determine if services are devulging sensitive details for attacker. User can add new tokens.
-LoadUI - tune how performance test behaves. Path to statistic results, Show cloud test price dialog, configure amount of system resources to allocate 
+WS-A (Web Service Addressing) - Web Service Addressing Headers. 
+	Controls soap ui default behavior for WS-A elements 
+	They can be overriden as well
+Global Sensitive Information Tokens - see the preconfigured list of tokens that soap ui can check for to determine if services are devulging sensitive details for attacker. 
+	User can add new token either Globaly or project by project bases 
+Version Update - This tells SOAPUI if you want to Phone Home upon launch and check to see if there is NEW version
+LoadUI - tune how performance test behaves. Path to statistic results, Show cloud test price dialog, 
+	Configure amount of system resources to allocate 
+GIT - configure settings designed to make GIT work smooth with API
 Test History - keeps helpful records of test runs. Consumes lots of storage
+	Abilit to impose limits on storage used for Test storage/Storages use to allocate to Test History 
 Virtual Service Transaction - controls how many artifact are retained. Setting help tune how test cases are performed in case of an error, manage log history and so on
+	Transaction logs to keep: <Number>
+	This controls how many artifacts are retained 
+Default Test Case Optins - fine tunes how test cases will perform in even of error
+	Manage log history and other stuff - this can be overriden in given test case
 JIRA - bug an issue tracking. Inform readyapi for specific jira instances
 ReadyAPI - determine/specify which editor want to use SOAP or REST along with other behaviors and locations
+	including directories with global scripts and customer reports 
 Coverage - whether coverage report should be created for you by default
+	Lots of times unUsed 
 Code Template - Collection of shortcuts to make scripting easier, more for developing and extensive scripting
 JDBC drivers - contains all sorts databases/installs databases
+	Third party JDBC Drivers can be added 
 Debug Context filter  - provide shortcut to reduce amount of typing to debug scripts 
-Zephy Integration - design/manage to track tests.  Ability to view Test Results in JIRA
-Internal Browser - renders basic web pages. Configures the behavior. 
+Zephyr Integration - design/manage to track tests.  Ability to view Test Results in JIRA
+	Configure Integration between ReadyAPI and Zephyr 
+	Need to provide URL, Login, Security Information 
+	You can view ReadyAPI Test Results in JIRA 
+Internal Browser - renders basic web pages. Configures the behavior of browser
 
-Workspaces
-	- Collection of related projects
-	- Definitions are stored in XML files
-	- Workstations are easy to switch between projects
------------------------------------------
-V = test
-Log.info <variable> = prints variable
-
-## For SOAP Test - Need WSDL File - Contains ALL info about Web Service
-	- How we can access it
-	- Its functionalities
-	- What kind of request need to send
-	- What kind of response we will get
-	- Once WSLD file is loaded in ReadyAPI - it will list all Relative endpoints, functionalities
-	- SOAP Request will Scan WSLD file and ADD as many properties as written in the File
-	- SOAP Request gets Response in XML only (no JSON)
-	
-	• Steps to Follow for SOAP Project - WSLD File
-		○ Create SOAP Project using WSDL File BY click "New Project"
-			§ <Project Name>
-			§ Type: "WSDL Definition (SOAP)"
-			§ Input: <URL or Path File>
-		○ Create Test Suite
-		○ Create Test Case
-		○ Add SOAP Request (Test Step)
-		○ Input any properties into XML or FORM tab
-		○ Execute Test Case
-	
-## REST Test - Can be ran with WADL and URL file
-	- REST supports many formats; XML, JSON, HTML, RAW, OUTPUT
-	• Steps to Follow for REST Project - with given URL (endpoint)
-		○ Click "New Project"
-		○ Under "Definition" Tab - chose either "Determine Automatically" or "WADL Definition (REST)"
-		○ Or Under "Endpoint" tab - Input URL (endpoint) with Specific Method (GET …)
-		○ Create Test Suite
-		○ Create Test Case
-		○ Add REST Request (Test Step)
-		○ Input properties into FORM tab
-		○ Execute Test Case
-		○ OR Once Project Name is create, Just Click + sign next to API (on left panel under <ProjectName>)
+# These settings can be saved and exported for others to use/share 
